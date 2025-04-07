@@ -1,8 +1,0 @@
-1- enter and exit  
-2- mangement places  
-3- payment online  
-4- admin dashboard  / client dashboard  
-5- login / logout  client /employee/ admin 
-6- cart 
-7- employes 
-8- 
