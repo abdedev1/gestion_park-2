@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SpotRresource;
 use App\Models\Spot;
 use Illuminate\Http\Request;
 
