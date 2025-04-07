@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
           
             ParcSeeder::class,
+            SpotSeeder::class,
             // Add other seeders here
         ]);
 
