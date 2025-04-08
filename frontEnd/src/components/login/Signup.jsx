@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import Auth from "../../assets/api/auth/Auth";
 import { Tabs } from 'antd';
 import { ArrowRight, ArrowLeft, Check} from "lucide-react";
 
@@ -36,36 +36,39 @@ export function SignupForm({ setActiveTab }) {
     // const dispatch = useDispatch();
     // const navigate = useNavigate();
 
-    const [confirmPass, setConfirmPass] = useState("");
     const [user, setUser] = useState({
-        firstName: "",
-        lastName: "",
+        first_name: "",
+        last_name: "",
         email: "",
         password: "",
-        date_birthday: "",
-        role_id: 1,
+        password_confirmation: "",
+        birth_date: "",
+        roleId: 1,
     });
 
-    const [errors, setErrors] = useState({email: "", confirmPass: ""});
+    const [errors, setErrors] = useState({});
 
     // Validation function
     const validateForm = () => {
-        const newErrors = {};
+        // const newErrors = {};
 
-        if (clients.find(c => c.email === user.email)) {
-            newErrors.email = "Email already registered";
-        }
-        if (user.password !== confirmPass) {
-            newErrors.confirmPass = "Passwords do not match";
-        }
+        // if (clients.find(c => c.email === user.email)) {
+        //     newErrors.email = "Email already registered";
+        // }
+        // if (user.password !== confirmPass) {
+        //     newErrors.confirmPass = "Passwords do not match";
+        // }
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Return true if no errors
+        // setErrors(newErrors);
+        // return Object.keys(newErrors).length === 0; // Return true if no errors
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("user", user);
+        
+        const res = await Auth.Register(user);
+        setErrors(res.errors);
+        
 
         // if (!validateForm()) return;
         
@@ -86,42 +89,58 @@ export function SignupForm({ setActiveTab }) {
             <p className="text-sm max-w-sm mt-2">
                 Create an account and rent a car
             </p>
-            <form className="mt-6" onSubmit={handleSubmit} >
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-1">
-                    {/* <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
-                        <input className="input w-full validator" placeholder="First name" type="text" onChange={e => setUser({ ...user, firstName: e.target.value.trim() })} value={user.firstName} required />
-                        <div className="validator-hint">Enter valid name</div>
+            <form className="mt-1 flex flex-col gap-1.5" onSubmit={handleSubmit} >
+                <div className="flex flex-col md:flex-row gap-2">
+                    <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
+                        <input className="input w-full validator" placeholder="First name" type="text" onChange={e => setUser({ ...user, first_name: e.target.value.trim() })} value={user.first_name} required />
+                        {errors?.first_name ? (<div className="text-error mb-1 text-xs">{errors?.first_name[0]}</div>) : (<div className="validator-hint mt-0 mb-1">First name is required</div>)}
                         <span className="text-xl" >First name</span>
-                    </label> */}
-                    <div className="w-full">
-                        <label className="fieldset-label" htmlFor="firstname">First name</label>
-                        <input id="firstname" className="input w-full validator" placeholder="Enter first name" type="text" onChange={e => setUser({ ...user, firstName: e.target.value.trim() })} value={user.firstName} required />
-                        <div className="validator-hint visible">Enter valid name</div>
-                    </div>
-                    <div className="w-full">
-                        <label className="fieldset-label" htmlFor="lastname">Last name</label>
-                        <input id="lastname" className="input w-full validator" placeholder="Enter last name" type="text" onChange={e => setUser({ ...user, lastName: e.target.value.trim() })} value={user.lastName} required />
-                        <div className="validator-hint visible">Enter valid name</div>
-                    </div>
+                    </label>
+
+                    <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
+                        <input className="input w-full validator" placeholder="Last name" type="text" onChange={e => setUser({ ...user, last_name: e.target.value.trim() })} value={user.last_name} required />
+                        {errors?.last_name ? (<div className="text-error mb-1 text-xs">{errors?.last_name[0]}</div>) : (<div className="validator-hint mt-0 mb-1">Last name is required</div>)}
+                        <span className="text-xl" >Last name</span>
+                    </label>
                 </div>
 
-                <div className="mb-1">
-                    <label className="fieldset-label" htmlFor="email">Email</label>
-                    <input id="email" type="email" className={`input validator w-full ${errors?.email && "input-error!"}`} placeholder="rentacar@ex.com" onChange={e => setUser({ ...user, email: e.target.value.trim() })} value={user.email} required />
-                    {errors?.email ? (<div className="text-error mt-2 text-xs">{errors?.email}</div>) : (<div className="validator-hint visible">Enter valid email address</div>)}
-                </div>
+                <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
+                    <input className="input w-full validator" placeholder="Email" type="email" onChange={e => setUser({ ...user, email: e.target.value.trim() })} value={user.email} required />
+                    {errors?.email ? (<div className="text-error mb-1 text-xs">{errors?.email[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible">Enter a valid email address</div>)}
+                    <span className="text-xl" >Email</span>
+                </label>
 
-                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-3">
-                    <div className="w-full">
+                <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
+                    <input className="input w-full validator" type="date" onChange={e => setUser({ ...user, birth_date: e.target.value })} value={user.birth_date} required max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]} />
+                    {errors?.birth_date ? (<div className="text-error mb-1 text-xs">{errors?.birth_date[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible">Enter a valid birthday date</div>)}
+                    <span className="text-xl" >Birth date</span>
+                </label>
+
+
+                <div className="flex flex-col md:flex-row gap-2 mb-6">
+                    <label className="floating-label w-full not-focus-within:[&>span]:text-sm relative">
+                        <input className="input w-full validator" placeholder="Password" type="password" onChange={e => setUser({ ...user, password: e.target.value })}  value={user.password} minLength={8} required />
+                        <span className="text-xl" >Password</span>
+                        {errors?.password ? (<div className="text-error mb-1 text-xs w-96 absolute">{errors?.password[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible w-96 absolute">Password must be at least 8 characters</div>)}
+                    </label>
+
+                    <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
+                        <input className="input w-full validator" placeholder="Confirm Password" type="password" onChange={e => setUser({ ...user, password_confirmation: e.target.value})} value={user.password_confirmation} minLength={8} required />
+                        <span className="text-xl" >Confirm Password</span>
+                    </label>
+
+                    
+
+                    {/* <div className="w-full">
                         <label className="fieldset-label" htmlFor="password">Password</label>
                         <input id="password" className="input w-full validator" placeholder="••••••••" type="password" onChange={e => setUser({ ...user, password: e.target.value })} value={user.password} required />
-                        <div className="validator-hint visible">Enter valid password</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid password</div>
                         </div>
-                    <div className="w-full">
+                        <div className="w-full">
                         <label className="fieldset-label" htmlFor="cpassword">Confirm Password</label>
                         <input id="cpassword" className={`input w-full ${errors?.confirmPass ? "input-error" : ""}`} placeholder="••••••••" type="password" onChange={e => setConfirmPass(e.target.value)} value={confirmPass} required />
-                        {errors?.confirmPass && <div className="text-error mt-2 text-xs">{errors?.confirmPass}</div>}
-                    </div>
+                        {errors?.confirmPass && <div className="text-error mb-1 text-xs">{errors?.confirmPass}</div>}
+                        </div> */}
                 </div>
 
                 <button className="btn btn-primary w-full" type="submit" > Sign Up <Check /></button>
@@ -152,37 +171,37 @@ function Step1({user, setUser, confirmPass, setConfirmPass, errors, setStep, set
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-1">
                     {/* <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
                         <input className="input w-full validator" placeholder="First name" type="text" onChange={e => setUser({ ...user, firstName: e.target.value.trim() })} value={user.firstName} required />
-                        <div className="validator-hint">Enter valid name</div>
+                        <div className="validator-hint mt-0 mb-1">Enter valid name</div>
                         <span className="text-xl" >First name</span>
                     </label> */}
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="firstname">First name</label>
                         <input id="firstname" className="input w-full validator" placeholder="Enter first name" type="text" onChange={e => setUser({ ...user, firstName: e.target.value.trim() })} value={user.firstName} required />
-                        <div className="validator-hint visible">Enter valid name</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid name</div>
                     </div>
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="lastname">Last name</label>
                         <input id="lastname" className="input w-full validator" placeholder="Enter last name" type="text" onChange={e => setUser({ ...user, lastName: e.target.value.trim() })} value={user.lastName} required />
-                        <div className="validator-hint visible">Enter valid name</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid name</div>
                     </div>
                 </div>
 
                 <div className="mb-1">
                     <label className="fieldset-label" htmlFor="email">Email</label>
                     <input id="email" type="email" className={`input validator w-full ${errors?.email && "input-error!"}`} placeholder="rentacar@ex.com" onChange={e => setUser({ ...user, email: e.target.value.trim() })} value={user.email} required />
-                    {errors?.email ? (<div className="text-error mt-2 text-xs">{errors?.email}</div>) : (<div className="validator-hint visible">Enter valid email address</div>)}
+                    {errors?.email ? (<div className="text-error mb-1 text-xs">{errors?.email}</div>) : (<div className="validator-hint mt-0 mb-1 visible">Enter valid email address</div>)}
                 </div>
 
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-3">
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="password">Password</label>
                         <input id="password" className="input w-full validator" placeholder="••••••••" type="password" onChange={e => setUser({ ...user, password: e.target.value })} value={user.password} required />
-                        <div className="validator-hint visible">Enter valid password</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid password</div>
                         </div>
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="cpassword">Confirm Password</label>
                         <input id="cpassword" className={`input w-full ${errors?.confirmPass ? "input-error" : ""}`} placeholder="••••••••" type="password" onChange={e => setConfirmPass(e.target.value)} value={confirmPass} required />
-                        {errors?.confirmPass && <div className="text-error mt-2 text-xs">{errors?.confirmPass}</div>}
+                        {errors?.confirmPass && <div className="text-error mb-1 text-xs">{errors?.confirmPass}</div>}
                     </div>
                 </div>
 
@@ -217,31 +236,31 @@ function Step2({user, setUser, setStep, setAlign, handleSubmit}) {
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="cin">CIN</label>
                         <input id="cin" className="input w-full validator" placeholder="JB123456" type="text" onChange={e => setUser({ ...user, cin: e.target.value.trim() })} value={user.cin} required />
-                        <div className="validator-hint visible">Enter valid CIN</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid CIN</div>
                     </div>
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="drivingLicenseId">Driving License ID</label>
                         <input id="drivingLicenseId" className="input w-full validator" placeholder="Enter your driving license ID" type="text" onChange={e => setUser({ ...user, drivingLicenseId: e.target.value.trim() })} value={user.drivingLicenseId} required />
-                        <div className="validator-hint visible">Enter your driving license ID</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter your driving license ID</div>
                     </div>
                 </div>
 
                 <div className="mb-1">
                     <label className="fieldset-label" htmlFor="address">Adress</label>
                     <input id="address" className="input w-full validator" placeholder="Enter your address" type="text" onChange={e => setUser({ ...user, address: e.target.value })} value={user.address} required />
-                    <div className="validator-hint visible">Enter valid address</div>
+                    <div className="validator-hint mt-0 mb-1 visible">Enter valid address</div>
                 </div>
 
                 <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-3">
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="city">City</label>
                         <input id="city" className="input w-full validator" placeholder="Enter your city" type="text" onChange={e => setUser({ ...user, city: e.target.value })} value={user.city} required />
-                        <div className="validator-hint visible">Enter valid city</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid city</div>
                     </div>
                     <div className="w-full">
                         <label className="fieldset-label" htmlFor="birthday">Birthday</label>
                         <input id="birthday" className="input w-full validator" type="date" onChange={e => setUser({ ...user, date_birthday: e.target.value })} value={user.date_birthday} required max={getMinDate()} />
-                        <div className="validator-hint visible">Enter valid birthday</div>
+                        <div className="validator-hint mt-0 mb-1 visible">Enter valid birthday</div>
                     </div>
                 </div>
 
