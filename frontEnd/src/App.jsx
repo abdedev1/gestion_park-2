@@ -1,15 +1,20 @@
-import { useState } from 'react'
-// import FormTabs from './components/login/Signup'
+
+import FormTabs from './components/login/Signup'
 import './App.css'
 import { BrowserRouter,Routes, Route } from 'react-router-dom'
-import Header from './component/admin/Header'
+import UsersList from './components/login/admin/UsersList'
+
 
 function App() {
 
   return (
     <>
-      <Header/>
-      {/* <FormTabs/> */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<UsersList/>}/>
+          <Route path="/signup" element={<FormTabs/>}/>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }

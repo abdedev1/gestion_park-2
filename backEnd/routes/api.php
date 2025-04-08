@@ -12,6 +12,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::post("/register", [AuthController::class, 'register']);
 Route::post("/login", [AuthController::class, 'login']);
-Route::get("/users", [UserController::class, 'index']);
+Route::apiResource('/users', UserController::class);
 Route::get("/parcs", [ParcController::class, 'index']);
 Route::post("/parcs", [ParcController::class, 'store']);
