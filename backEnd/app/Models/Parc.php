@@ -16,5 +16,9 @@ class Parc extends Model
         'capacite',
         'adresse',
     ];
+    public function employes(){
+        return $this->hasMany(Employe::class);
+    }
    
+    
 }
