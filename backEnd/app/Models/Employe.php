@@ -9,4 +9,9 @@ class Employe extends Model
 {
     /** @use HasFactory<\Database\Factories\EmployeFactory> */
     use HasFactory;
+    public function parc(){
+        return $this->belongsTo(Parc::class);
+    }
+    
+
 }
