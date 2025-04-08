@@ -82,6 +82,7 @@ class ParcController extends Controller
     public function getParcEmployes($id){
         $employes = Parc::find($id)->employes;
         // $parc = Parc::with('employes.user')->find($id);
+        //abdelilah
         return response()->json($employes,200);
     }
 }
