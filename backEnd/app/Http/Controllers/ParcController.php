@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Parc;
 use Illuminate\Http\Request;
-use App\Http\Resources\ParcResource;
+
 
 class ParcController extends Controller
 {
@@ -13,7 +13,8 @@ class ParcController extends Controller
      */
     public function index()
     {
-        return ParcResource::collection(Parc::all());
+        $parcs = Parc::all();
+        return response()->json($parcs);
     }
 
     /**
@@ -34,7 +35,7 @@ class ParcController extends Controller
 
         $parc = Parc::create($request->all());
 
-        return new ParcResource($parc);
+        return response()->json($parc, 201);
         
     }
 
@@ -44,8 +45,7 @@ class ParcController extends Controller
     public function show(string $id)
     {
         $parc = Parc::findOrFail($id);
-
-        return new ParcResource($parc);
+        return response()->json($parc);
         
 
 
@@ -62,15 +62,15 @@ class ParcController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'nom' => 'required|string|max:255',
-            'capacite' => 'required|integer|min:1',
-            'adresse' => 'required|string|max:255',
+            'nom' => 'sometimes|required|string|max:255',
+            'capacite' => 'sometimes|required|integer|min:1',
+            'adresse' => 'sometimes|required|string|max:255',
         ]);
 
         $parc = Parc::findOrFail($id);
         $parc->update($request->all());
 
-        return new ParcResource($parc);
+        return response()->json($parc);
         
     }
 
@@ -82,6 +82,6 @@ class ParcController extends Controller
         $parc = Parc::findOrFail($id);
         $parc->delete();
 
-        return response()->json(['message' => 'Parc deleted successfully']);
+        return response()->json(null, 204);
     }
 }
