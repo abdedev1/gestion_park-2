@@ -42,6 +42,7 @@ function UsersList() {
   }, [])
 
   
+  
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:8000/api/users/${id}`)
@@ -135,7 +136,7 @@ function UsersList() {
                   <div className="font-bold capitalize">{user.password}</div>
                 </td>
                 <td>
-                  <div className="font-bold capitalize">{user.role_id}</div>
+                  <div className="font-bold capitalize">{user?.role?.name ?? 'No role'}</div>
                 </td>
 
                 <th>
