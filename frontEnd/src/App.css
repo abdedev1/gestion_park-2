@@ -1,4 +1,19 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-    themes: corporate --default;
-  }
+  themes: corporate --default;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+input[type=number] {
+  appearance: textfield;
+}
+.input:focus-within, .select:focus-within{
+  outline: none;
+}
