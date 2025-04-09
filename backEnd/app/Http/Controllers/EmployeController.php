@@ -12,15 +12,8 @@ class EmployeController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $employes = Employe::with('user')->get();
+        return response()->json($employes);
     }
 
     /**
@@ -28,7 +21,17 @@ class EmployeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id', 
+            'parc_id' => 'required|exists:parcs,id', 
+        ]);
+    
+        $employe = Employe::create($validatedData);
+    
+        return response()->json([
+            'message' => 'Employe created successfully',
+            'employe' => $employe,
+        ], 201);
     }
 
     /**
@@ -36,15 +39,8 @@ class EmployeController extends Controller
      */
     public function show(Employe $employe)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Employe $employe)
-    {
-        //
+        $employe->load('user'); 
+        return response()->json($employe);
     }
 
     /**
@@ -52,7 +48,17 @@ class EmployeController extends Controller
      */
     public function update(Request $request, Employe $employe)
     {
-        //
+        $validatedData = $request->validate([
+            'user_id' => 'sometimes|required|exists:users,id',
+            'parc_id' => 'sometimes|required|exists:parcs,id',
+        ]);
+    
+        $employe->update($validatedData);
+    
+        return response()->json([
+            'message' => 'Employe updated successfully',
+            'employe' => $employe,
+        ]);
     }
 
     /**
@@ -60,6 +66,10 @@ class EmployeController extends Controller
      */
     public function destroy(Employe $employe)
     {
-        //
+        $employe->delete();
+
+        return response()->json([
+            'message' => 'Employe deleted successfully',
+        ]);
     }
 }

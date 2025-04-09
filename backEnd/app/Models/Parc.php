@@ -16,9 +16,14 @@ class Parc extends Model
         'capacite',
         'adresse',
     ];
-    //elghaoui
+    
     public function employes(){
         return $this->hasMany(Employe::class);
+    }
+
+
+    public function spots(){
+        return $this->hasMany(Spot::class);
     }
    
     

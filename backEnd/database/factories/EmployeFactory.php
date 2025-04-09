@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Parc;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Employe>
- */
 class EmployeFactory extends Factory
 {
     /**
@@ -16,8 +15,10 @@ class EmployeFactory extends Factory
      */
     public function definition(): array
     {
+        
         return [
-            //
+            'user_id' => User::factory(),
+            'parc_id' => Parc::factory(), 
         ];
     }
 }
