@@ -13,6 +13,6 @@ class ParcSeeder extends Seeder
      */
     public function run(): void
     {
-       Parc::factory(4)->create();
+       Parc::factory(8)->create();
     }
 }

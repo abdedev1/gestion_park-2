@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SpotRequest;
 use App\Models\Spot;
 use Illuminate\Http\Request;
 
@@ -12,32 +13,26 @@ class SpotController extends Controller
      */
     public function index()
     {
-        return SpotRresource::collection(Spot::all());
+        $spots = Spot::all();
+        return response()->json($spots,200);
         
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SpotRequest $request)
     {
-        $request->validate([
-            'numero' => 'required|string|max:255',
-            'etat' => 'required|string|max:255',
-            'parc_id' => 'required|exists:parcs,id',
-        ]);
+        $request->validated();
 
         $spot = Spot::create($request->all());
 
-        return new SpotRresource($spot);
+        return response()->json([
+            'message'=>'The new spot has been added successfully!',
+            'spot'=>$spot
+        ],201);
     }
 
     /**
@@ -45,33 +40,30 @@ class SpotController extends Controller
      */
     public function show(Spot $spot)
     {
-        return new SpotRresource($spot);
-        
+        return response()->json([
+            'message' => 'Spot details fetched successfully.',
+            'spot' => $spot
+        ], 200);
     }
+    
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Spot $spot)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Spot $spot)
+    public function update(SpotRequest $request, Spot $spot)
     {
-        $request->validate([
-            'numero' => 'sometimes|required|string|max:255',
-            'etat' => 'sometimes|required|string|max:255',
-            'parc_id' => 'sometimes|required|exists:parcs,id',
-        ]);
-
+        $request->validated();
+    
         $spot->update($request->all());
-
-        return new SpotRresource($spot);
+    
+        return response()->json([
+            'message' => 'Spot updated successfully.',
+            'spot' => $spot
+        ], 200);
     }
+    
 
     /**
      * Remove the specified resource from storage.
