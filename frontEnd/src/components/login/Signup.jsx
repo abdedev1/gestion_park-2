@@ -127,7 +127,7 @@ export function SignupForm({ setActiveTab }) {
                 <button className="btn btn-primary w-full" type="submit" > Sign Up <Check /></button>
             </form>
             <div className="divider">Already have an account?</div>
-            <button className="btn btn-accent btn-soft w-full" onClick={() => setActiveTab("Login")}>Login</button>
+            <button className="btn btn-secondary btn-soft w-full" onClick={() => setActiveTab("Login")}>Login</button>
         </fieldset>
     );
 }
@@ -189,7 +189,7 @@ function Step1({user, setUser, confirmPass, setConfirmPass, errors, setStep, set
                 <button className="btn btn-primary w-full" type="submit" > Next <ArrowRight size={20} /></button>
             </form>
             <div className="divider">Already have an account?</div>
-            <button className="btn btn-accent btn-soft w-full" onClick={() => setActiveTab("Login")}>Login</button>
+            <button className="btn btn-secondary btn-soft w-full" onClick={() => setActiveTab("Login")}>Login</button>
         </>
     )
 }
@@ -206,7 +206,7 @@ function Step2({user, setUser, setStep, setAlign, handleSubmit}) {
 
     return (
         <>
-            <button className="btn btn-accent btn-soft w-full" onClick={prevStep}><ArrowLeft />Back</button>
+            <button className="btn btn-secondary btn-soft w-full" onClick={prevStep}><ArrowLeft />Back</button>
             <div className="divider"></div>
             <h2 className="font-bold text-xl">Additional Information</h2>
             <p className="text-sm max-w-sm mt-2">
@@ -294,7 +294,7 @@ export function LoginForm({ setActiveTab }) {
                 <button className="btn btn-primary w-full" type="submit"> Login <ArrowRight className="mt-1"/></button>
             </form>
             <div className="divider">You don't have an account yet?</div>
-            <button className="btn btn-accent btn-soft" onClick={() => setActiveTab("Sign Up")}>Sign Up</button>
+            <button className="btn btn-secondary btn-soft" onClick={() => setActiveTab("Sign Up")}>Sign Up</button>
         </fieldset>
     );
 }
