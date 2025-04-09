@@ -171,8 +171,8 @@ export default function RolesList() {
     },
     {
       title: "Description",
-      dataIndex: "description",
-      key: "description",
+      dataIndex: "descreption",
+      key: "descreption",
       responsive: ["md"],
     },
     {
@@ -248,7 +248,7 @@ export default function RolesList() {
             <Input />
           </Form.Item>
           <Form.Item
-            name="description"
+            name="descreption"
             label="Description"
             rules={[{ required: true, message: "Please enter role description" }]}
           >
@@ -270,7 +270,7 @@ export default function RolesList() {
             <Input />
           </Form.Item>
           <Form.Item
-            name="description"
+            name="descreption"
             label="Description"
             rules={[{ required: true, message: "Please enter role description" }]}
           >
