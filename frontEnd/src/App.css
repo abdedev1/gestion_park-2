@@ -1,7 +1,4 @@
 @import "tailwindcss";
-<<<<<<< HEAD
-@plugin "daisyui" ;
-=======
 @plugin "daisyui" {
   themes: corporate --default;
 }
@@ -20,4 +17,3 @@ input[type=number] {
 .input:focus-within, .select:focus-within{
   outline: none;
 }
->>>>>>> e3effb761d075dba85348d885290a7181b339c38
