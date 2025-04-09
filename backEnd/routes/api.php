@@ -1,11 +1,12 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ParcController;
 use App\Http\Controllers\SpotController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployeController;
 
 Route::middleware('auth:sanctum')->group(function () {
     
@@ -17,3 +18,4 @@ Route::get("/users", [UserController::class, 'index']);
 Route::apiResource("parcs",ParcController::class);
 Route::apiResource('spots',SpotController::class);
 Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
+Route::apiResource('employes', EmployeController::class);

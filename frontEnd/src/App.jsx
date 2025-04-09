@@ -1,15 +1,24 @@
 import { useState } from 'react'
 import FormTabs from './components/login/Signup'
 import './App.css'
-import { BrowserRouter,Routes, Route } from 'react-router-dom'
+import { BrowserRouter,Route,Routes } from 'react-router-dom'
 // import Header from './component/admin/Header'
-
+import Overview from './components/employe/Overview'
+import HeaderEmploye from './components/employe/HeaderEmploye'
 function App() {
 
   return (
     <>
       {/* <Header/> */}
-      <FormTabs/>
+      <Overview />
+      {/* <FormTabs/> */}
+      <BrowserRouter>
+        <Routes>
+          <Route path='/employe' element={<HeaderEmploye />}>
+
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
