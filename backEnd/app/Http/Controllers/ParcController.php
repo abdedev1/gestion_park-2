@@ -85,4 +85,8 @@ class ParcController extends Controller
         //abdelilah
         return response()->json($employes,200);
     }
+    public function getParcSpots($id){
+        $spots = Parc::find($id)->spots;
+        return response()->json($spots,200);
+    }
 }
