@@ -10,8 +10,9 @@ class Spot extends Model
     /** @use HasFactory<\Database\Factories\SpotFactory> */
     use HasFactory;
     protected $fillable = [
-        'numero',
-        'etat',
+        'nom',
+        'type',
+        'status',
         'parc_id',
     ];
    

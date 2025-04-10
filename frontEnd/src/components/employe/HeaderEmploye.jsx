@@ -12,7 +12,7 @@ function HeaderEmploye() {
         }`;
     return (
         <div className="h-screen flex flex-col">
-            <header className="h-16  text-black  flex items-center justify-between px-6 shadow-md">
+            <header className="h-16  text-black  flex items-center justify-between px-6 shadow-md z-200">
                 <div className='flex items-center gap-16'>
                     <NavLink ><img className='h-12' src="/Logo/logo.png" alt="" /></NavLink>
                     <nav className="space-x-10">
@@ -61,7 +61,6 @@ function HeaderEmploye() {
                     </li>
                 </ul>
             </aside>
-        <Footer/>
         </div>
     );
 }

@@ -1,25 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-const API_URL = "http://127.0.0.1:8000/api/employes";
+import { axios } from "../../../assets/api/axios";
+
 
 
 export const fetchEmployes = createAsyncThunk('employes/fetchEmployes', async () => {
-    const response = await axios.get(API_URL);
+    const response = await axios.get("employes");
     return response.data;
 });
 
 export const addEmploye = createAsyncThunk("employes/addEmploye", async (newEmploye) => {
-    const response = await axios.post(API_URL, newEmploye);
+    const response = await axios.post("employes", newEmploye);
     return response.data;
   });
   
   export const updateEmploye = createAsyncThunk("employes/updateEmploye", async ({ id, updatedEmploye }) => {
-    const response = await axios.put(`${API_URL}/${id}`, updatedEmploye);
+    const response = await axios.put(`employes/${id}`, updatedEmploye);
     return response.data;
   });
   
   export const deleteEmploye = createAsyncThunk("employes/deleteEmploye", async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
+    await axios.delete(`employes/${id}`);
     return id;
   });
 

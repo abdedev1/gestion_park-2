@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Client extends Model
+class Report extends Model
 {
-    /** @use HasFactory<\Database\Factories\ClientFactory> */
-    protected $fillable = ['user_id','cart_id'];
+    /** @use HasFactory<\Database\Factories\ReportFactory> */
     use HasFactory;
+    protected $fillable = ['sujet', 'date', 'client_id'];
 }

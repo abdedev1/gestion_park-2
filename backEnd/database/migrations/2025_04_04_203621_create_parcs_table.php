@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('parcs', function (Blueprint $table) {
             $table->id();
             $table->string("nom");
-            $table->integer("capacite");
             $table->string("adresse");
+            $table->integer("numberSpots");
             $table->softDeletes();
             $table->timestamps();
         });

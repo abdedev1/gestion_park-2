@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('spots', function (Blueprint $table) {
             $table->id();
-            $table->string("numero");
-            $table->string("etat");
-            $table->foreignId(column: 'parc_id')->constrained('parcs');
+            $table->string("nom");
+            $table->string("status");
+            $table->integer("type");
+            $table->foreignId(column: 'parc_id')->constrained('parcs')->onDelete('cascade');
             $table->timestamps();
         });
     }
