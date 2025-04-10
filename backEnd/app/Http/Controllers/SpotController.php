@@ -27,7 +27,8 @@ class SpotController extends Controller
     public function store(SpotRequest $request)
     {
         $request->validate([
-            'parc_id' => 'required|exists:parks,id',
+            'numero' => 'nullable|string',
+            'parc_id' => 'required|exists:parcs,id',
             'etat' => 'nullable|string',
         ]);
     
@@ -40,7 +41,7 @@ class SpotController extends Controller
             
             'etat' => $request->etat ?? 'available',
             'parc_id' => $park->id,
-            'numero' => $nextNumero
+            'numero' => $nextNumero,
         ]);
     
       
