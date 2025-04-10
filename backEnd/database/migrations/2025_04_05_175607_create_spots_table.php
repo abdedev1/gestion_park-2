@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("nom");
             $table->string("status");
-            $table->integer("type");
+            $table->string("type");
             $table->foreignId(column: 'parc_id')->constrained('parcs')->onDelete('cascade');
             $table->timestamps();
         });

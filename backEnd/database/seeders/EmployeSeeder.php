@@ -13,6 +13,6 @@ class EmployeSeeder extends Seeder
      */
     public function run(): void
     {
-        Employe::factory(10)->create();
+        Employe::factory(50)->create();
     }
 }

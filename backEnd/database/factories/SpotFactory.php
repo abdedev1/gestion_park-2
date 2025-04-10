@@ -18,8 +18,9 @@ class SpotFactory extends Factory
     public function definition(): array
     {
         return [
-            'numero' => $this->faker->unique()->numberBetween(1, 100),
-            'etat' => $this->faker->randomElement(['libre', 'occupé']),
+            'nom' => $this->faker->unique()->numberBetween(1, 1000),
+            'status' => $this->faker->randomElement(['disponible', 'reserve']),
+            'type' => $this->faker->randomElement(['voiture', 'moto', 'velo', 'handicape', 'electric']),
             'parc_id' => Parc::inRandomOrder()->value('id'),
         ];
     }

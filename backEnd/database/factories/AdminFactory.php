@@ -18,7 +18,12 @@ class AdminFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => User::where('name', 'admin')->inRandomOrder()->value('id'),
+            'user_id' => User::where('role_id', function ($query) {
+                return $query->select('id')
+                             ->from('roles')
+                             ->where('name', 'admin')
+                             ->limit(1); 
+            })->inRandomOrder()->value('id'),
         ];
     }
 }

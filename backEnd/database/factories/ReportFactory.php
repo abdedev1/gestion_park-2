@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class ReportFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'sujet' => $this->faker->sentence(),
+            'date' => $this->faker->date(),
+            'client_id' => Client::factory(),
         ];
     }
 }

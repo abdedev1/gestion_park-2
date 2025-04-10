@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Role;
+use Doctrine\Inflector\Rules\Word;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -25,11 +26,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'birth_date' => fake()->date(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'role_id'=>Role::inRandomOrder()->value('id'),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => fake()->Word('password'),
             'remember_token' => Str::random(10),
         ];
     }
