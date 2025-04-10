@@ -25,3 +25,5 @@ Route::apiResource('/users', UserController::class);
 Route::apiResource('/roles', RoleController::class);
 Route::get("/parcs", [ParcController::class, 'index']);
 Route::post("/parcs", [ParcController::class, 'store']);
+Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
+
