@@ -25,7 +25,8 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'string|max:255',
+            'description' => 'string',
         ]);
 
         $role = Role::create($request->all());
@@ -50,6 +51,7 @@ class RoleController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'required|string',
         ]);
 
         $role = Role::findOrFail($id);

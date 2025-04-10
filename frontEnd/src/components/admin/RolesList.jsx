@@ -1,5 +1,5 @@
 "use client"
-
+import axios from "axios"
 import { useEffect, useState } from "react"
 import { Edit, Loader2, MoreHorizontal, Plus, RefreshCw, Shield, Trash2 } from "lucide-react"
 import { Button, Table, Modal, Form, Input, Dropdown, Spin, message } from "antd"
@@ -57,25 +57,27 @@ export default function RolesList() {
   // Add new role
   const handleAddRole = async (values) => {
     try {
-      const response = await fetch("http://localhost:8000/api/roles", {
-        method: "POST",
+      const response = await axios.post('http://localhost:8000/api/roles', values, {
         headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+  
+      const data =response.data; // Always parse the response
+      
       if (!response.ok) {
-        throw new Error("Failed to add role")
+        // This will show server-side validation errors if any
+        throw new Error(data.message || "Failed to add role");
       }
-
-      messageApi.success("Role added successfully")
-      setIsAddModalOpen(false)
-      form.resetFields()
-      fetchRoles()
+  
+      messageApi.success("Role added successfully");
+      setIsAddModalOpen(false);
+      form.resetFields();
+      fetchRoles();
     } catch (error) {
-      console.error("Error adding role:", error)
-      messageApi.error("Failed to add role. Please try again.")
+      console.error("Error adding role:", error);
+      messageApi.error(error.message || "Failed to add role. Please try again.");
     }
   }
 
