@@ -81,6 +81,7 @@ class ParcController extends Controller
         $request->validated();
         $parc = Parc::findOrFail($id);
         $parc->update($request->all());
+        
 
         return response()->json($parc,201);
         
