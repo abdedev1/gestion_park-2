@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ParcRequest;
 use App\Models\Parc;
+use App\Models\Spot;
 use Illuminate\Http\Request;
+use App\Http\Requests\ParcRequest;
 
 
 class ParcController extends Controller
@@ -18,22 +19,32 @@ class ParcController extends Controller
         return response()->json($parcs,200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
   
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ParcRequest $request)
     {
-        $request->validated();
-        $parc = Parc::create($request->all());
-
+        $request->validate([
+            'nom' => 'required|string',
+            'capacite' => 'required|integer|min:1|max:1000', // you can limit if you want
+        ]);
+    
+        $park = Parc::create([
+            'nom' => $request->nom,
+            'capacite' => $request->capacite,
+            'adresse' => $request->adresse,
+        ]);
+    
+        for ($i = 0; $i < $request->capacite; $i++) {
+            Spot::create([
+                'numero' => 'P' . $i ,
+                'parc_id' => $park->id,
+                'etat' => 'available', 
+                // default or customizable
+            ]);
+        }
+    
         return response()->json([
-            'message'=>'Parc created successfully.',
-            'parc'=>$parc
+            'message' => "Park created with {$request->capacite} spots.",
+            'parc' => $park
         ], 201);
         
     }
@@ -63,6 +74,7 @@ class ParcController extends Controller
         $request->validated();
         $parc = Parc::findOrFail($id);
         $parc->update($request->all());
+        
 
         return response()->json($parc,201);
         

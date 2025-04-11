@@ -8,6 +8,8 @@ import Overview from './components/employe/ParkEmploye'
 import UsersList from './components/admin/UsersList'
 import Header from './components/Header'
 import RolesList from './components/admin/RolesList'
+import QrScanner from './components/admin/test'
+import Headerr from './components/admin/Admindashboard'
 
 
 function App() {
@@ -36,6 +38,7 @@ function App() {
           }}
         >
           <Header />
+         
           <Routes>
             <Route path="/" element={<h1>homepage</h1>} />
             <Route path="/sign" element={<SignTabs />} />
@@ -62,20 +65,26 @@ function App() {
 
             {/* Protected routes for admin */}
             <Route element={<ProtectedRoute requiredRole="admin" />}>
-              <Route path="/dashboard" element={<h1>dashboard</h1>} />
-              <Route path="/users">
-                <Route index element={<h1>users list</h1>} />
+              <Route path="/admin/dashboard" element={<Headerr />} />
+              
+              <Route path="/admin/users">
+                <Route index element={<UsersList/>} />
                 <Route path=":id" element={<h1>show user</h1>} />
               </Route>
-              <Route path="/roles">
-                <Route index element={<h1>roles list</h1>} />
+              
+              <Route path="/admin/roles">
+                <Route index element={<RolesList/>}/>
                 <Route path=":id" element={<h1>show role</h1>} />
               </Route>
-              <Route path="/reservartions">
-                <Route index element={<h1>reservartions list</h1>} />
-                <Route path=":id" element={<h1>show reservartion</h1>} />
+              
+              <Route path='/admin/test' element={<QrScanner/>}/>
+              
+              <Route path="/admin/reservations">
+                <Route index element={<h1>reservations list</h1>} />
+                <Route path=":id" element={<h1>show reservation</h1>} />
               </Route>
-              <Route path="/parcs">
+              
+              <Route path="/admin/parcs">
                 <Route index element={<h1>parcs list</h1>} />
                 <Route path=":id" element={<h1>show parc</h1>} />
               </Route>

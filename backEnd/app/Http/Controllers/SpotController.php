@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SpotRequest;
+use App\Models\Parc;
 use App\Models\Spot;
 use Illuminate\Http\Request;
+use App\Http\Requests\SpotRequest;
 
 class SpotController extends Controller
 {
@@ -25,14 +26,33 @@ class SpotController extends Controller
      */
     public function store(SpotRequest $request)
     {
-        $request->validated();
-
-        $spot = Spot::create($request->all());
-
+        $request->validate([
+            'numero' => 'nullable|string',
+            'parc_id' => 'required|exists:parcs,id',
+            'etat' => 'nullable|string',
+        ]);
+    
+        $park = Parc::findOrFail($request->parc_id);
+    
+       
+        $nextNumero = 'P' . ($park->spots()->count() + 1);
+    
+        $spot = Spot::create([
+            
+            'etat' => $request->etat ?? 'available',
+            'parc_id' => $park->id,
+            'numero' => $nextNumero,
+        ]);
+    
+      
+        $park->update([
+            'capacite' => $park->spots()->count()
+        ]);
+    
         return response()->json([
-            'message'=>'The new spot has been added successfully!',
-            'spot'=>$spot
-        ],201);
+            'message' => 'Spot created and park capacity updated.',
+            'spot' => $spot
+        ], 201);
     }
 
     /**

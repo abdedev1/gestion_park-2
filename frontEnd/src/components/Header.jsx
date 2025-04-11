@@ -17,6 +17,7 @@ export default function Header() {
             <NavLink className={({ isActive }) => `btn btn-sm btn-outline btn-neutral mx-2 ${isActive ? "btn-active" : ""}`} to="/dashboard">Dashborad</NavLink>
             <NavLink className={({ isActive }) => `btn btn-sm btn-outline btn-neutral mx-2 ${isActive ? "btn-active" : ""}`} to="/admin/users">users</NavLink>
             <NavLink className={({ isActive }) => `btn btn-sm btn-outline btn-neutral mx-2 ${isActive ? "btn-active" : ""}`} to="/admin/roles">roles</NavLink>
+            <NavLink className={({ isActive }) => `btn btn-sm btn-outline btn-neutral mx-2 ${isActive ? "btn-active" : ""}`} to="/admin/test">test</NavLink>
           </div>
           <div className="navbar-end">
           <button className="btn btn-ghost btn-neutral btn-circle md:hidden hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(!isOpen)}><Menu/></button>

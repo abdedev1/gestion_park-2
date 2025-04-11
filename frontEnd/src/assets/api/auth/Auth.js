@@ -85,7 +85,9 @@ export default class Auth {
         try {
             const res = await axios.get("user")
             data = res.data
+            console.log(data)
             return data
+           
         
         } catch (error) {
             return data

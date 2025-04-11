@@ -104,9 +104,11 @@ function UsersList() {
           <thead>
             <tr>
               <th>Id</th>
-              <th>Name</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Birthday</th>
               <th>Email</th>
-              <th>RoleId</th>
+              <th>Role</th>
 
               <th></th>
             </tr>
@@ -126,15 +128,19 @@ function UsersList() {
                         </Link>
                       </div>
                     </div>
-                    <div className="font-bold capitalize">{user.name}</div>
+                    <div className="font-bold capitalize">{user.first_name}</div>
                   </div>
+                </td>
+                <td>
+                  <div className="font-bold">{user.last_name}</div>
+                </td>
+                <td>
+                  <div className="font-bold">{user.birth_date}</div>
                 </td>
                 <td>
                   <div className="font-bold">{user.email}</div>
                 </td>
-                <td>
-                  <div className="font-bold capitalize">{user.password}</div>
-                </td>
+               
                 <td>
                   <div className="font-bold capitalize">{user?.role?.name ?? 'No role'}</div>
                 </td>
