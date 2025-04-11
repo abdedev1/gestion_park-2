@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Client;
-use Illuminate\Database\Seeder;
+use App\Models\Cart;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
-class ClientSeeder extends Seeder
+class CartSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Client::factory(50)->create();
+        Cart::factory(1)->create();
 
     }
 }

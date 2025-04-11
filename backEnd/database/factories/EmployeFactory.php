@@ -17,7 +17,12 @@ class EmployeFactory extends Factory
     {
         
         return [
-            'user_id' => User::factory(),
+            'user_id' => User::where('role_id', function ($query) {
+                return $query->select('id')
+                             ->from('roles')
+                             ->where('name', 'employe')
+                             ->limit(1); 
+            })->inRandomOrder()->value('id'),
             'parc_id' => Parc::factory(), 
         ];
     }

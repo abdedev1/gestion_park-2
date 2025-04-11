@@ -14,15 +14,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
         $this->call([
             RoleSeeder::class,
+            PricingRateSeeder::class,
             UserSeeder::class,
+            AdminSeeder::class,
             ParcSeeder::class,
-            SpotSeeder::class,
             EmployeSeeder::class,
-            ClientSeeder::class
-            // Add other seeders here
+            ClientSeeder::class,
+            SpotSeeder::class,
+            CartSeeder::class,
+            ParkingTicketSeeder::class,
+            ReportSeeder::class,
         ]);
 
        

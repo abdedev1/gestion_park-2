@@ -72,4 +72,11 @@ class EmployeController extends Controller
             'message' => 'Employe deleted successfully',
         ]);
     }
+    public function getEmployeSpots($id){
+        $employe = Employe::findOrFail($id);
+        $parc = $employe->parc;
+        $spots = $parc->spots;
+        return response()->json($spots, 200);
+    }
+
 }

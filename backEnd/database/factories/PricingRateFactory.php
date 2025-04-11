@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Parc>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PricingRate>
  */
-class ParcFactory extends Factory
+class PricingRateFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,8 @@ class ParcFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom' => $this->faker->word(),
-            'numberSpots' => $this->faker->numberBetween(1, 30),
-            'adresse' => $this->faker->address(),
+            'rate_name' => $this->faker->word(),
+            'price_per_hour' => $this->faker->randomFloat(2, 5, 50),
         ];
     }
 }

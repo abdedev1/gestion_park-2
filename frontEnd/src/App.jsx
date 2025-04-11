@@ -93,6 +93,11 @@ function App() {
             <Route path="*" element={<h1>Page Not Found Error 404</h1>} />
           </Routes>
         </ConfigProvider>
+        <Routes>
+          <Route path='/' element={<HeaderEmploye/>}>
+              <Route path='/employe' element={<ParkEmploye/>} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </>
   )
