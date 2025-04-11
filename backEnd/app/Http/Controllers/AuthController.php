@@ -53,7 +53,7 @@ class AuthController extends Controller
         } else {
             return response()->json([
                 'message' => 'Invalid credentials',
-                "errors" => ["password" => "Email or password is incorrect"]
+                "errors" => ["password" => ["Email or Password is incorrect"]]
             ], 401);
         }
     }

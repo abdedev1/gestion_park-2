@@ -11,7 +11,7 @@ export default class Auth {
         let data = {
             success: false,
             message: "Server Error",
-            errors: {password: "Something went wrong"}
+            errors: {password: ["Something went wrong"]}
         }
 
         try {
@@ -38,7 +38,7 @@ export default class Auth {
         let data = {
             success: false,
             message: "Server Error",
-            errors: {password: "Something went wrong"}
+            errors: {password: ["Something went wrong"]}
         }
 
         try {
@@ -47,10 +47,11 @@ export default class Auth {
             setBearerToken(data.token)
             Cookies.set("token", data.token, {expires: data.expires, secure: true})
             return data
-
+            
         } catch (error) {
+            console.log(error)
             if(isAxiosError(error)) {
-                if(error.status == 400 || error.status == 422) {
+                if(error.status == 400 || error.status == 422 || error.status == 401) {
                     data.errors = error.response.data.errors
                     data.message = error.response.data.message
                     return data
@@ -69,7 +70,7 @@ export default class Auth {
             return res.data
             
         } catch (error) {
-            const data = { success: false, message: "Something went wrong", errors: {password: "Something went wrong"} }
+            const data = { success: false, message: ["Something went wrong"], errors: {password: ["Something went wrong"]} }
             return data
         }
     }
