@@ -98,8 +98,8 @@ export default function SpotsEmploye() {
         
         try {
             if (selectedSpot.status === "disponible") {
-                await dispatch(addParking_ticket(formData));
-                await dispatch(updateSpot({
+                 await dispatch(addParking_ticket(formData));
+                 await dispatch(updateSpot({
                     id: formData.spot_id,
                     updatedSpot: { ...selectedSpot, status: "reserve" }
                 }));
@@ -107,7 +107,7 @@ export default function SpotsEmploye() {
                 const ticket = selectTicketForSpot(parking_tickets, selectedSpot.id);
                 
                 if (ticket) {
-                    await dispatch(updateParking_ticket({
+                     await dispatch(updateParking_ticket({
                         id: ticket.id,
                         updatedParking_ticket: { 
                             ...formData, 
@@ -116,7 +116,7 @@ export default function SpotsEmploye() {
                         }
                     }));
                     
-                    await dispatch(updateSpot({
+                     await dispatch(updateSpot({
                         id: formData.spot_id,
                         updatedSpot: { ...selectedSpot, status: "disponible" }
                     }));
@@ -142,7 +142,7 @@ export default function SpotsEmploye() {
             <button
                 key={spot.id}
                 onClick={() => handleSpotClick(spot)}
-                className={`text-center py-2 px-3 rounded border font-medium text-sm
+                className={`text-center py-2 px-3 rounded border font-medium text-sm 
                     ${isReserved
                         ? 'bg-gray-800 text-white'
                         : isAvailable
@@ -166,7 +166,7 @@ export default function SpotsEmploye() {
             </div>
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-500">
                     <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md">
                         <h2 className="text-xl font-bold mb-4">
                             {selectedSpot?.status === "disponible" 

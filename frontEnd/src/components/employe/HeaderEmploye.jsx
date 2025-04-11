@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink, Link, Outlet } from "react-router-dom";
 import { Menu, X, Bell, ScanLine } from "lucide-react";
+import ScanerQrCode from './ScanerQrCode';
 import Footer from './Footer';
 function HeaderEmploye() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenSc, setIsOpenSc] = useState(false);
     const navLinkClass = ({ isActive }) =>
         `px-3 py-2 transition duration-200 ${
           isActive
@@ -20,7 +22,7 @@ function HeaderEmploye() {
                     </nav>
                 </div>
                 <div className="flex items-center gap-5">
-                    <button className="p-2  text-black rounded-md " aria-label="Open Scan" onClick={() => setIsOpen(true)}>
+                    <button className="p-2  text-black rounded-md " aria-label="Open Scan" onClick={() => setIsOpenSc(true)}>
                         <ScanLine  size={24} />
                     </button>
                     <button className="p-2  text-black rounded-md " aria-label="Open Notfication" onClick={() => setIsOpen(true)}>
@@ -37,14 +39,14 @@ function HeaderEmploye() {
 
             {/* SiderBar Menu */}
             <div
-                className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity ${
+                className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity z-300 ${
                     isOpen ? "opacity-100 visible" : "opacity-0 invisible"
                 }`}
                 onClick={() => setIsOpen(false)}
             />
 
             <aside
-                className={`fixed top-0 right-0 w-64 h-full bg-white shadow-lg p-4 transform transition-transform ${
+                className={`fixed top-0 right-0 w-64 h-full bg-white shadow-lg p-4 transform transition-transform z-500 ${
                     isOpen ? "-translate-x-0" : "translate-x-full"
                 }`}
             >
@@ -61,7 +63,9 @@ function HeaderEmploye() {
                     </li>
                 </ul>
             </aside>
+            {isOpenSc && <ScanerQrCode/>}
         </div>
+        
     );
 }
 
