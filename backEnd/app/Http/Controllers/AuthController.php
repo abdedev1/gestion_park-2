@@ -44,8 +44,9 @@ class AuthController extends Controller
                 'message' => 'Login successful',
                 'user' => [
                     'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email
+                    'name' => $user->first_name,
+                    'email' => $user->email,
+                    'role'=>$user->role->name,
                 ],
                 'token' => $token->plainTextToken,
                 'expires' => $expires,
@@ -53,7 +54,7 @@ class AuthController extends Controller
         } else {
             return response()->json([
                 'message' => 'Invalid credentials',
-                "errors" => ["password" => "Email or password is incorrect"]
+                "errors" => ["password" => ["Email or Password is incorrect"]]
             ], 401);
         }
     }

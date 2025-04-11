@@ -19,14 +19,7 @@ class ParcController extends Controller
         return response()->json($parcs,200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
   
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ParcRequest $request)
     {
         $request->validate([

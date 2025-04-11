@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import FormTabs from './components/login/Signup'
-import './App.css'
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
-// import Header from './component/admin/Header'
-import Overview from './components/employe/ParkEmploye'
-import HeaderEmploye from './components/employe/HeaderEmploye'
+import { ConfigProvider } from 'antd'
+import { ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
-
+import SignTabs from './components/login/Signup'
+import Overview from './components/employe/ParkEmploye'
 import UsersList from './components/admin/UsersList'
-import Header from './components/admin/Header'
+import Header from './components/Header'
 import RolesList from './components/admin/RolesList'
+import QrScanner from './components/admin/test'
+import Headerr from './components/admin/Admindashboard'
 
 
 function App() {
@@ -17,12 +17,81 @@ function App() {
   return (
     <>
       <BrowserRouter>
-      <Header/>
-        <Routes>
-          <Route path="/admin/users" element={<UsersList/>}/>
-          <Route path="/admin/roles" element={<RolesList/>}/>
-          <Route path="/signup" element={<FormTabs/>}/>
-        </Routes>
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#0082ce",
+              colorInfo: "#0082ce",
+              colorSuccess: "#01a43b",
+              colorWarning: "#fcc700",
+              colorError: "#fe6266",
+              borderRadius: 4
+            },
+            components: {
+              Button: {
+                dangerColor: "rgb(0,0,0)"
+              },
+              Badge: {
+                colorTextLightSolid: "rgb(0,0,0)"
+              }
+            }
+          }}
+        >
+         
+          <Routes>
+            <Route path="/" element={<h1>homepage</h1>} />
+            <Route path="/sign" element={<SignTabs />} />
+
+            <Route element={<ProtectedRoute requiredRole="employe" />}>
+              <Route path="/overview" element={<h1>overview</h1>} />
+            </Route>
+
+            <Route element={<ProtectedRoute requiredRole="client" />}>
+              <Route path="/dashboard" element={<h1>dashboard</h1>} />
+              <Route path="/promotions">
+                <Route index element={<h1>promotions list</h1>} />
+                <Route path=":id" element={<h1>show promotion</h1>} />
+              </Route>
+              <Route path="/reservartions">
+                <Route index element={<h1>reservartions list</h1>} />
+                <Route path=":id" element={<h1>show reservartion</h1>} />
+              </Route>
+              <Route path="/parcs">
+                <Route index element={<h1>parcs list</h1>} />
+                <Route path=":id" element={<h1>show parc</h1>} />
+              </Route>
+            </Route>
+
+            {/* Protected routes for admin */}
+            <Route element={<ProtectedRoute requiredRole="admin" />}>
+              <Route path="/admin/dashboard" element={<Headerr />} />
+              
+              <Route path="/admin/users">
+                <Route index element={<UsersList/>} />
+                <Route path=":id" element={<h1>show user</h1>} />
+              </Route>
+              
+              <Route path="/admin/roles">
+                <Route index element={<RolesList/>}/>
+                <Route path=":id" element={<h1>show role</h1>} />
+              </Route>
+              
+              <Route path='/admin/test' element={<QrScanner/>}/>
+              
+              <Route path="/admin/reservations">
+                <Route index element={<h1>reservations list</h1>} />
+                <Route path=":id" element={<h1>show reservation</h1>} />
+              </Route>
+              
+              <Route path="/admin/parcs">
+                <Route index element={<h1>parcs list</h1>} />
+                <Route path=":id" element={<h1>show parc</h1>} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<h1>Page Not Found Error 404</h1>} />
+          </Routes>
+        </ConfigProvider>
       </BrowserRouter>
     </>
   )
