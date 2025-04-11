@@ -23,7 +23,7 @@ class ParcRequest extends FormRequest
     {
         return [
             'nom' => 'required|string|max:255',
-            'capacite' => 'required|integer|min:1',
+            'numberSpots' => 'required|integer|min:1',
             'adresse' => 'required|string|max:255',
         ];
     }

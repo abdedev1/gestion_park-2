@@ -22,28 +22,27 @@ class ParcController extends Controller
   
     public function store(ParcRequest $request)
     {
-        $request->validate([
-            'nom' => 'required|string',
-            'capacite' => 'required|integer|min:1|max:1000', // you can limit if you want
-        ]);
+        $request->validated();
     
         $park = Parc::create([
             'nom' => $request->nom,
-            'capacite' => $request->capacite,
+            'numberSpots' => $request->numberSpots,
             'adresse' => $request->adresse,
         ]);
     
-        for ($i = 0; $i < $request->capacite; $i++) {
+        for ($i = 0; $i < $request->numberSpots; $i++) {
             Spot::create([
-                'numero' => 'P' . $i ,
+                'nom' => 'P' . $i ,
+                'type'=>'normal',
+                'status' => 'disponible', 
                 'parc_id' => $park->id,
-                'etat' => 'available', 
+                
                 // default or customizable
             ]);
         }
     
         return response()->json([
-            'message' => "Park created with {$request->capacite} spots.",
+            'message' => "Park created with {$request->numberSpots} spots.",
             'parc' => $park
         ], 201);
         

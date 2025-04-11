@@ -4,7 +4,7 @@ import { ConfigProvider } from 'antd'
 import { ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'
-import Overview from './components/employe/ParkEmploye'
+
 import UsersList from './components/admin/UsersList'
 import Header from './components/Header'
 import RolesList from './components/admin/RolesList'
@@ -93,11 +93,7 @@ function App() {
             <Route path="*" element={<h1>Page Not Found Error 404</h1>} />
           </Routes>
         </ConfigProvider>
-        <Routes>
-          <Route path='/' element={<HeaderEmploye/>}>
-              <Route path='/employe' element={<ParkEmploye/>} />
-          </Route>
-        </Routes>
+        
       </BrowserRouter>
     </>
   )

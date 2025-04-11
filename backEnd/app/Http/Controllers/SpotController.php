@@ -26,12 +26,7 @@ class SpotController extends Controller
      */
     public function store(SpotRequest $request)
     {
-        $request->validate([
-            'numero' => 'nullable|string',
-            'parc_id' => 'required|exists:parcs,id',
-            'etat' => 'nullable|string',
-        ]);
-    
+        $request->validated();
         $park = Parc::findOrFail($request->parc_id);
     
        
@@ -39,14 +34,15 @@ class SpotController extends Controller
     
         $spot = Spot::create([
             
-            'etat' => $request->etat ?? 'available',
+            'status' => $request->status ?? 'available',
             'parc_id' => $park->id,
-            'numero' => $nextNumero,
+            'nom' => $nextNumero,
+            'type' => $request->type ?? 'normal',
         ]);
     
       
         $park->update([
-            'capacite' => $park->spots()->count()
+            'numberSpots' => $park->spots()->count()
         ]);
     
         return response()->json([
