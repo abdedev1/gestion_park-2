@@ -32,7 +32,8 @@ const employesSlice = createSlice({
             .addCase(fetchEmployes.fulfilled, (state, action) => {state.status = 'succeeded';state.employes = action.payload;})
             .addCase(fetchEmployes.rejected, (state, action) => {state.status = 'failed';state.error = action.error.message;})
             .addCase(addEmploye.fulfilled,(state,action)=>{state.employes.push(action.payload)})
-            .addCase(updateEmploye.fulfilled,(state,action)=>{state.employes.findIndex(employe=>employe.id === action.payload.id);if (index !== -1) state.employes[index] = action.payload;})
+            .addCase(updateEmploye.fulfilled,(state,action)=>{const index=state.employes.findIndex(employe=>employe.id === action.payload.id);
+              if (index !== -1) state.employes[index] = action.payload;})
             .addCase(deleteEmploye.fulfilled, (state, action) => {
                     state.employes = state.employes.filter(employe => employe.id !== action.payload);
                   });
