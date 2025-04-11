@@ -23,9 +23,9 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'role' => $user->role->name,
                 'birth_date' => $user->birth_date,
                 'email' => $user->email,
-                'role_id' => $user->role_id,
             ],
             'token' => $token->plainTextToken,
             'expires' => $expires,
@@ -44,7 +44,10 @@ class AuthController extends Controller
                 'message' => 'Login successful',
                 'user' => [
                     'id' => $user->id,
-                    'name' => $user->name,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'role' => $user->role->name,
+                    'birth_date' => $user->birth_date,
                     'email' => $user->email
                 ],
                 'token' => $token->plainTextToken,
@@ -74,9 +77,9 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'role' => $user->role->name,
                 'birth_date' => $user->birth_date,
                 'email' => $user->email,
-                'role_id' => $user->role_id,
             ],
         ], 200);
     }
