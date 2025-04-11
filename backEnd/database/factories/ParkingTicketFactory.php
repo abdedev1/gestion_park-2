@@ -21,12 +21,12 @@ class ParkingTicketFactory extends Factory
     {
         return [
             'spot_id' => Spot::factory(),
-            'vehicle_plate' => $this->faker->regexify('[A-Z]{2}-[0-9]{4}-[A-Z]{2}'),
+            'clientName' => $this->faker->word(),
             'entry_time' => $this->faker->dateTime(),
             'exit_time' => $this->faker->optional()->dateTime(),
-            'status' => $this->faker->randomElement(['active', 'completed', 'cancelled']),
+            'status' => $this->faker->randomElement(['active', 'completed']),
             'base_rate_id' => PricingRate::factory(),
-            'amount_charged' => $this->faker->optional()->numberBetween(100, 1000),
+            'total_price' => $this->faker->optional()->numberBetween(1, 100),
             'client_id' => Client::factory(),
         ];
     }

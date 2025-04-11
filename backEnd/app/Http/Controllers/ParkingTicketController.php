@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ParkingTicket;
 use Illuminate\Http\Request;
+use App\Models\ParkingTicket;
+use Illuminate\Support\Facades\Log;
 
 class ParkingTicketController extends Controller
 {
@@ -12,15 +13,8 @@ class ParkingTicketController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $tickets = ParkingTicket::all();
+        return response()->json($tickets);
     }
 
     /**
@@ -28,7 +22,21 @@ class ParkingTicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Log::info('Incoming parking ticket request:', $request->all());
+
+        $validatedData = $request->validate([
+            'spot_id' => 'required|exists:spots,id',
+            'clientName' => 'required|string|max:255',
+            'entry_time' => 'required|date',
+            'exit_time' => 'nullable|date',
+            'status' => 'required|string|max:255',
+            'base_rate_id' => 'required|exists:pricing_rates,id',
+            'total_price' => 'nullable|numeric',
+            'client_id' => 'nullable|exists:clients,id',
+        ]);
+
+        $ticket = ParkingTicket::create($validatedData);
+        return response()->json($ticket, 201);
     }
 
     /**
@@ -36,15 +44,7 @@ class ParkingTicketController extends Controller
      */
     public function show(ParkingTicket $parkingTicket)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ParkingTicket $parkingTicket)
-    {
-        //
+        return response()->json($parkingTicket);
     }
 
     /**
@@ -52,7 +52,22 @@ class ParkingTicketController extends Controller
      */
     public function update(Request $request, ParkingTicket $parkingTicket)
     {
-        //
+        Log::info('FULL REQUEST:', $request->all());
+        $validatedData = $request->validate([
+            'spot_id' => 'sometimes|exists:spots,id',
+            'clientName' => 'sometimes|string|max:255',
+            'entry_time' => 'sometimes|date',
+            'exit_time' => 'nullable|date',
+            'status' => 'sometimes|string|max:255',
+            'base_rate_id' => 'sometimes|exists:pricing_rates,id',
+            'total_price' => 'nullable|numeric',
+            'client_id' => 'nullable|exists:clients,id',
+        ]);
+        Log::info('validatedData:', $validatedData);
+
+
+        $parkingTicket->update($validatedData);
+        return response()->json($parkingTicket);
     }
 
     /**
@@ -60,6 +75,7 @@ class ParkingTicketController extends Controller
      */
     public function destroy(ParkingTicket $parkingTicket)
     {
-        //
+        $parkingTicket->delete();
+        return response()->json(['message' => 'Parking ticket deleted successfully']);
     }
 }

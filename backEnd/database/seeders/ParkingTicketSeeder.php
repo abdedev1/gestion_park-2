@@ -13,7 +13,7 @@ class ParkingTicketSeeder extends Seeder
      */
     public function run(): void
     {
-        ParkingTicket::factory(10)->create();
+        ParkingTicket::factory(1)->create();
 
     }
 }

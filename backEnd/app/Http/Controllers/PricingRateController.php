@@ -12,16 +12,11 @@ class PricingRateController extends Controller
      */
     public function index()
     {
-        //
+        $pracing_rate = PricingRate::all();
+        return response()->json($pracing_rate,201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+  
 
     /**
      * Store a newly created resource in storage.
@@ -35,14 +30,6 @@ class PricingRateController extends Controller
      * Display the specified resource.
      */
     public function show(PricingRate $pricingRate)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PricingRate $pricingRate)
     {
         //
     }

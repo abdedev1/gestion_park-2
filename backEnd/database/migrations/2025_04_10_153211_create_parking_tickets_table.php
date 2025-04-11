@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('parking_tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('spot_id')->constrained('spots');
-            $table->string('vehicle_plate');
+            $table->string('clientName');
             $table->dateTime('entry_time');
             $table->dateTime('exit_time')->nullable();
             $table->string('status');
             $table->foreignId('base_rate_id')->constrained('pricing_rates');
-            $table->bigInteger('amount_charged')->nullable();
+            $table->bigInteger('total_price')->nullable();
             $table->foreignId('client_id')->nullable()->constrained('clients');
             $table->timestamps();
         });
