@@ -43,8 +43,15 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::with('role')->findOrFail($id);
-        return response()->json($user);
+        $user = User::with('role')->findOrFail($id);    
+        return response()->json([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'birth_date' => $user->birth_date,
+            'email' => $user->email,
+            'role' => $user->role->name,
+        ]);
     }
 
     /**

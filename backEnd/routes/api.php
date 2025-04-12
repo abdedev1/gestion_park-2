@@ -13,6 +13,7 @@ use App\Http\Controllers\ParkingTicketController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get("/user", [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get("/user", [AuthController::class, 'getUser']);
 });
 Route::post("/register", [AuthController::class, 'register']);
 Route::post("/login", [AuthController::class, 'login']);
