@@ -53,8 +53,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function getRoleNameAttribute()
+    {
+        return $this->role->name ?? null;
+    }
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
+
 }
