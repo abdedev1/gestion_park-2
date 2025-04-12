@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
 import { ProtectedRoute } from './lib/ProtectedRoute'
@@ -11,8 +10,31 @@ import RolesList from './components/admin/RolesList'
 import QrScanner from './components/admin/test'
 import Headerr from './components/admin/Admindashboard'
 
+import { useEffect } from 'react'
+import Auth from './assets/api/auth/Auth'
+import { useDispatch, useSelector } from 'react-redux'
+import { Loader2 } from 'lucide-react'
+import { setLoading } from './components/Redux/slices/AuthSlice'
+
 
 function App() {
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(setLoading(true));
+    Auth.CheckAuth(dispatch)
+      .then(result => {
+        console.log('Auth initialized:', result);
+      });
+    
+  }, [dispatch]);
+
+  if (isLoading) {
+    return (
+        <Loader2 className="h-8 w-8 mx-auto mt-4 animate-spin text-primary" />
+    );
+}
 
   return (
     <>
@@ -38,10 +60,11 @@ function App() {
           }}
         >
           <Header />
-         
           <Routes>
             <Route path="/" element={<h1>homepage</h1>} />
             <Route path="/sign" element={<SignTabs />} />
+            <Route path='/admin/test' element={<QrScanner/>}/>
+
 
             <Route element={<ProtectedRoute requiredRole="employe" />}>
               <Route path="/overview" element={<h1>overview</h1>} />

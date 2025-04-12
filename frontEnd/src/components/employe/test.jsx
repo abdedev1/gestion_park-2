@@ -3,8 +3,10 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { Menu, X, Bell, ScanLine } from "lucide-react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import Footer from './Footer';
+import { useSelector } from 'react-redux';
 
 function HeaderEmploye() {
+    const { isLoading } = useSelector(state => state.auth);
     const [isOpen, setIsOpen] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
     const [barcode, setBarcode] = useState('');
@@ -22,7 +24,7 @@ function HeaderEmploye() {
 
     useEffect(() => {
         if (showScanner) {
-            const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } });
             scanner.render(
                 (decodedText) => {
                     setBarcode(decodedText); // Store the scanned QR code
@@ -37,6 +39,11 @@ function HeaderEmploye() {
             return () => scanner.clear(); // Cleanup on component unmount
         }
     }, [showScanner]);
+    if (isLoading) {
+        return (
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        );
+    }
 
     return (
         <div className="h-screen flex flex-col">

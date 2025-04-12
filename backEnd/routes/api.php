@@ -11,13 +11,12 @@ use App\Http\Controllers\PricingRateController;
 use App\Http\Controllers\ParkingTicketController;
 
 Route::middleware('auth:sanctum')->group(function () {
-    
+    Route::get("/user", [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 Route::post("/register", [AuthController::class, 'register']);
 Route::post("/login", [AuthController::class, 'login']);
 Route::get("/users", [UserController::class, 'index']);
-Route::get("/user", [AuthController::class, 'getUser']);
 Route::apiResource("parcs",ParcController::class);
 Route::apiResource('spots',SpotController::class);
 Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
