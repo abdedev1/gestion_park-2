@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Auth from "../../assets/api/auth/Auth";
 import { Tabs } from 'antd';
-import { ArrowRight, Check} from "lucide-react";
+import { ArrowRight, Check, Loader2} from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../Redux/slices/AuthSlice"
+import { login, setLoading } from "../Redux/slices/AuthSlice"
 import { useNavigate } from "react-router-dom";
 
 export default function SignTabs() {
@@ -29,6 +29,7 @@ export default function SignTabs() {
 export function SignupForm({ setActiveTab }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { isLoading } = useSelector((state) => state.auth);
 
     const [user, setUser] = useState({
         first_name: "",
@@ -41,16 +42,18 @@ export function SignupForm({ setActiveTab }) {
     });
 
     const [errors, setErrors] = useState({});
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        dispatch(setLoading(true));
         const res = await Auth.Register(user);
-        console.log(res);
         if (res.success) {
             dispatch(login({user: res.user, token: res.token }));
+            navigate("/");
         }
         else {
+            dispatch(setLoading(false));
             setErrors(res.errors)
         }
         
@@ -94,7 +97,7 @@ export function SignupForm({ setActiveTab }) {
                     <label className="floating-label w-full not-focus-within:[&>span]:text-sm relative">
                         <input className={`input w-full validator ${errors?.password ? "input-error!" : ""}`} placeholder="Password" type="password" onChange={e => setUser({ ...user, password: e.target.value })}  value={user.password} minLength={8} required />
                         <span className="text-xl" >Password</span>
-                        {errors?.password ? (<div className="text-error mb-1 text-xs w-96 absolute">{errors?.password[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible w-96 absolute">Password must be at least 8 characters</div>)}
+                        {errors?.password ? (<div className="text-error mb-1 text-xs w-96 absolute not-md:top-22">{errors?.password[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible w-96 absolute">Password must be at least 8 characters</div>)}
                     </label>
 
                     <label className="floating-label w-full not-focus-within:[&>span]:text-sm">
@@ -103,7 +106,7 @@ export function SignupForm({ setActiveTab }) {
                     </label>
                 </div>
 
-                <button className="btn btn-primary w-full" type="submit" > Sign Up <Check /></button>
+                <button className="btn btn-primary w-full" type="submit" > Sign Up {isLoading ? <Loader2 className="mt-1 animate-spin" /> : <Check className="mt-1"/>}</button>
             </form>
             <div className="divider">Already have an account?</div>
             <button className="btn btn-secondary btn-soft w-full" onClick={() => setActiveTab("Login")}>Login</button>
@@ -115,6 +118,7 @@ export function SignupForm({ setActiveTab }) {
 export function LoginForm({ setActiveTab }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { isLoading } = useSelector((state) => state.auth);
 
     const [user, setUser] = useState({
         email: "",
@@ -125,12 +129,14 @@ export function LoginForm({ setActiveTab }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        dispatch(setLoading(true));
         const res = await Auth.Login(user);
-        console.log(res);
         if (res.success) {
             dispatch(login({user: res.user, token: res.token }));
+            navigate("/");
         }
         else {
+            dispatch(setLoading(false));
             setErrors(res.errors)
         }
     };
@@ -154,7 +160,7 @@ export function LoginForm({ setActiveTab }) {
                     {errors?.password ? (<div className="text-error mb-1 text-xs">{errors?.password[0]}</div>) : (<div className="validator-hint mt-0 mb-1 visible">Password must be at least 8 characters</div>)}
                 </label>
 
-                <button className="btn btn-primary w-full" type="submit"> Login <ArrowRight className="mt-1"/></button>
+                <button className="btn btn-primary w-full" type="submit"> Login {isLoading ? <Loader2 className="mt-1 animate-spin" /> : <ArrowRight className="mt-1"/>}</button>
             </form>
             <div className="divider">You don't have an account yet?</div>
             <button className="btn btn-secondary btn-soft" onClick={() => setActiveTab("Sign Up")}>Sign Up</button>

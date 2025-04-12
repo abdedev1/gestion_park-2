@@ -30,11 +30,11 @@ function App() {
     
   }, [dispatch]);
 
-  if (isLoading) {
-    return (
-        <Loader2 className="h-8 w-8 mx-auto mt-4 animate-spin text-primary" />
-    );
-}
+  // if (isLoading) {
+  //   return (
+  //       <Loader2 className="h-8 w-8 mx-auto mt-4 animate-spin text-primary" />
+  //   );
+  // }
 
   return (
     <>

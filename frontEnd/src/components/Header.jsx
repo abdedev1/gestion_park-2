@@ -1,10 +1,24 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import Auth from '../assets/api/auth/Auth';
+import { logout } from './Redux/slices/AuthSlice';
 
 
 export default function Header() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { user, token} = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
+    
+    const logoutUser = async () => {
+      const res = await Auth.Logout();
+      if (res.success) {
+        dispatch(logout());
+        navigate("/");
+      }
+    };
 
     return (
     <>
@@ -30,7 +44,7 @@ export default function Header() {
               <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                 <li><a className="justify-between">Profile</a></li>
                 <li><a>Settings</a></li>
-                <li><a>Logout</a></li>
+                <li><button onClick={logoutUser}>Logout</button></li>
               </ul>
             </div>
           </div>
@@ -52,8 +66,8 @@ export default function Header() {
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
-            <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/logout">Logout</NavLink>
-            <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>
+            { token ? <button className="btn btn-outline btn-neutral mx-2 w-full mt-2" onClick={logoutUser} >Logout</button>
+            : <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>}
           </div>
         </aside>
       </div>
