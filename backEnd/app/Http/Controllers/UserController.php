@@ -24,14 +24,18 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birth_date' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'birth_date' => $request->birth_date,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role_id' => $request->role_id,
@@ -62,14 +66,22 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'sometimes|required|string|max:255',
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|required|string|max:255',
+            'birth_date' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'sometimes|required|string|min:8|confirmed',
             'role_id' => 'sometimes|required|exists:roles,id',
         ]);
 
         $user = User::findOrFail($id);
-        $user->update($request->only('name', 'email', 'role_id'));
+        $user->update($request->only(
+            'first_name',
+            'last_name',
+            'birth_date',
+            'email',
+            'role_id'
+        ));
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);

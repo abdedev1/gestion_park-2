@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { message, Popconfirm, Modal, Form, Input, Select } from "antd";
-import { HelpCircle as CircleHelp, Pencil, Trash2 } from "lucide-react";
+import { message, Popconfirm, Modal, Form, Input, Select ,Table,Spin,} from "antd";
+import { HelpCircle as CircleHelp, Pencil, Trash2 ,Loader2,Shield } from "lucide-react";
 
 function UsersList() {
   const [users, setUsers] = useState([]);
@@ -83,24 +83,35 @@ function UsersList() {
 
   const handleUpdateUser = async (values) => {
     try {
+      // Format the data properly before sending
+      const formattedValues = {
+        ...values,
+        birth_date: values.birth_date || selectedUser.birth_date ,
+        role_id:values.role_id// Ensure birth_date is not null
+      };
+
       const response = await axios.put(
         `http://localhost:8000/api/users/${selectedUser.id}`,
-        values
+        formattedValues
       );
       
-      // Check if response.data exists and has a data property
       const updatedUser = response.data?.data || response.data;
       
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
           user.id === selectedUser.id ? { ...user, ...updatedUser } : user
         )
       );
+      
       message.success("User updated successfully");
       handleModalCancel();
     } catch (error) {
       console.error("Update error:", error);
-      message.error(error.response?.data?.message || "Error updating user");
+      message.error(
+        error.response?.data?.message || 
+        error.response?.data?.error || 
+        "Error updating user"
+      );
     }
   };
 
@@ -111,6 +122,81 @@ function UsersList() {
   if (error) {
     return <div>Error: {error}</div>;
   }
+  const columns = [
+      {
+        title: "#",
+        dataIndex: "index",
+        key: "index",
+        width: 60,
+        render: (_, __, index) => index + 1,
+      },
+      {
+        title: "first_name",
+        dataIndex: "first_name",
+        key: "first_name",
+        render: (text) => (
+          <div className="flex items-center gap-2">
+            
+            {text}
+          </div>
+        ),
+      },
+      {
+        title: "last_name",
+        dataIndex: "last_name",
+        key: "last_name",
+        responsive: ["md"],
+      },
+      {
+        title: "birth_date",
+        dataIndex: "birth_date",
+        key: "birth_date",
+        responsive: ["lg"],
+       
+      },
+      {
+        title: "email",
+        dataIndex: "email",
+        key: "email",
+        responsive: ["lg"],
+       
+      },
+      {
+        title: "role",
+        dataIndex: "role",
+        key: "role",
+        responsive: ["lg"],
+       
+      },
+      {
+        title: "Actions",
+        key: "actions",
+        align: "right",
+        render: (user) => (
+          <>
+            <Popconfirm
+              placement="topLeft"
+              title="Delete the User?"
+              description={`Are you sure you want to delete this User ID ${user.id}?`}
+              okText="Yes"
+              cancelText="No"
+              icon={<CircleHelp size={16} className="m-1" />}
+              onConfirm={() => handleDelete(user.id)}
+            >
+              <button className="join-item btn btn-outline btn-secondary btn-sm">
+                <Trash2 size={16} /> 
+              </button>
+            </Popconfirm>
+            <button
+              className="join-item btn btn-outline ml-5 btn-primary btn-sm"
+              onClick={() => showUpdateModal(user)}
+            >
+              <Pencil size={16} /> 
+            </button>
+          </>
+        ),
+      },
+    ]
 
   return (
     <div className="border-sh rounded-xl overflow-hidden mx-1 md:mx-4 h-fit my-4">
@@ -156,76 +242,21 @@ function UsersList() {
         </label>
       </div>
 
-      <div className="divider after:bg-gray-700 before:bg-gray-700 my-0 mx-4" />
+      <div className=" after:bg-gray-700 before:bg-gray-700 my-0 mx-4" />
       
       <div className="overflow-x-auto">
-        <table className="table text-center">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Birthday</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="hover:bg-base-300">
-                <td>
-                  <div className="font-bold">{user.id}</div>
-                </td>
-                <td>
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle h-12 w-12">
-                        <Link to={`/users/${user.id}`} />
-                      </div>
-                    </div>
-                    <div className="font-bold capitalize">{user.first_name}</div>
-                  </div>
-                </td>
-                <td>
-                  <div className="font-bold">{user.last_name}</div>
-                </td>
-                <td>
-                  <div className="font-bold">{user.birth_date}</div>
-                </td>
-                <td>
-                  <div className="font-bold">{user.email}</div>
-                </td>
-                <td>
-                  <div className="font-bold capitalize">{user.role}</div>
-                </td>
-                <td>
-                  <div className="join">
-                    <Popconfirm
-                      placement="topLeft"
-                      title="Delete the User?"
-                      description={`Are you sure you want to delete this User ID ${user.id}?`}
-                      okText="Yes"
-                      cancelText="No"
-                      icon={<CircleHelp size={16} className="m-1" />}
-                      onConfirm={() => handleDelete(user.id)}
-                    >
-                      <button className="join-item btn btn-outline btn-secondary btn-sm">
-                        <Trash2 size={16} /> Delete
-                      </button>
-                    </Popconfirm>
-                    <button
-                      className="join-item btn btn-outline btn-primary btn-sm"
-                      onClick={() => showUpdateModal(user)}
-                    >
-                      <Pencil size={16} /> Update
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="bg-white rounded-lg shadow">
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="id"
+          loading={{
+            indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />} />,
+            spinning: loading,
+          }}
+          pagination={{ pageSize: 10 }}
+        />
+      </div>
       </div>
 
       <Modal
@@ -233,11 +264,15 @@ function UsersList() {
         open={isModalOpen}
         onCancel={handleModalCancel}
         footer={null}
+        destroyOnClose // This ensures form is reset when modal closes
       >
         <Form
           form={form}
           layout="vertical"
-          
+          onFinish={handleUpdateUser}
+          initialValues={{
+            birth_date: selectedUser?.birth_date?.split('T')[0] // Format date for input[type="date"]
+          }}
           className="mt-4"
         >
           <Form.Item
@@ -292,13 +327,19 @@ function UsersList() {
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary btn-sm">
+            <button 
+              type="submit" 
+              className="btn btn-primary btn-sm"
+              // Add loading state if needed
+            >
               Update User
             </button>
           </Form.Item>
         </Form>
       </Modal>
+      
     </div>
+    
   );
 }
 

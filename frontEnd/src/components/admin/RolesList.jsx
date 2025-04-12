@@ -20,6 +20,7 @@ export default function RolesList() {
     setLoading(true)
     try {
       const response = await fetch("http://localhost:8000/api/roles")
+      
       if (!response.ok) {
         throw new Error("Failed to fetch roles")
       }
