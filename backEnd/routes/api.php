@@ -9,23 +9,42 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\PricingRateController;
 use App\Http\Controllers\ParkingTicketController;
+use App\Http\Middleware\AlreadyLoggedInMiddleware;
+use App\Http\Middleware\isAdminMiddleWare;
+use App\Http\Middleware\isClientMiddleWare;
+use App\Http\Middleware\isEmployeMiddleWare;
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get("/user", [AuthController::class, 'getUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get("/user", [AuthController::class, 'getUser']);
+Route::middleware(AlreadyLoggedInMiddleware::class)->group(function(){
+    Route::post("/register", [AuthController::class, 'register']);
+    Route::post("/login", [AuthController::class, 'login']);
 });
-Route::post("/register", [AuthController::class, 'register']);
-Route::post("/login", [AuthController::class, 'login']);
-Route::get("/users", [UserController::class, 'index']);
+
+Route::middleware("auth:sanctum")->controller(AuthController::class)->group(function(){
+    Route::get("user", "getUser");
+    Route::post("logout", "logout");
+});
+
+Route::middleware(isAdminMiddleWare::class)->group(function(){
+    // الروت ديال أدمين هنا
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('employes', EmployeController::class);
+    Route::apiResource('roles', RoleController::class);
+    Route::apiResource('pricing_rates', PricingRateController::class);
+    
+});
+
+Route::middleware(isEmployeMiddleWare::class)->group(function(){
+    // employe routes
+});
+
+Route::middleware(isClientMiddleWare::class)->group(function(){
+    // client routes
+});
+
 Route::apiResource("parcs",ParcController::class);
 Route::apiResource('spots',SpotController::class);
 Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
 Route::get('/parcs/{id}/spots',[ParcController::class,'getParcSpots']);
-Route::apiResource('employes', EmployeController::class);
-Route::apiResource('/users', UserController::class);
-Route::apiResource('/roles', RoleController::class);
-Route::apiResource('/pricing_rates', PricingRateController::class);
 Route::get("/parcs", [ParcController::class, 'index']);
 Route::post("/parcs", [ParcController::class, 'store']);
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
