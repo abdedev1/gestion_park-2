@@ -142,7 +142,7 @@ function UsersList() {
                 </td>
                
                 <td>
-                  <div className="font-bold capitalize">{user?.role?.name ?? 'No role'}</div>
+                  <div className="font-bold capitalize">{user.role}</div>
                 </td>
 
                 <th>
