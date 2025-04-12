@@ -234,7 +234,7 @@ export default function RolesList() {
           dataSource={roles}
           rowKey="id"
           loading={{
-            indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-cyan-600" />} />,
+            indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />} />,
             spinning: loading,
           }}
           pagination={{ pageSize: 10 }}

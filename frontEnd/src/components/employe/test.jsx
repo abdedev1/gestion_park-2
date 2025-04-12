@@ -1,15 +1,15 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { NavLink, Link, Outlet } from "react-router-dom"
-import { Menu, X, Bell, ScanLine } from "lucide-react"
-import { Html5QrcodeScanner } from "html5-qrcode"
-import Footer from "./Footer"
+import React, { useState, useEffect } from 'react';
+import { NavLink, Link, Outlet } from "react-router-dom";
+import { Menu, X, Bell, ScanLine } from "lucide-react";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import Footer from './Footer';
+import { useSelector } from 'react-redux';
 
 function HeaderEmploye() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [showScanner, setShowScanner] = useState(false)
-  const [barcode, setBarcode] = useState("")
+    const { isLoading } = useSelector(state => state.auth);
+    const [isOpen, setIsOpen] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
+    const [barcode, setBarcode] = useState('');
 
   const navLinkClass = ({ isActive }) =>
     `px-3 py-2 transition duration-200 ${
@@ -23,6 +23,7 @@ function HeaderEmploye() {
     setBarcode("") // Clear previous scan results when opening scanner
   }
 
+<<<<<<< HEAD
   useEffect(() => {
     if (showScanner) {
       const scanner = new Html5QrcodeScanner("reader", {
@@ -41,6 +42,30 @@ function HeaderEmploye() {
           console.error(`Error scanning: ${error}`)
         },
       )
+=======
+    useEffect(() => {
+        if (showScanner) {
+            const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } });
+            scanner.render(
+                (decodedText) => {
+                    setBarcode(decodedText); // Store the scanned QR code
+                    scanner.clear(); // Stop the scanner after a successful scan
+                    setShowScanner(false);
+                },
+                (error) => {
+                    console.error(`Error scanning: ${error}`);
+                }
+            );
+
+            return () => scanner.clear(); // Cleanup on component unmount
+        }
+    }, [showScanner]);
+    if (isLoading) {
+        return (
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        );
+    }
+>>>>>>> d02b0e08dd95218169b9e10ce2a5c70863ce0b4b
 
       return () => scanner.clear() // Cleanup on component unmount
     }

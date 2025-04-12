@@ -1,97 +1,131 @@
-import { isAxiosError } from "axios"
-import { axios, setBearerToken } from "../axios"
-import Cookies from "js-cookie"
-
-
+import { isAxiosError } from "axios";
+import { axios, setBearerToken } from "../axios";
+import Cookies from "js-cookie";
+import { login, logout } from '../../../components/Redux/slices/AuthSlice'
 
 export default class Auth {
-
-
-    static async Register(info) {
-        let data = {
-            success: false,
-            message: "Server Error",
-            errors: {password: ["Something went wrong"]}
-        }
-
-        try {
-            const res = await axios.post("register", info)
-            data = res.data
-            setBearerToken(data.token)
-            Cookies.set("token", data.token, {expires: data.expires, secure: true})
-            return data
-
-        } catch (error) {
-            if(isAxiosError(error)) {
-                if(error.status == 422) {
-                    data.errors = error.response.data.errors
-                    data.message = error.response.data.message
-                    return data
-                }
-                return data
-            }
-            return data
-        }
-    }
-
-    static async Login(info) {
-        let data = {
-            success: false,
-            message: "Server Error",
-            errors: {password: ["Something went wrong"]}
-        }
-
-        try {
-            const res = await axios.post("login", info)
-            data = res.data
-            setBearerToken(data.token)
-            Cookies.set("token", data.token, {expires: data.expires, secure: true})
-            return data
-            
-        } catch (error) {
-            console.log(error)
-            if(isAxiosError(error)) {
-                if(error.status == 400 || error.status == 422 || error.status == 401) {
-                    data.errors = error.response.data.errors
-                    data.message = error.response.data.message
-                    return data
-                }
-                return data
-            }
-            return data
-        }
-    }
-    static async Logout() {
-        try {
-            const res = await axios.post("logout")
-            
-            Cookies.remove("token")
-            setBearerToken(null)
-            return res.data
-            
-        } catch (error) {
-            const data = { success: false, message: ["Something went wrong"], errors: {password: ["Something went wrong"]} }
-            return data
-        }
-    }
+  static async CheckAuth(dispatch) {
+    const tokenFromCookie = Cookies.get('token');
     
-
-    static async GetUser() {
-        let data = {
-            success: false,
-            message: "Server Error"
-        }
-
-        try {
-            const res = await axios.get("user")
-            data = res.data
-            console.log(data)
-            return data
-           
-        
-        } catch (error) {
-            return data
-        }
+    if (!tokenFromCookie) {
+      dispatch(logout());
+      return { initialized: true, authenticated: false };
     }
-    
+
+    try {
+      setBearerToken(tokenFromCookie);
+      const res = await this.GetUser();
+      
+      if (res.success) {
+        dispatch(login({
+          user: res.user,
+          token: tokenFromCookie
+        }));
+        return { initialized: true, authenticated: true };
+      }
+      
+      dispatch(logout());
+      Cookies.remove('token');
+      return { initialized: true, authenticated: false };
+      
+    } catch (error) {
+      console.error('Failed to load user:', error);
+      dispatch(logout());
+      Cookies.remove('token');
+      return { 
+        initialized: true, 
+        authenticated: false, 
+        error: error.message 
+      };
+    }
+  };
+
+  static async Register(info) {
+    const defaultError = {
+      success: false,
+      message: "Server Error",
+      errors: { password: ["Something went wrong"] }
+    };
+
+    try {
+      const res = await axios.post("register", info);
+      const { token, expires } = res.data;
+      
+      setBearerToken(token);
+      Cookies.set("token", token, { expires, secure: true });
+      return res.data;
+
+    } catch (error) {
+      if (!isAxiosError(error)) return defaultError;
+      
+      if (error.response?.status === 422) {
+        return {
+          ...defaultError,
+          errors: error.response.data.errors,
+          message: error.response.data.message
+        };
+      }
+      
+      return defaultError;
+    }
+  }
+
+  static async Login(info) {
+    const defaultError = {
+      success: false,
+      message: "Server Error",
+      errors: { password: ["Something went wrong"] }
+    };
+
+    try {
+      const res = await axios.post("login", info);
+      const { token, expires } = res.data;
+      
+      setBearerToken(token);
+      Cookies.set("token", token, { expires, secure: true });
+      return res.data;
+      
+    } catch (error) {
+      if (!isAxiosError(error)) return defaultError;
+      
+      if ([400, 401, 422].includes(error.response?.status)) {
+        return {
+          ...defaultError,
+          errors: error.response.data.errors,
+          message: error.response.data.message
+        };
+      }
+      
+      return defaultError;
+    }
+  }
+
+  static async Logout() {
+    try {
+      await axios.post("logout");
+      Cookies.remove("token");
+      setBearerToken(null);
+      return { success: true, message: "Logged out successfully" };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: "Something went wrong", 
+        errors: { general: ["Logout failed"] } 
+      };
+    }
+  }
+
+  static async GetUser() {
+    try {
+      const res = await axios.get("user");
+      return res.data;
+    } catch (error) {
+      return {
+        success: false,
+        message: isAxiosError(error) 
+          ? error.response?.data?.message || "Server Error"
+          : "Server Error"
+      };
+    }
+  }
 }
