@@ -27,8 +27,8 @@ Route::middleware("auth:sanctum")->controller(AuthController::class)->group(func
 Route::middleware(isAdminMiddleWare::class)->group(function(){
     // الروت ديال أدمين هنا
     Route::apiResource('users', UserController::class);
-    Route::apiResource('employes', EmployeController::class);
     Route::apiResource('roles', RoleController::class);
+    Route::apiResource('employes', EmployeController::class);
     Route::apiResource('pricing_rates', PricingRateController::class);
     
 });

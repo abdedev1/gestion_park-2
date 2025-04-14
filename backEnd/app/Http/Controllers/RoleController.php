@@ -12,13 +12,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        
         $roles = Role::all();
-
-    
         return response()->json($roles);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -28,12 +24,9 @@ class RoleController extends Controller
             'name' => 'string|max:255',
             'description' => 'string',
         ]);
-
         $role = Role::create($request->all());
-
         return response()->json($role, 201);
     }
-
     /**
      * Display the specified resource.
      */

@@ -49,6 +49,7 @@ export default class Auth {
 
     try {
       const res = await axios.post("register", info);
+      
       const { token, expires } = res.data;
       
       setBearerToken(token);
