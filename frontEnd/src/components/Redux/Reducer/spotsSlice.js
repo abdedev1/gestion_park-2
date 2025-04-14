@@ -14,7 +14,7 @@ export const addSpot = createAsyncThunk("spots/addSpot", async (newSpot) => {
   });
   
   export const updateSpot = createAsyncThunk("spots/updateSpot", async ({ id, updatedSpot }) => {
-    const response = await axios.put(`spots/${id}`, updatedSpot);
+    const response = await axios.put(`/spots/${id}`, updatedSpot);
     return response.data;
   });
   

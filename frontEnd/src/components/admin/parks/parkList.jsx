@@ -271,18 +271,19 @@ export default function ParkList() {
       <Modal title="Add New Spot" open={isAddSpotModalOpen} onCancel={() => setIsAddSpotModalOpen(false)} footer={null}>
         <Form form={spotForm} layout="vertical" onFinish={handleAddSpot} className="py-4">
          
-          <Form.Item name="type" label="Type">
+          <Form.Item name="type" label="Type"> 
             <Select placeholder="Select a type">
-              <Select.Option value="standard">Standard</Select.Option>
+              <Select.Option value="voiture">Voiture</Select.Option>
               <Select.Option value="handicap">Handicap</Select.Option>
               <Select.Option value="electric">Electric Vehicle</Select.Option>
-              <Select.Option value="reserved">Reserved</Select.Option>
+              <Select.Option value="moto">moto</Select.Option>
+              <Select.Option value="velo">velo</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="status" label="Status" initialValue="available">
             <Select>
-              <Select.Option value="available">Available</Select.Option>
-              <Select.Option value="occupied">Occupied</Select.Option>
+              <Select.Option value="disponible">Available</Select.Option>
+              <Select.Option value="reserve">reserve</Select.Option>
               <Select.Option value="maintenance">Maintenance</Select.Option>
             </Select>
           </Form.Item>

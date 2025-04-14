@@ -54,6 +54,7 @@ export default function Headerabde() {
               <NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink>
               <NavLink className={navLinkClass} to="/admin/users">users</NavLink>
               <NavLink className={navLinkClass} to="/admin/roles">roles</NavLink>
+              <NavLink className={navLinkClass} to="/admin/parcs">parcs</NavLink>
               </div>
             )}
             {user?.role === "employe" && (

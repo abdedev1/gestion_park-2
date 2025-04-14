@@ -79,6 +79,7 @@ function App() {
                 <Route element={<ProtectedRoute requiredRole="admin" />}>
                 <Route  path="admin/users" element={<UsersList/>} />
                 <Route  path="admin/roles" element={<RolesList/>} />
+                <Route  path="admin/parcs" element={<ParkList/>} />
                 <Route  path="dashboard" element={<h1>Dashbord</h1>} />
                 </Route>
               
