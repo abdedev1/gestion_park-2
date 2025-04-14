@@ -64,6 +64,7 @@ function App() {
           }}
         >
           <Routes>
+            <Route path="/sign" element={<SignTabs />} />
             <Route  path='/' element={<Headerabde/>}>
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>

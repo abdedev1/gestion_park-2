@@ -69,9 +69,11 @@ export default function Headerabde() {
           { token ?
             <div className="dropdown dropdown-end hidden md:inline-block">
               <div className='flex items-center gap-1'>
-                  <button className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100" aria-label="Open Scan" onClick={() => setIsOpenSc(true)}>
-                            <ScanLine  size={24} />
-                  </button>
+                  {user?.role === "employe" && (
+                      <button className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100" aria-label="Open Scan" onClick={() => setIsOpenSc(true)}>
+                      <ScanLine  size={24} />
+                      </button>
+                  )}
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
                     <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full bg-${color} text-${color}-content flex! items-center justify-center text-lg font-bold`}>
                       {user.first_name[0]}{user.last_name[0]}
