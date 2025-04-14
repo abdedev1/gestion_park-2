@@ -6,6 +6,8 @@ import { addParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
 import { updateSpot } from '../Redux/Reducer/spotsSlice';
 import { updateParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
 import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
+import { FloatButton } from 'antd';
+
 
 const selectTicketForSpot = (tickets, spotId) => 
     tickets.find(t => Number(t.spot_id) === Number(spotId) && t.status === "active");
@@ -164,6 +166,12 @@ export default function SpotsEmploye() {
             <div className="grid grid-cols-10 gap-2 p-4 bg-white rounded">
                 {spots.map(renderSpotButton)}
             </div>
+            {/* <FloatButton
+                shape="circle"
+                type="primary"
+                style={{ insetInlineEnd: 94 }}
+                icon={<CustomerServiceOutlined />}
+                /> */}
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-500">

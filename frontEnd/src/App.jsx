@@ -4,20 +4,16 @@ import { ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'
 import UsersList from './components/admin/UsersList'
-import Header from './components/Header'
 import RolesList from './components/admin/RolesList'
-import ScanPage from './components/ScanPage'
-import Headerr from './components/admin/Admindashboard'
-import Headerabde from './components/Headerabde'
 import { useEffect } from 'react'
 import Auth from './assets/api/auth/Auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader2 } from 'lucide-react'
 import { setLoading } from './components/Redux/slices/AuthSlice'
-import HeaderEmploye from './components/employe/HeaderEmploye'
 import SpotsEmploye from './components/employe/SpotsEmploye'
 import ParkList from './components/admin/parks/parkList'
-import QRCodeScanner from './components/QrCodeScanner'
+import QRCodeScanner from './components/employe/QrCodeScanner'
+import Header from './components/Header'
 function App() {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.auth);
@@ -69,7 +65,7 @@ function App() {
 
             <Route path="/sign" element={<SignTabs />} />
             <Route path='/admin/test' element={<QRCodeScanner/>}/>
-            <Route  path='/' element={<Headerabde/>}>
+            <Route  path='/' element={<Header/>}>
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
                   <Route index path="overview" element={<SpotsEmploye/>} />
