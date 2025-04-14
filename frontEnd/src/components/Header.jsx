@@ -51,8 +51,9 @@ export default function Header() {
             {user?.role === "admin" && (
               <div className="gap-5 hidden md:inline-flex">
               <NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink>
-              <NavLink className={navLinkClass} to="/admin/users">users</NavLink>
-              <NavLink className={navLinkClass} to="/admin/roles">roles</NavLink>
+              <NavLink className={navLinkClass} to="/admin/users">Users</NavLink>
+              <NavLink className={navLinkClass} to="/admin/roles">Roles</NavLink>
+              <NavLink className={navLinkClass} to="/admin/parcs">Parcs</NavLink>
               </div>
             )}
             {user?.role === "employe" && (
@@ -109,6 +110,7 @@ export default function Header() {
               <>
                 <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
                 <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/parcs">Parcs</NavLink>
                 <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
               </>
             }
