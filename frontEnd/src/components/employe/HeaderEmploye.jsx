@@ -3,6 +3,7 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { Menu, X, Bell, ScanLine } from "lucide-react";
 import ScanerQrCode from './ScanerQrCode';
 import Footer from './Footer';
+import { useSelector } from 'react-redux';
 function HeaderEmploye() {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenSc, setIsOpenSc] = useState(false);
@@ -12,6 +13,7 @@ function HeaderEmploye() {
             ? "text-blue-500 border-b-2 border-blue-500 pb-5.5"
             : "text-gray-700 hover:text-blue-500 hover:border-b-2 pb-5.5 "
         }`;
+
     return (
         <div className="h-screen flex flex-col">
             <header className="h-16  text-black  flex items-center justify-between px-6 shadow-md z-200">
