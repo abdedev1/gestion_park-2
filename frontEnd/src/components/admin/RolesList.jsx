@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Edit, Loader2, MoreHorizontal, Plus, RefreshCw, Shield, Trash2 } from "lucide-react"
 import { Button, Table, Modal, Form, Input, Dropdown, Spin, message } from "antd"
+import {getRoles} from "../../assets/api/roles/roles"
 import TextArea from "antd/es/input/TextArea"
 import axios from "axios"
 
@@ -19,7 +20,7 @@ export default function RolesList() {
   const fetchRoles = async () => {
     setLoading(true)
     try {
-      const response = await fetch("http://localhost:8000/api/roles")
+      const response = await getRoles()
       
       if (!response.ok) {
         throw new Error("Failed to fetch roles")

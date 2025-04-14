@@ -1,13 +1,13 @@
-import axios from "axios"
+import axios from "../axios";
 
-const API_BASE_URL = "/api/users"
+
 
 /**
  * Fetch all users
  * @returns {Promise} Axios response promise
  */
 export const fetchUsers = () => {
-  return axios.get(`${API_BASE_URL}`)
+  return axios.get("users")
 }
 
 /**

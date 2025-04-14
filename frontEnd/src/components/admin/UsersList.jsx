@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import {axios} from "../../assets/api/axios";
 import { Link } from "react-router-dom";
 import { message, Popconfirm, Modal, Form, Input, Select ,Table,Spin,} from "antd";
 import { HelpCircle as CircleHelp, Pencil, Trash2 ,Loader2,Shield } from "lucide-react";
@@ -18,7 +18,7 @@ function UsersList() {
   useEffect(()=>{
     const fetchRoles = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/roles");
+        const response = await axios.get("roles");
         setRoles(response.data);
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -28,15 +28,15 @@ function UsersList() {
     fetchRoles();
   })
   useEffect(() => {
-    const source = axios.CancelToken.source();
+
     
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/users", {
-          cancelToken: source.token,
+        const response = await axios.get("users", {
+          
         });
         
-        setUsers(response.data.data);
+        setUsers(response.data);
       } catch (error) {
         if (!axios.isCancel(error)) {
           setError("Error fetching users");
