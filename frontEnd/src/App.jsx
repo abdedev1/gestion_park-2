@@ -88,7 +88,7 @@ function App() {
 
             {/* Protected routes for admin */}
             <Route element={<ProtectedRoute requiredRole="admin" />}>
-              <Route path="/admin/dashboard" element={<Headerr />} />
+              
               
               <Route path="/admin/users">
                 <Route index element={<UsersList/>} />

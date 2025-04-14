@@ -18,26 +18,21 @@ export default function RolesList() {
 
   // Fetch roles from API
   const fetchRoles = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await getRoles()
-      
-      if (!response.ok) {
-        throw new Error("Failed to fetch roles")
-      }
-      const data = await response.json()
-      setRoles(data)
+      const data = await getRoles();
+      setRoles(data);
     } catch (error) {
-      console.error("Error fetching roles:", error)
-      messageApi.error("Failed to load roles. Please try again.")
+      console.error("Error fetching roles:", error);
+      messageApi.error(error.response?.data?.message || "Failed to load roles. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchRoles()
-  }, [])
+    fetchRoles();
+  }, []);
 
   // Open edit modal with role data
   const handleEditClick = (role) => {

@@ -3,6 +3,8 @@ import {axios} from "../../assets/api/axios";
 import { Link } from "react-router-dom";
 import { message, Popconfirm, Modal, Form, Input, Select ,Table,Spin,} from "antd";
 import { HelpCircle as CircleHelp, Pencil, Trash2 ,Loader2,Shield } from "lucide-react";
+import { getUsers } from "../../assets/api/admin/users";
+import { getRoles } from "../../assets/api/roles/roles";
 
 function UsersList() {
   const [users, setUsers] = useState([]);
@@ -12,46 +14,45 @@ function UsersList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage()
   
 
 
-  useEffect(()=>{
-    const fetchRoles = async () => {
-      try {
-        const response = await axios.get("roles");
-        setRoles(response.data);
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      }
-    };
 
-    fetchRoles();
-  })
-  useEffect(() => {
 
+  const fetchUsers = async () => {
     
-    const fetchUsers = async () => {
       try {
-        const response = await axios.get("users", {
-          
-        });
-        
-        setUsers(response.data);
+        const data = await getUsers();
+        setUsers(data);
       } catch (error) {
-        if (!axios.isCancel(error)) {
-          setError("Error fetching users");
-        }
+        console.error("Error fetching Users:", error);
+        messageApi.error(error.response?.data?.message || "Failed to load Users. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchUsers();
-
-    return () => {
-      source.cancel("Component unmounted, request canceled");
+    const fetchRoles = async () => {
+      setLoading(true);
+      try {
+        const data = await getRoles();
+        setRoles(data);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+        messageApi.error(error.response?.data?.message || "Failed to load roles. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
-  }, []);
+    
+    useEffect(() => {
+      fetchUsers();
+      fetchRoles();
+    }, []);
+
+
+
+
 
   const handleDelete = async (id) => {
     try {
