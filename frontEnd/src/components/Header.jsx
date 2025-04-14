@@ -73,17 +73,17 @@ export default function Header() {
         <div className={`fixed inset-0 z-10 bg-black bg-opacity-50 transition-opacity ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`} onClick={() => setIsOpen(false)} >
         <aside className={`fixed top-0 left-0 w-full h-fit bg-white shadow-lg p-4 transform transition-transform ${isOpen ? "translate-y-0" : "-translate-y-full"}`}>
           <div className='flex justify-between items-center mb-2'>
+          { token &&
             <div className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
               <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full bg-${color} text-${color}-content flex! items-center justify-center text-lg font-bold`}>
-                <NavLink to="/profile">
-               
-                </NavLink>
+                <NavLink to="/profile">{user.first_name[0]}{user.last_name[0]}</NavLink>
               </div>
             </div>
+          }
             <button className="btn btn-ghost btn-neutral btn-circle hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(false)}><X/></button>
           </div>
           <div className='flex flex-col items-center gap-2 px-2'>
-            <div className='text-center font-semibold mb-2'>Welcome </div>
+            { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>}
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>

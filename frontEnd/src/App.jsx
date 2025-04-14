@@ -7,7 +7,8 @@ import SignTabs from './components/login/Signup'
 import UsersList from './components/admin/UsersList'
 import Header from './components/Header'
 import RolesList from './components/admin/RolesList'
-import QrScanner from './components/admin/test'
+// import QrScanner from './components/admin/test'
+import ScanPage from './components/ScanPage'
 import Headerr from './components/admin/Admindashboard'
 
 import { useEffect } from 'react'
@@ -16,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Loader2 } from 'lucide-react'
 import { setLoading } from './components/Redux/slices/AuthSlice'
 import ParkList from './components/admin/parks/parkList'
+
 
 
 function App() {
@@ -64,7 +66,7 @@ function App() {
           <Routes>
             <Route path="/" element={<h1>homepage</h1>} />
             <Route path="/sign" element={<SignTabs />} />
-            <Route path='/admin/test' element={<QrScanner/>}/>
+            <Route path='/admin/test' element={<ScanPage/>}/>
 
 
             <Route element={<ProtectedRoute requiredRole="employe" />}>
@@ -107,6 +109,7 @@ function App() {
               </Route>
               
               
+              <Route path='/admin/test' element={<ScanPage/>}/>
               
               <Route path="/admin/reservations">
                 <Route index element={<h1>reservations list</h1>} />
