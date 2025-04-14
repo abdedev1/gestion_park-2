@@ -3,7 +3,7 @@ import {axios} from "../../assets/api/axios";
 import { Link } from "react-router-dom";
 import { message, Popconfirm, Modal, Form, Input, Select ,Table,Spin,} from "antd";
 import { HelpCircle as CircleHelp, Pencil, Trash2 ,Loader2,Shield } from "lucide-react";
-import { getUsers } from "../../assets/api/admin/users";
+import { getUsers, updateUser } from "../../assets/api/admin/users";
 import { getRoles } from "../../assets/api/roles/roles";
 
 function UsersList() {
@@ -84,19 +84,16 @@ function UsersList() {
 
   const handleUpdateUser = async (values) => {
     try {
+      if (!selectedUser) return;
+      
       // Format the data properly before sending
       const formattedValues = {
         ...values,
-        birth_date: values.birth_date || selectedUser.birth_date ,
-        role_id:values.role_id// Ensure birth_date is not null
+        birth_date: values.birth_date || selectedUser.birth_date,
+        role_id: values.role_id
       };
-
-      const response = await axios.put(
-        `http://localhost:8000/api/users/${selectedUser.id}`,
-        formattedValues
-      );
-      
-      const updatedUser = response.data?.data || response.data;
+  
+      const updatedUser = await updateUser(selectedUser.id, formattedValues);
       
       setUsers(prevUsers =>
         prevUsers.map(user =>

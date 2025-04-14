@@ -15,6 +15,7 @@ import Auth from './assets/api/auth/Auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { Loader2 } from 'lucide-react'
 import { setLoading } from './components/Redux/slices/AuthSlice'
+import ParkList from './components/admin/parks/parkList'
 
 
 function App() {
@@ -99,8 +100,13 @@ function App() {
                 <Route index element={<RolesList/>}/>
                 <Route path=":id" element={<h1>show role</h1>} />
               </Route>
+
+              <Route path="/admin/parcs">
+                <Route index element={<ParkList/>}/>
+                <Route path=":id" element={<h1>show park</h1>} />
+              </Route>
               
-              <Route path='/admin/test' element={<QrScanner/>}/>
+              
               
               <Route path="/admin/reservations">
                 <Route index element={<h1>reservations list</h1>} />

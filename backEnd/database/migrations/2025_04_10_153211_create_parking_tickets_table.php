@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('parking_tickets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('spot_id')->constrained('spots');
+            $table->foreignId('spot_id')->constrained('spots')->onDelete('cascade');
             $table->string('clientName');
             $table->dateTime('entry_time');
             $table->dateTime('exit_time')->nullable();

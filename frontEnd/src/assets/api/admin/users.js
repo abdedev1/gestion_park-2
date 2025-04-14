@@ -8,4 +8,33 @@ export const getUsers = async () => {
     throw error;
   }
 };
+export const addUser = async (userData) => {
+  try {
+    const response = await axios.post('/users', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding User:', error);
+    throw error;
+  }
+};
+
+export const updateUser = async (userId, userData) => {
+  try {
+    const response = await axios.put(`/users/${userId}`, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating User:', error);
+    throw error;
+  }
+};
+
+export const deleteUser = async (userId) => {
+  try {
+    const response = await axios.delete(`/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting User:', error);
+    throw error;
+  }
+};
 

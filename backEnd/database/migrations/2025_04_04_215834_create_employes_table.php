@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('employes', function (Blueprint $table) {
             $table->id();
             $table->foreignId(column: 'user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId(column: 'parc_id')->constrained('parcs');
+            $table->foreignId(column: 'parc_id')->constrained('parcs')->onDelete('cascade');
             $table->timestamps();
         });
     }
