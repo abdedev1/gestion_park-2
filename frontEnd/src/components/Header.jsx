@@ -75,14 +75,14 @@ export default function Header() {
             <div className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
               <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full bg-${color} text-${color}-content flex! items-center justify-center text-lg font-bold`}>
                 <NavLink to="/profile">
-                {/* {user.first_name[0]}{user.last_name[0]} */}
+                {user.first_name[0]}{user.last_name[0]}
                 </NavLink>
               </div>
             </div>
             <button className="btn btn-ghost btn-neutral btn-circle hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(false)}><X/></button>
           </div>
           <div className='flex flex-col items-center gap-2 px-2'>
-            {/* <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div> */}
+            <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
             <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
