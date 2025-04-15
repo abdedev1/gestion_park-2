@@ -31,22 +31,27 @@ export default function Header() {
       }
     }
 
-    useEffect(() =>{
+    useEffect(() => {
       if (user) {
-        const str = user.first_name
-        const colors = ["primary", "secondary", "accent", "info", "success", "warning", "error"]
+        const str = user.first_name;
+        const colorMap = {
+          primary: "bg-primary text-primary-content",
+          secondary: "bg-secondary text-secondary-content",
+          accent: "bg-accent text-accent-content",
+          info: "bg-info text-info-content",
+          success: "bg-success text-success-content",
+          warning: "bg-warning text-warning-content",
+          error: "bg-error text-error-content",
+        };
+        const colorKeys = Object.keys(colorMap);
         let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const index = Math.abs(hash) % colors.length;
-        setcolor(colors[index])
-        console.log(colors[index])
+        for (let i = 0; i < str.length; i++) {hash = str.charCodeAt(i) + ((hash << 5) - hash);}
+        const index = Math.abs(hash) % colorKeys.length;
+        setcolor(colorMap[colorKeys[index]]);
+        console.log(colorKeys[index]);
       }
-    }, [user])
-
-
-    // if (token) {getColor(user.first_name);}
+    }, [user]);
+    
     
     const logoutUser = async () => {
       const res = await Auth.Logout();
@@ -68,6 +73,7 @@ export default function Header() {
             {user?.role === "admin" && (
               <>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks">parks</NavLink></div>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">users</NavLink></div>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">roles</NavLink></div>
               </>
@@ -88,7 +94,7 @@ export default function Header() {
                       </button>
                   )}
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
-                    <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full bg-${color} text-${color}-content flex! items-center justify-center text-lg font-bold`}>
+                    <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full ${color} flex! items-center justify-center text-lg font-bold`}>
                       {user.first_name[0]}{user.last_name[0]}
                     </div>
                   </div>
@@ -102,7 +108,6 @@ export default function Header() {
             </div>
             : <NavLink className={({ isActive }) => `btn btn-sm btn-neutral mx-2 hover:bg-base-100 hover:text-neutral ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>
           }
-          
           </div>
         </div>
         {/* sidebar */}
@@ -122,17 +127,17 @@ export default function Header() {
             { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>}
             {user?.role === "admin" &&
               <>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/parcs">Parcs</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/users">Users</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/roles">Roles</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parks">Parks</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
             }
             {user?.role === "employe" &&
               <>
               <button className="p-2  text-black rounded-md " aria-label="Open Scan" onClick={() => setIsOpenSc(true)}><ScanLine  size={24} /></button>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/overview">Overview</NavLink>
-              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
             }
             { token ? <button className="btn btn-outline btn-neutral mx-2 w-full mt-2" onClick={logoutUser} >Logout</button>

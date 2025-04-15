@@ -68,20 +68,7 @@ function App() {
             <Route path='test' element={<QRCodeScanner/>}/>
             <Route  path='/' element={<Header/>}>
 
-            <Route 
-              index 
-              element={
-                user?.role === 'admin' ? (
-                  <Navigate to="/admin/users" replace />
-                ) : user?.role === 'employe' ? (
-                  <Navigate to="/overview" replace />
-                ) : (
-                  <Navigate to="" replace />
-                )
-              
-                
-              } 
-            />
+            
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
                   <Route index path="overview" element={<SpotsEmploye/>} />
