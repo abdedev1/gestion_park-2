@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getEmployeSpots } from '../Redux/Reducer/spotsSlice';
-import { fetchPricing_rates } from '../Redux/Reducer/pracingRatesSlice';
-import { addParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
-import { updateSpot } from '../Redux/Reducer/spotsSlice';
-import { updateParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
-import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
+import { getEmployeSpots, updateSpot } from '../Redux/slices/spotsSlice';
+import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
+import { updateParking_ticket, fetchParking_tickets,addParking_ticket } from '../Redux/slices/parkingTicketsSlice';
 import { FloatButton } from 'antd';
 
 

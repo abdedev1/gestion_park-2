@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useRef, useEffect } from "react"
 import { addPark, getParks, getSpots, addSpot, deleteSpot } from "../../../assets/api/parks/park"
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select } from "antd"

@@ -1,21 +1,52 @@
-import { use, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { use, useEffect, useRef, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import Auth from '../assets/api/auth/Auth';
 import { logout } from './Redux/slices/AuthSlice';
 import { Outlet } from 'react-router-dom';
 import { ScanLine } from 'lucide-react';
+import { motion, useAnimation } from "framer-motion";
+
+
 export default function Header() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
+    const controls = useAnimation();
+    
     const { user, token} = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
+    const [color, setcolor] = useState("primary");
     const [isOpenSc, setIsOpenSc] = useState(false);
-    
-    let color = "primary"
-    if (token)
-    {color = getColor(user.first_name);}
+
+    const switchTab = (activeTab) => {
+      if (activeTab) {
+        const { offsetLeft, offsetWidth } = activeTab;
+        controls.start({
+          x: offsetLeft,
+          width: offsetWidth,
+          transition: { type: "spring", stiffness: 500, damping: 50 },
+        });
+      }
+    }
+
+    useEffect(() =>{
+      if (user) {
+        const str = user.first_name
+        const colors = ["primary", "secondary", "accent", "info", "success", "warning", "error"]
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % colors.length;
+        setcolor(colors[index])
+        console.log(colors[index])
+      }
+    }, [user])
+
+
+    // if (token) {getColor(user.first_name);}
     
     const logoutUser = async () => {
       const res = await Auth.Logout();
@@ -24,22 +55,7 @@ export default function Header() {
         navigate("/");
       }
     };
-    const navLinkClass = ({ isActive }) =>
-      `px-3 py-2 transition duration-200 ${
-        isActive
-          ? "text-blue-500 border-b-2 border-blue-500"
-          : "text-gray-700 hover:text-blue-500 hover:border-b-2 "
-      }`;
-
-    function getColor(str) {
-      const colors = ["neutral", "primary", "secondary", "accent", "info", "success", "warning", "error"]
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      const index = Math.abs(hash) % colors.length;
-      return colors[index];
-    }
+    const navLinkClass = ({ isActive }) =>`px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 ${isActive ? "text-primary": ""}`;
 
     return (
       <>
@@ -48,18 +64,17 @@ export default function Header() {
             <NavLink ><img className='h-12' src="/Logo/logo.png" alt="" /></NavLink>
           </div>
           
+          <div className="gap-5 hidden md:inline-flex relative">
             {user?.role === "admin" && (
-              <div className="gap-5 hidden md:inline-flex">
-              <NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink>
-              <NavLink className={navLinkClass} to="/admin/users">users</NavLink>
-              <NavLink className={navLinkClass} to="/admin/roles">roles</NavLink>
-              </div>
+              <>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">users</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">roles</NavLink></div>
+              </>
             )}
-            {user?.role === "employe" && (
-              <div className="gap-5 hidden md:inline-flex">
-              <NavLink className={navLinkClass} to="/overview">Overview</NavLink>
-              </div>
-            )}
+            {user?.role === "employe" && (<div ref={(e) => (tab.current["/overview"] = e)}><NavLink className={({ isActive }) => `px-3 py-2 text-neutral hover:text-primary border-b-2 transition-colors duration-200 ${isActive ? "text-primary border-primary": ""}`} to="/overview">Overview</NavLink></div>)}
+            <motion.div className={`absolute top-7 left-0 h-0.5 bg-primary opacity-0 ${["/dashboard", "/users", "/roles"].includes(location.pathname) && "opacity-100"}`} animate={controls} initial={{ x: 0 }} />
+          </div>
             
           <div className="navbar-end">
           <button className="btn btn-ghost btn-neutral btn-circle md:hidden hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(!isOpen)}><Menu/></button>
@@ -79,7 +94,7 @@ export default function Header() {
                   </div>
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                <li className='text-center font-semibold mb-2'>Welcome {user.first_name}</li>
+                <li className='text-center font-semibold mb-2'>Welcome {user.first_name} ({user.role})</li>
                 <li><a className="justify-between">Profile</a></li>
                 <li><a>Settings</a></li>
                 <li><button onClick={logoutUser}>Logout</button></li>

@@ -63,8 +63,8 @@ function App() {
         >
           <Routes>
 
-            <Route path="/sign" element={<SignTabs />} />
-            <Route path='/admin/test' element={<QRCodeScanner/>}/>
+            <Route path="sign" element={<SignTabs />} />
+            <Route path='test' element={<QRCodeScanner/>}/>
             <Route  path='/' element={<Header/>}>
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
@@ -73,8 +73,8 @@ function App() {
               {/* partie admin */}
 
                 <Route element={<ProtectedRoute requiredRole="admin" />}>
-                <Route  path="admin/users" element={<UsersList/>} />
-                <Route  path="admin/roles" element={<RolesList/>} />
+                <Route  path="users" element={<UsersList/>} />
+                <Route  path="roles" element={<RolesList/>} />
                 <Route  path="dashboard" element={<h1>Dashbord</h1>} />
                 </Route>
               
