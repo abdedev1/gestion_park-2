@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\IsAdminEmployeeMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ParcController;
@@ -29,17 +30,25 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
-    Route::apiResource('pricing_rates', PricingRateController::class);
     Route::apiResource("parcs",ParcController::class);
-    Route::apiResource('spots',SpotController::class);
+    
 });
 
 Route::middleware(isEmployeMiddleWare::class)->group(function(){
-    // employe routes
+    // employe routes    
+    Route::apiResource('pricing_rates', PricingRateController::class);
+    
+    
+
 });
 
 Route::middleware(isClientMiddleWare::class)->group(function(){
     // client routes
+});
+Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
+    // admin and employe routes
+    Route::apiResource('spots',controller: SpotController::class);
+
 });
 
 
@@ -47,7 +56,8 @@ Route::middleware(isClientMiddleWare::class)->group(function(){
 Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
 Route::get('/parcs/{id}/spots',[ParcController::class,'getParcSpots']);
 Route::get("/parcs", [ParcController::class, 'index']);
-Route::get("/spots", [SpotController::class, 'index']);
+
 Route::post("/parcs", [ParcController::class, 'store']);
+
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
 Route::apiResource('parking-tickets', ParkingTicketController::class);

@@ -3,7 +3,7 @@ import { Edit, Loader2, MoreHorizontal, Plus, RefreshCw, Shield, Trash2 } from "
 import { Button, Table, Modal, Form, Input, Dropdown, Spin, message } from "antd"
 import {addRole, deleteRole, getRoles, updateRole} from "../../assets/api/roles/roles"
 import TextArea from "antd/es/input/TextArea"
-import axios from "axios"
+
 
 export default function RolesList() {
   const [roles, setRoles] = useState([])

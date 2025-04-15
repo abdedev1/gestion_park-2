@@ -29,7 +29,7 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
-        dispatch(getEmployeSpots(1));
+        dispatch(getEmployeSpots(51));
         dispatch(fetchPricing_rates());
         dispatch(fetchParking_tickets());
     }, [dispatch]);
@@ -123,7 +123,7 @@ export default function SpotsEmploye() {
             }
             
             // Refresh data
-            await dispatch(getEmployeSpots(1));
+            await dispatch(getEmployeSpots(51));
             await dispatch(fetchParking_tickets());
             
             setIsModalOpen(false);
