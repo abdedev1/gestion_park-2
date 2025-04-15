@@ -72,7 +72,7 @@ function App() {
               index 
               element={
                 user?.role === 'admin' ? (
-                  <Navigate to="/admin/users" replace />
+                  <Navigate to="/users" replace />
                 ) : user?.role === 'employe' ? (
                   <Navigate to="/overview" replace />
                 ) : (
@@ -91,7 +91,7 @@ function App() {
                 <Route element={<ProtectedRoute requiredRole="admin" />}>
                 <Route  path="users" element={<UsersList/>} />
                 <Route  path="roles" element={<RolesList/>} />
-                <Route  path="parks" element={<ParkList/>} />
+                <Route  path="parcs" element={<ParkList/>} />
                 <Route  path="dashboard" element={<h1>Dashbord</h1>} />
                 </Route>
               

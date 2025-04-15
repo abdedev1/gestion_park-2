@@ -68,8 +68,9 @@ export default function Header() {
             {user?.role === "admin" && (
               <>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">users</NavLink></div>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">roles</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">Users</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">Roles</NavLink></div>
+                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parcs">Parcs</NavLink></div>
               </>
             )}
             {user?.role === "employe" && (<div ref={(e) => (tab.current["/overview"] = e)}><NavLink className={({ isActive }) => `px-3 py-2 text-neutral hover:text-primary border-b-2 transition-colors duration-200 ${isActive ? "text-primary border-primary": ""}`} to="/overview">Overview</NavLink></div>)}
@@ -122,9 +123,9 @@ export default function Header() {
             { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>}
             {user?.role === "admin" &&
               <>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/parcs">Parcs</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/users">Users</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/roles">Roles</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parcs">Parcs</NavLink>
                 <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
               </>
             }
