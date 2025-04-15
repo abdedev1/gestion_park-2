@@ -73,7 +73,6 @@ export default function Header() {
             {user?.role === "admin" && (
               <>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks">parks</NavLink></div>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">users</NavLink></div>
                 <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">roles</NavLink></div>
               </>
@@ -127,10 +126,10 @@ export default function Header() {
             { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>}
             {user?.role === "admin" &&
               <>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/users">Users</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/roles">Roles</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parks">Parks</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/parcs">Parcs</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
               </>
             }
             {user?.role === "employe" &&

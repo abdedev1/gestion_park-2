@@ -68,7 +68,20 @@ function App() {
             <Route path='test' element={<QRCodeScanner/>}/>
             <Route  path='/' element={<Header/>}>
 
-            
+            <Route 
+              index 
+              element={
+                user?.role === 'admin' ? (
+                  <Navigate to="/users" replace />
+                ) : user?.role === 'employe' ? (
+                  <Navigate to="/overview" replace />
+                ) : (
+                  <Navigate to="" replace />
+                )
+              
+                
+              } 
+            />
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
                   <Route index path="overview" element={<SpotsEmploye/>} />
@@ -78,7 +91,7 @@ function App() {
                 <Route element={<ProtectedRoute requiredRole="admin" />}>
                 <Route  path="users" element={<UsersList/>} />
                 <Route  path="roles" element={<RolesList/>} />
-                <Route  path="parks" element={<ParkList/>} />
+                <Route  path="parcs" element={<ParkList/>} />
                 <Route  path="dashboard" element={<h1>Dashbord</h1>} />
                 </Route>
               
