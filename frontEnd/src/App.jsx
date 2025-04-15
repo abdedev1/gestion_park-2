@@ -14,9 +14,10 @@ import SpotsEmploye from './components/employe/SpotsEmploye'
 import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
+import { Navigate } from 'react-router-dom'
 function App() {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => state.auth);
+  const { isLoading,user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(setLoading(true));
@@ -66,6 +67,19 @@ function App() {
             <Route path="/sign" element={<SignTabs />} />
             <Route path='/admin/test' element={<QRCodeScanner/>}/>
             <Route  path='/' element={<Header/>}>
+
+            <Route 
+              index 
+              element={
+                user?.role === 'admin' ? (
+                  <Navigate to="/admin/users" replace />
+                ) : user?.role === 'employe' ? (
+                  <Navigate to="/overview" replace />
+                ) : (
+                  <Navigate to="/sign" replace />
+                )
+              } 
+            />
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
                   <Route index path="overview" element={<SpotsEmploye/>} />
