@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react"
 import { addPark, getParks, getSpots, addSpot, deleteSpot } from "../../../assets/api/parks/park"
-import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select } from "antd"
-import { EditOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined } from "@ant-design/icons"
+import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin } from "antd"
+import { Loader2, Plus } from "lucide-react"
+
+import { EditOutlined, DeleteOutlined, ArrowRightOutlined } from "@ant-design/icons"
 
 export default function ParkList() {
   const [parks, setParks] = useState([])
@@ -55,6 +57,7 @@ export default function ParkList() {
       setIsAddModalOpen(false)
       form.resetFields()
       fetchParks()
+      fetchSpots()
     } catch (error) {
       console.error("Error adding park:", error)
       messageApi.error(error.response?.data?.message || "Failed to add park. Please try again.")
@@ -87,13 +90,6 @@ export default function ParkList() {
       messageApi.error(error.response?.data?.message || "Failed to delete spots. Please try again.")
     }
   }
-
-  // Remove the handleAllocateSpot function since it's no longer needed
-  // Delete or comment out this function:
-  // const handleAllocateSpot = (spotId) => {
-  //   // Implement spot allocation logic here
-  //   messageApi.info(`Allocating spot ${spotId}`)
-  // }
 
   useEffect(() => {
     fetchParks()
@@ -132,30 +128,52 @@ export default function ParkList() {
       title: "Name of spot",
       dataIndex: "nom",
       key: "nom",
+      className: "font-medium",
     },
     {
       title: "Type",
       dataIndex: "type",
       key: "type",
-      render: (text) => text || "No restrictions",
+      render: (text) => <span className="text-gray-700">{text || "No restrictions"}</span>,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: (status) => {
+        let statusClass = "bg-gray-100 text-gray-800"
+        if (status === "disponible") statusClass = "bg-green-100 text-green-800"
+        else if (status === "reserve") statusClass = "bg-yellow-100 text-yellow-800"
+        else if (status === "maintenance") statusClass = "bg-red-100 text-red-800"
+
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>{status || "Unknown"}</span>
+        )
+      },
     },
     {
       title: "Park ID",
       dataIndex: "parc_id",
       key: "parc_id",
+      className: "text-gray-600",
     },
+
     {
-      title: "",
+      title: "Actions",
       key: "action",
+
       render: (_, record) => (
         <Space size="middle">
-          <Button type="text" icon={<EditOutlined />} />
-          <Button type="text" icon={<ArrowRightOutlined />} />
+          <Button
+            type="text"
+            icon={<EditOutlined className="text-gray-600 hover:text-gray-900" />}
+            className="hover:bg-gray-100"
+          />
+          <Button
+            type="text"
+            icon={<ArrowRightOutlined className="text-gray-600 hover:text-gray-900" />}
+            className="hover:bg-gray-100"
+          />
         </Space>
       ),
     },
@@ -163,102 +181,150 @@ export default function ParkList() {
 
   // Convert parks to tab items
   const parkTabs = parks.map((park) => ({
-    label: park.name || `Park ${park.id}`,
+    label: park.nom || `Park ${park.id}`,
     children: (
-      <div>
-        <div className="park-details">
-          <h3>{park.nom}</h3>
-          <p>Number of spots: {park.numberSpots || 0}</p>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="park-details p-4 border-b border-gray-100">
+          <h3 className="text-xl font-semibold text-gray-800 mb-1">{park.nom}</h3>
+          <p className="text-sm text-gray-600">Number of spots: {park.numberSpots || 0}</p>
         </div>
-
-        <div style={{ marginBottom: 16 }}>
-          <Button
-            type="primary"
-            onClick={() => setIsAddSpotModalOpen(true)}
-            icon={<PlusOutlined />}
-            style={{ marginRight: 8, backgroundColor: "#1677ff" }}
-          >
-            Add spots
-          </Button>
-          <Popconfirm
-            title="Are you sure you want to delete these spots?"
-            onConfirm={handleDeleteSpots}
-            okText="Yes"
-            cancelText="No"
-            disabled={!hasSelected}
-          >
-            <Button danger disabled={!hasSelected} icon={<DeleteOutlined />}>
-              Delete
+        <div className="container mx-auto py-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Button
+              type="primary"
+              onClick={() => setIsAddSpotModalOpen(true)}
+              icon={<Plus className="h-4 w-4 mr-2" />}
+              style={{
+                backgroundColor: "#0891b2",
+                display: "flex",
+                alignItems: "center",
+              }}
+              className="hover:opacity-90 transition-opacity shadow-sm"
+            >
+              Add spots
             </Button>
-          </Popconfirm>
-          <span style={{ marginLeft: 8 }}>{hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}</span>
-        </div>
+            <Popconfirm
+              title="Are you sure you want to delete these spots?"
+              onConfirm={handleDeleteSpots}
+              okText="Yes"
+              cancelText="No"
+              disabled={!hasSelected}
+            >
+              <Button danger disabled={!hasSelected} icon={<DeleteOutlined />} className="flex items-center">
+                Delete
+              </Button>
+            </Popconfirm>
+            <span className="flex items-center text-sm text-gray-500">
+              {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
+            </span>
+          </div>
 
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={spots.filter((spot) => spot.parc_id === park.id)}
-          rowKey="id"
-          pagination={false}
-          footer={() => `${spots.filter((spot) => spot.parc_id === park.id).length} Spot(s)`}
-          className="spots-table"
-        />
+          <Table
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={spots.filter((spot) => spot.parc_id === park.id)}
+            rowKey="id"
+           
+            className="spots-table"
+            loading={{
+              indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-cyan-600" />} />,
+              spinning: loading,
+            }}
+            pagination={{
+              pageSize: 5,
+              className: "flex justify-end",
+            }}
+            rowClassName="hover:bg-gray-50"
+          />
+        </div>
       </div>
     ),
     key: park.id,
   }))
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-4 p-6 bg-gray-50 min-h-screen">
       {contextHolder}
-      <h1 className="text-2xl font-bold">Parks List</h1>
-      <div style={{ marginBottom: 16 }}>
+      <h1 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2">Parks Management</h1>
+      <div className="mb-4">
         <Button
           onClick={() => {
             form.resetFields()
             setIsAddModalOpen(true)
           }}
           type="primary"
-          style={{ backgroundColor: "#1677ff" }}
+          icon={<Plus className="h-4 w-4 mr-2" />}
+          style={{
+            backgroundColor: "#0891b2",
+            display: "flex",
+            alignItems: "center",
+          }}
+          className="hover:opacity-90 transition-opacity shadow-sm"
         >
           ADD PARK
         </Button>
       </div>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+
       {!loading && !error && parks.length > 0 && (
-        <Tabs
-          type="card"
-          onChange={onChange}
-          activeKey={activeKey}
-          onEdit={() => {
-            form.resetFields()
-            setIsAddModalOpen(true)
-          }}
-          items={parkTabs}
-        />
+        <div className="bg-white rounded-lg shadow-sm">
+          <Tabs
+            type="card"
+            onChange={onChange}
+            activeKey={activeKey}
+            onEdit={() => {
+              form.resetFields()
+              setIsAddModalOpen(true)
+            }}
+            items={parkTabs}
+            className="p-1"
+          />
+        </div>
       )}
-      {!loading && !error && parks.length === 0 && <p>No parks found. Click "ADD PARK" to create one.</p>}
+      {!loading && !error && parks.length === 0 && (
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <p className="text-gray-500">No parks found. Click "ADD PARK" to create one.</p>
+        </div>
+      )}
 
       {/* Add Park Modal */}
-      <Modal title="Add New Park" open={isAddModalOpen} onCancel={() => setIsAddModalOpen(false)} footer={null}>
+      <Modal
+        title={<span className="text-lg font-medium">Add New Park</span>}
+        open={isAddModalOpen}
+        onCancel={() => setIsAddModalOpen(false)}
+        footer={null}
+      >
         <Form form={form} layout="vertical" onFinish={handleAddPark} className="py-4">
-          <Form.Item name="nom" label="Nom" rules={[{ required: true, message: "Please enter park name" }]}>
-            <Input />
+          <Form.Item
+            name="nom"
+            label={<span className="font-medium">Park Name</span>}
+            rules={[{ required: true, message: "Please enter park name" }]}
+          >
+            <Input className="rounded" placeholder="Enter park name" />
           </Form.Item>
-          <Form.Item name="adresse" label="Adresse" rules={[{ required: true, message: "Please enter park address" }]}>
-            <Input />
+          <Form.Item
+            name="adresse"
+            label={<span className="font-medium">Address</span>}
+            rules={[{ required: true, message: "Please enter park address" }]}
+          >
+            <Input className="rounded" placeholder="Enter park address" />
           </Form.Item>
           <Form.Item
             name="numberSpots"
-            label="Number of Spots"
+            label={<span className="font-medium">Number of Spots</span>}
             rules={[{ required: true, message: "Please enter number of spots" }]}
           >
-            <Input type="number" />
+            <Input type="number" className="rounded" placeholder="Enter number of spots" />
           </Form.Item>
           <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit" style={{ backgroundColor: "#0891b2" }}>
+            <Button onClick={() => setIsAddModalOpen(false)} className="rounded">
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ backgroundColor: "#0891b2" }}
+              className="rounded hover:opacity-90"
+            >
               Add Park
             </Button>
           </div>
@@ -266,28 +332,40 @@ export default function ParkList() {
       </Modal>
 
       {/* Add Spot Modal */}
-      <Modal title="Add New Spot" open={isAddSpotModalOpen} onCancel={() => setIsAddSpotModalOpen(false)} footer={null}>
+      <Modal
+        title={<span className="text-lg font-medium">Add New Spot</span>}
+        open={isAddSpotModalOpen}
+        onCancel={() => setIsAddSpotModalOpen(false)}
+        footer={null}
+      >
         <Form form={spotForm} layout="vertical" onFinish={handleAddSpot} className="py-4">
          
-          <Form.Item name="type" label="Type"> 
-            <Select placeholder="Select a type">
+          <Form.Item name="type" label={<span className="font-medium">Type</span>}>
+            <Select placeholder="Select a type" className="rounded">
               <Select.Option value="voiture">Voiture</Select.Option>
               <Select.Option value="handicap">Handicap</Select.Option>
               <Select.Option value="electric">Electric Vehicle</Select.Option>
-              <Select.Option value="moto">moto</Select.Option>
-              <Select.Option value="velo">velo</Select.Option>
+              <Select.Option value="moto">Moto</Select.Option>
+              <Select.Option value="velo">Velo</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="status" label="Status" initialValue="available">
-            <Select>
+          <Form.Item name="status" label={<span className="font-medium">Status</span>} initialValue="disponible">
+            <Select className="rounded">
               <Select.Option value="disponible">Available</Select.Option>
-              <Select.Option value="reserve">reserve</Select.Option>
+              <Select.Option value="reserve">Reserved</Select.Option>
               <Select.Option value="maintenance">Maintenance</Select.Option>
             </Select>
           </Form.Item>
           <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={() => setIsAddSpotModalOpen(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit" style={{ backgroundColor: "#0891b2" }}>
+            <Button onClick={() => setIsAddSpotModalOpen(false)} className="rounded">
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ backgroundColor: "#0891b2" }}
+              className="rounded hover:opacity-90"
+            >
               Add Spot
             </Button>
           </div>

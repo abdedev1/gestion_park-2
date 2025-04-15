@@ -76,8 +76,10 @@ function App() {
                 ) : user?.role === 'employe' ? (
                   <Navigate to="/overview" replace />
                 ) : (
-                  <Navigate to="/sign" replace />
+                  <Navigate to="" replace />
                 )
+              
+                
               } 
             />
               {/* partie employe */}
