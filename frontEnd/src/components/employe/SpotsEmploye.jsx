@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getEmployeSpots } from '../Redux/Reducer/spotsSlice';
+import {getEmployeSpots } from '../Redux/Reducer/spotsSlice';
 import { fetchPricing_rates } from '../Redux/Reducer/pracingRatesSlice';
 import { addParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
 import { updateSpot } from '../Redux/Reducer/spotsSlice';
-import { updateParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
 import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
 import { FloatButton } from 'antd';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import QRCode from "react-qr-code";
+import { ScanLine } from 'lucide-react';
+import QRCodeScanner from './QrCodeScanner';
+import { fetchEmployes } from '../Redux/Reducer/employesSlice';
+import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
+import isEqual from "lodash/isEqual";
 
-
-const selectTicketForSpot = (tickets, spotId) => 
-    tickets.find(t => Number(t.spot_id) === Number(spotId) && t.status === "active");
 
 export default function SpotsEmploye() {
-    const { spots } = useSelector(state => state.spots);
+    const employeeSpots = useSelector(state => state.spots.employeeSpots);
     const { pricing_rates } = useSelector(state => state.pricing_rates);
-    const { parking_tickets } = useSelector(state => state.parking_tickets);
+    const [showScanner, setShowScanner] = useState(false);
     const dispatch = useDispatch();
-    
+    const { user, token} = useSelector((state) => state.auth);
+    const {employes} = useSelector(state=>state.employes) 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
+    const [employeIdStock,setEmployeIdStock] =useState(null)
     const [formData, setFormData] = useState({
         clientName: '',
         spot_id: '',  
@@ -32,149 +37,253 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
-        dispatch(getEmployeSpots(1));
         dispatch(fetchPricing_rates());
         dispatch(fetchParking_tickets());
+        dispatch(fetchEmployes())
     }, [dispatch]);
+
+    useEffect(() => {
+        if (user && employes.length > 0) {
+            const employe_id = employes.find(employe => Number(employe.user_id) === Number(user.id))?.id;
+            if (employe_id) {
+                dispatch(getEmployeSpots(employe_id));
+                if (!isEqual(employe_id, employeIdStock)) {
+                      setEmployeIdStock(employe_id);
+                    }
+            }
+        }
+    }, [user, employes, dispatch]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
-        if (name === 'exit_time' && formData.entry_time) {
-            const entryTime = new Date(formData.entry_time);
-            const exitTime = new Date(value);
-            const durationInHours = (exitTime - entryTime) / (1000 * 60 * 60);
-            
-            const rate = pricing_rates.find(r => r.id === formData.base_rate_id);
-            const pricePerHour = rate ? rate.price_per_hour : 0;
-            
-            setFormData(prev => ({
-                ...prev,
-                [name]: value,
-                total_price: parseFloat((durationInHours * pricePerHour).toFixed(2))
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-        }
+        setFormData(prevent =>({
+            ...prevent,[name]:value
+        }))
     };
 
     const handleSpotClick = (spot) => {
-        setSelectedSpot(spot);
-        const ticket = selectTicketForSpot(parking_tickets, spot.id);
-        
-        if (spot.status === "disponible") {
-            setFormData({
-                clientName: '',  
-                spot_id: spot.id, 
-                base_rate_id: pricing_rates[0]?.id || null, 
-                client_id: null,  
-                entry_time: new Date().toISOString().slice(0, 16),
-                exit_time: null,  
-                total_price: 0,  
-                status: 'active'
-            });
-        } else if (ticket) {
-            console.log(ticket)
-            setFormData({
-                clientName: ticket.clientName,  
-                spot_id: spot.id, 
-                base_rate_id: ticket.base_rate_id, 
-                client_id: ticket.client_id,  
-                entry_time: ticket.entry_time,
-                exit_time: ticket.exit_time || null,  
-                total_price: ticket.total_price || 0,  
-                status: ticket.status
-            });
-        }
-        
-        setIsModalOpen(true);
+      setSelectedSpot(spot)
+      if(spot.status === "disponible"){
+        setFormData({
+            clientName: '',
+            spot_id: spot.id,  
+            client_id: null,
+            base_rate_id: pricing_rates[0]?.id,
+            entry_time: new Date().toISOString().slice(0, 16),
+            exit_time: null,
+            total_price: 0,
+            status: "active"
+        })
+        setIsModalOpen(true)
+      }
+      
     };
-
+    const generateQRBase64 = (text) => {
+        return new Promise((resolve) => {
+            const qr = (
+                <QRCode
+                    value={text}
+                    size={128}
+                    level="H"
+                    includeMargin={true}
+                    bgColor="#ffffff"
+                    fgColor="#000000"
+                />
+            );
+    
+            const container = document.createElement("div");
+            document.body.appendChild(container);
+    
+            import("react-dom/client").then((ReactDOM) => {
+                const root = ReactDOM.createRoot(container);
+                root.render(qr);
+    
+                setTimeout(() => {
+                    const svg = container.querySelector("svg");
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+    
+                    const svgData = new XMLSerializer().serializeToString(svg);
+                    const img = new Image();
+                    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+                    const url = URL.createObjectURL(svgBlob);
+    
+                    img.onload = () => {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        const pngBase64 = canvas.toDataURL("image/png");
+                        URL.revokeObjectURL(url);
+                        document.body.removeChild(container);
+                        resolve(pngBase64);
+                    };
+    
+                    img.src = url;
+                }, 100); 
+            });
+        });
+    };
+      const generateTicketPDF = async (formData, selectedSpot, pricePerHour) => {
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([400, 500]);
+        const { width, height } = page.getSize();
+        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      
+        const fontSize = 14;
+      
+        const logoUrl = "/Logo/logo.png"; 
+        const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
+        const logoImage = await pdfDoc.embedPng(logoBytes);
+        const logoDims = logoImage.scale(0.3);
+        page.drawImage(logoImage, {
+          x: width / 2 - logoDims.width / 2,
+          y: height - 100,
+          width: logoDims.width,
+          height: logoDims.height,
+        });
+      
+        page.drawText("Ticket de Stationnement", {
+          x: width / 2 - 100,
+          y: height - 135,
+          size: 18,
+          font,
+          color: rgb(0, 0, 0.6),
+        });
+      
+        const startY = height - 180;
+        const lineHeight = 35;
+      
+        const drawLine = (label, value, yOffset) => {
+          page.drawText(`${label}: ${value}`, {
+            x: 40,
+            y: startY - yOffset,
+            size: fontSize,
+            font,
+            color: rgb(0.2, 0.2, 0.2),
+          });
+        };
+      
+        drawLine("Client", formData.clientName, 0);
+        drawLine("Prix / Heure", `${pricePerHour} MAD`, lineHeight);
+        drawLine("Spot", selectedSpot.nom, lineHeight * 2);
+        drawLine("Entrée", new Date(formData.entry_time).toLocaleString(), lineHeight * 3);
+      
+        const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.nom}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id},Tickit_id:${formData.id}`;
+        const qrBase64 = await generateQRBase64(qrData);
+        const qrImageBytes = await fetch(qrBase64).then(res => res.arrayBuffer());
+        const qrImage = await pdfDoc.embedPng(qrImageBytes);
+      
+        const qrDims = qrImage.scale(1.0);
+        page.drawImage(qrImage, {
+          x: width / 2 - qrDims.width / 2,
+          y: 40,
+          width: qrDims.width,
+          height: qrDims.height,
+        });
+      
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+      
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ticket-${selectedSpot.nom}.pdf`;
+        link.click();
+      };
+      
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (!selectedSpot) return;
-        
-        try {
+        if (selectedSpot) {
+            const pricePerHour = pricing_rates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0;
+    
             if (selectedSpot.status === "disponible") {
-                 await dispatch(addParking_ticket(formData));
-                 await dispatch(updateSpot({
-                    id: formData.spot_id,
-                    updatedSpot: { ...selectedSpot, status: "reserve" }
-                }));
-            } else {
-                const ticket = selectTicketForSpot(parking_tickets, selectedSpot.id);
-                
-                if (ticket) {
-                     await dispatch(updateParking_ticket({
-                        id: ticket.id,
-                        updatedParking_ticket: { 
-                            ...formData, 
-                            status: 'completed',
-                            exit_time: formData.exit_time
-                        }
+                const resultAction = await dispatch(addParking_ticket(formData));
+    
+                if (addParking_ticket.fulfilled.match(resultAction)) {
+                    const newTicket = resultAction.payload;
+                    const ticketId = newTicket.id;
+    
+                    setFormData(prev => ({
+                        ...prev,
+                        id: ticketId
                     }));
-                    
-                     await dispatch(updateSpot({
+    
+                    await dispatch(updateSpot({
                         id: formData.spot_id,
-                        updatedSpot: { ...selectedSpot, status: "disponible" }
+                        updatedSpot: { ...selectedSpot, status: "reserve" }
                     }));
-                }
-            }
-            
-            // Refresh data
-            await dispatch(getEmployeSpots(1));
-            await dispatch(fetchParking_tickets());
-            
-            setIsModalOpen(false);
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour:", error);
+    
+                    if (employeIdStock) {
+                        dispatch(getEmployeSpots(employeIdStock));
+                    }
+    
+                    await generateTicketPDF({ ...formData, id: ticketId }, selectedSpot, pricePerHour);
+    
+                    setIsModalOpen(false);}
         }
+        
+    }
+        
     };
 
-    const renderSpotButton = (spot) => {
-        const ticket = selectTicketForSpot(parking_tickets, spot.id);
-        const isReserved = spot.status === 'reserve';
-        const isAvailable = spot.status === 'disponible';
-        
-        return (
-            <button
-                key={spot.id}
-                onClick={() => handleSpotClick(spot)}
-                className={`text-center py-2 px-3 rounded border font-medium text-sm 
-                    ${isReserved
-                        ? 'bg-gray-800 text-white'
-                        : isAvailable
-                            ? 'bg-white text-black border-gray-300'
-                            : 'bg-gray-300 text-gray-600'
-                    }
-                    ${spot.type === 'handicap' ? 'flex items-center justify-center gap-1' : ''}`}
-            >
-                {isReserved && ticket 
-                    ? `${spot.nom}` 
-                    : spot.nom}
-                {spot.type === 'handicap' && <span className="text-lg">♿</span>}
-            </button>
-        );
-    };
+
+    
 
     return (
         <div>
-            <div className="grid grid-cols-10 gap-2 p-4 bg-white rounded">
-                {spots.map(renderSpotButton)}
-            </div>
-            {/* <FloatButton
-                shape="circle"
-                type="primary"
-                style={{ insetInlineEnd: 94 }}
-                icon={<CustomerServiceOutlined />}
-                /> */}
+           
+           <FloatButton
+            shape="circle"
+            type="primary"
+            style={{
+                insetInlineEnd: 74,
+            }}
+            icon={
+                <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+                }}>
+                <ScanLine size={50} /> 
+                </div>
+                
+            }onClick={()=>setShowScanner(true)}/>
+            {employeeSpots && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-10 gap-2 p-4 bg-white rounded">
+                            {employeeSpots.map(spot => (
+                                <button
+                                    key={spot.id}
+                                    onClick={() => handleSpotClick(spot)}
+                                    className={`text-center py-2 px-3 rounded border  font-medium text-sm w-full flex items-center justify-center
+                                    ${spot.status === "reserve"
+                                        ? 'bg-gray-800 text-white'
+                                        : spot.status === "disponible"
+                                        ? 'bg-white text-black border-gray-300 hover:bg-gray-500'
+                                        : 'bg-gray-300 text-gray-600'
+                                    }`}
+                                >
+                                    {spot.type === 'Handicap' && (
+                                    <FaWheelchair className="w-6 h-6 text-blue-600 mb-1 mr-4" />
+                                    )}
+                                    {spot.type === 'Electric Vehicle' && (
+                                    <FaChargingStation className="w-6 h-6 text-green-600 mb-1 mr-4" />
+                                    )}
+                                    {spot.type === 'Moteur voiture' && (
+                                    <FaCar className="w-6 h-6 text-gray-600 mb-1 mr-4" />
+                                    )}
+
+                                    {spot.nom}
+                                </button>
+                            ))}
+                        </div>
+                        )}
+
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-500">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md">
                         <h2 className="text-xl font-bold mb-4">
                             {selectedSpot?.status === "disponible" 
@@ -315,6 +424,8 @@ export default function SpotsEmploye() {
                     </div>
                 </div>
             )}
+                    {showScanner && <QRCodeScanner openModel={showScanner} onClose={() => setShowScanner(false)}/>}
+
         </div>
     );
 }

@@ -14,6 +14,7 @@ import SpotsEmploye from './components/employe/SpotsEmploye'
 import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
+// import QrGenerate from './components/employe/QrGenerate'
 function App() {
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.auth);
@@ -36,11 +37,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-              {/* <Routes>
-              <Route path="/" element={<Headerabde/>} > 
-                <Route path='/overview' element={<SpotsEmploye/>}/>
-              </Route>
-              </Routes> */}
+              
               <ConfigProvider
           theme={{
             token: {
