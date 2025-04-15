@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,8 @@ export default function Header() {
     const [color, setcolor] = useState("primary");
     const [isOpenSc, setIsOpenSc] = useState(false);
 
-    const switchTab = (activeTab) => {
+    const switchTab = (el) => {
+      const activeTab = el?.getBoundingClientRect ? el : document.querySelector(`[data-path="${location.pathname}"]`);
       if (activeTab) {
         const { offsetLeft, offsetWidth } = activeTab;
         controls.start({
@@ -29,12 +30,17 @@ export default function Header() {
           transition: { type: "spring", stiffness: 500, damping: 50 },
         });
       }
-    }
+    };
+
+    useEffect(() => {
+      switchTab();
+    }, [location.pathname]);    
 
     useEffect(() => {
       if (user) {
         const str = user.first_name;
         const colorMap = {
+          neutral: "bg-neutral text-neutral-content",
           primary: "bg-primary text-primary-content",
           secondary: "bg-secondary text-secondary-content",
           accent: "bg-accent text-accent-content",
@@ -48,7 +54,6 @@ export default function Header() {
         for (let i = 0; i < str.length; i++) {hash = str.charCodeAt(i) + ((hash << 5) - hash);}
         const index = Math.abs(hash) % colorKeys.length;
         setcolor(colorMap[colorKeys[index]]);
-        console.log(colorKeys[index]);
       }
     }, [user]);
     
@@ -72,13 +77,14 @@ export default function Header() {
           <div className="gap-5 hidden md:inline-flex relative">
             {user?.role === "admin" && (
               <>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">users</NavLink></div>
-                <div onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">roles</NavLink></div>
+                <div data-path="/dashboard" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
+                <div data-path="/users" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">Users</NavLink></div>
+                <div data-path="/parks" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks">Parks</NavLink></div>
+                <div data-path="/roles" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">Roles</NavLink></div>
               </>
             )}
-            {user?.role === "employe" && (<div ref={(e) => (tab.current["/overview"] = e)}><NavLink className={({ isActive }) => `px-3 py-2 text-neutral hover:text-primary border-b-2 transition-colors duration-200 ${isActive ? "text-primary border-primary": ""}`} to="/overview">Overview</NavLink></div>)}
-            <motion.div className={`absolute top-7 left-0 h-0.5 bg-primary opacity-0 ${["/dashboard", "/users", "/roles"].includes(location.pathname) && "opacity-100"}`} animate={controls} initial={{ x: 0 }} />
+            {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
+            <motion.div className="absolute top-7 left-0 h-0.5 bg-primary" animate={controls} initial={{ x: 0, width: 0 }} />
           </div>
             
           <div className="navbar-end">
@@ -115,7 +121,7 @@ export default function Header() {
           <div className='flex justify-between items-center mb-2'>
           { token &&
             <div className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
-              <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full bg-${color} text-${color}-content flex! items-center justify-center text-lg font-bold`}>
+              <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full ${color} flex! items-center justify-center text-lg font-bold`}>
                 <NavLink to="/profile">{user.first_name[0]}{user.last_name[0]}</NavLink>
               </div>
             </div>
@@ -123,13 +129,13 @@ export default function Header() {
             <button className="btn btn-ghost btn-neutral btn-circle hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(false)}><X/></button>
           </div>
           <div className='flex flex-col items-center gap-2 px-2'>
-            { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name}</div>}
+            { token && <div className='text-center font-semibold mb-2'>Welcome {user.first_name} ({user.role})</div>}
             {user?.role === "admin" &&
               <>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/users">Users</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/roles">Roles</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/parcs">Parcs</NavLink>
-                <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/admin/SettingsAdmin">Settings</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-primary mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/users">Users</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-primary mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/roles">Roles</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-primary mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parks">Parks</NavLink>
+                <NavLink className={({ isActive }) => `btn btn-ghost btn-primary mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
             }
             {user?.role === "employe" &&
