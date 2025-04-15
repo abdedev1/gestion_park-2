@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
-import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
+import { fetchParking_tickets } from '../Redux/slices/parkingTicketsSlice';
 import { useSelector,useDispatch } from "react-redux";
-import { fetchPricing_rates } from '../Redux/Reducer/pracingRatesSlice';
+import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
 import isEqual from "lodash/isEqual";
 import { RotateCcw, X,Repeat } from "lucide-react";
-import { updateParking_ticket } from "../Redux/Reducer/parkingTicketsSlice";
-import { updateSpot } from "../Redux/Reducer/spotsSlice";
-import { fetchEmployes } from '../Redux/Reducer/employesSlice';
-import { getEmployeSpots } from "../Redux/Reducer/spotsSlice";
+import { updateParking_ticket } from "../Redux/slices/parkingTicketsSlice";
+import { updateSpot } from "../Redux/slices/spotsSlice";
+import { fetchEmployes } from '../Redux/slices/employesSlice';
+import { getEmployeSpots } from "../Redux/slices/spotsSlice";
 export default function QRCodeScanner({ openModel, onClose }) {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);

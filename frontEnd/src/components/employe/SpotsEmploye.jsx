@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {getEmployeSpots } from '../Redux/Reducer/spotsSlice';
-import { fetchPricing_rates } from '../Redux/Reducer/pracingRatesSlice';
-import { addParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
-import { updateSpot } from '../Redux/Reducer/spotsSlice';
-import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
+import {getEmployeSpots } from '../Redux/slices/spotsSlice';
+import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
+import { addParking_ticket } from '../Redux/slices/parkingTicketsSlice';
+import { updateSpot } from '../Redux/slices/spotsSlice';
+import { fetchParking_tickets } from '../Redux/slices/parkingTicketsSlice';
 import { FloatButton } from 'antd';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import QRCode from "react-qr-code";
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
-import { fetchEmployes } from '../Redux/Reducer/employesSlice';
+import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
 import isEqual from "lodash/isEqual";
 
