@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
 import AuthReducer from "./slices/AuthSlice";
-import spotsReducer from './Reducer/spotsSlice'
-import pricing_ratesReducer from './Reducer/pracingRatesSlice'
-import parking_ticketsReducer from './Reducer/parkingTicketsSlice'
-import employesReducer  from './Reducer/employesSlice'
+import spotsReducer from './slices/spotsSlice'
+import pricing_ratesReducer from './slices/pracingRatesSlice'
+import parking_ticketsReducer from './slices/parkingTicketsSlice'
+import employesReducer  from './slices/employesSlice'
 
 export const store = configureStore({
     reducer:{

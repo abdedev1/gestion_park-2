@@ -3,7 +3,7 @@ import {axios} from "../../assets/api/axios";
 import { Link } from "react-router-dom";
 import { message, Popconfirm, Modal, Form, Input, Select ,Table,Spin,} from "antd";
 import { HelpCircle as CircleHelp, Pencil, Trash2 ,Loader2,Shield } from "lucide-react";
-import { getUsers } from "../../assets/api/admin/users";
+import { getUsers, updateUser } from "../../assets/api/admin/users";
 import { getRoles } from "../../assets/api/roles/roles";
 
 function UsersList() {
@@ -21,7 +21,7 @@ function UsersList() {
 
 
   const fetchUsers = async () => {
-    
+      setLoading(true)
       try {
         const data = await getUsers();
         setUsers(data);
@@ -84,19 +84,16 @@ function UsersList() {
 
   const handleUpdateUser = async (values) => {
     try {
+      if (!selectedUser) return;
+      
       // Format the data properly before sending
       const formattedValues = {
         ...values,
-        birth_date: values.birth_date || selectedUser.birth_date ,
-        role_id:values.role_id// Ensure birth_date is not null
+        birth_date: values.birth_date || selectedUser.birth_date,
+        role_id: values.role_id
       };
-
-      const response = await axios.put(
-        `http://localhost:8000/api/users/${selectedUser.id}`,
-        formattedValues
-      );
-      
-      const updatedUser = response.data?.data || response.data;
+  
+      const updatedUser = await updateUser(selectedUser.id, formattedValues);
       
       setUsers(prevUsers =>
         prevUsers.map(user =>
@@ -116,13 +113,7 @@ function UsersList() {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  
   const columns = [
       {
         title: "#",
@@ -200,13 +191,13 @@ function UsersList() {
     ]
 
   return (
-    <div className="border-sh rounded-xl overflow-hidden mx-1 md:mx-4 h-fit my-4">
+    <div className="border-sh rounded-xl overflow-hidden mx-1 md:mx-4 h-fit my-4 ">
       <div className="flex flex-wrap justify-between items-center gap-6 my-4 px-3">
         <div className="flex gap-4">
-          <h1 className="text-4xl text-center">User List</h1>
-          <span className="badge badge-outline badge-lg m-3 count">
+          <h1 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2">Users List</h1>
+          {/* <span className="badge badge-outline badge-lg m-3 count">
             {users.length}
-          </span>
+          </span> */}
         </div>
       </div>
 
@@ -246,7 +237,7 @@ function UsersList() {
       <div className=" after:bg-gray-700 before:bg-gray-700 my-0 mx-4" />
       
       <div className="overflow-x-auto">
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-lg shadow  container mx-auto py-6">
         <Table
           columns={columns}
           dataSource={users}
@@ -255,7 +246,7 @@ function UsersList() {
             indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />} />,
             spinning: loading,
           }}
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 6}}
         />
       </div>
       </div>

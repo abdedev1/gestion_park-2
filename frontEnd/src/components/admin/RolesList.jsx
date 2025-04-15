@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { Edit, Loader2, MoreHorizontal, Plus, RefreshCw, Shield, Trash2 } from "lucide-react"
 import { Button, Table, Modal, Form, Input, Dropdown, Spin, message } from "antd"
-import {getRoles} from "../../assets/api/roles/roles"
+import {addRole, deleteRole, getRoles, updateRole} from "../../assets/api/roles/roles"
 import TextArea from "antd/es/input/TextArea"
-import axios from "axios"
+
 
 export default function RolesList() {
   const [roles, setRoles] = useState([])
@@ -53,8 +53,7 @@ export default function RolesList() {
   // Add new role
   const handleAddRole = async (values) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/roles', values);
-      
+      await addRole(values);
       messageApi.success("Role added successfully");
       setIsAddModalOpen(false);
       form.resetFields();
@@ -63,55 +62,37 @@ export default function RolesList() {
       console.error("Error adding role:", error);
       messageApi.error(error.response?.data?.message || "Failed to add role. Please try again.");
     }
-}
+  };
 
   // Update existing role
   const handleUpdateRole = async (values) => {
-    if (!currentRole) return
+    if (!currentRole) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/roles/${currentRole.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to update role")
-      }
-
-      messageApi.success("Role updated successfully")
-      setIsEditModalOpen(false)
-      fetchRoles()
+      await updateRole(currentRole.id, values);
+      messageApi.success("Role updated successfully");
+      setIsEditModalOpen(false);
+      fetchRoles();
     } catch (error) {
-      console.error("Error updating role:", error)
-      messageApi.error("Failed to update role. Please try again.")
+      console.error("Error updating role:", error);
+      messageApi.error(error.response?.data?.message || "Failed to update role. Please try again.");
     }
-  }
+  };
 
   // Delete role
   const handleDeleteRole = async () => {
-    if (!currentRole) return
+    if (!currentRole) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/api/roles/${currentRole.id}`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to delete role")
-      }
-
-      messageApi.success("Role deleted successfully")
-      setIsDeleteModalOpen(false)
-      fetchRoles()
+      await deleteRole(currentRole.id);
+      messageApi.success("Role deleted successfully");
+      setIsDeleteModalOpen(false);
+      fetchRoles();
     } catch (error) {
-      console.error("Error deleting role:", error)
-      messageApi.error("Failed to delete role. Please try again.")
+      console.error("Error deleting role:", error);
+      messageApi.error(error.response?.data?.message || "Failed to delete role. Please try again.");
     }
-  }
+  };
 
   // Define dropdown menu items for each row
   const getDropdownItems = (role) => [
