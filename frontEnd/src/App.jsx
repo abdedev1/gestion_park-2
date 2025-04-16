@@ -37,11 +37,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-              {/* <Routes>
-              <Route path="/" element={<Headerabde/>} > 
-                <Route path='/overview' element={<SpotsEmploye/>}/>
-              </Route>
-              </Routes> */}
+              
               <ConfigProvider
           theme={{
             token: {

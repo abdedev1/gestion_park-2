@@ -35,9 +35,10 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
 });
 
 Route::middleware(isEmployeMiddleWare::class)->group(function(){
-    // employe routes    
     Route::apiResource('pricing_rates', PricingRateController::class);
-    
+    Route::apiResource('employes', EmployeController::class);
+    Route::apiResource('spots',SpotController::class);
+
     
 
 });

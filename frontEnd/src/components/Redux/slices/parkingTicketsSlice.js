@@ -15,8 +15,7 @@ export const addParking_ticket = createAsyncThunk("parking_ticket/addParking_tic
   });
   
   export const updateParking_ticket = createAsyncThunk("parking_ticket/updateParking_ticket", async ({ id, updatedParking_ticket }) => {
-    console.log("🚀 updating ticket with id:", id);
-    console.log("📦 data being sent:", updatedParking_ticket);
+
     const response = await axios.put(`parking-tickets/${id}`, updatedParking_ticket);
     return response.data;
   });

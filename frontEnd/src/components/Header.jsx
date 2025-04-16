@@ -88,11 +88,6 @@ export default function Header() {
           { token ?
             <div className="dropdown dropdown-end hidden md:inline-block">
               <div className='flex items-center gap-1'>
-                  {user?.role === "employe" && (
-                      <button className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100" aria-label="Open Scan" onClick={() => setIsOpenSc(true)}>
-                      <ScanLine  size={24} />
-                      </button>
-                  )}
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
                     <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full ${color} flex! items-center justify-center text-lg font-bold`}>
                       {user.first_name[0]}{user.last_name[0]}
@@ -135,7 +130,6 @@ export default function Header() {
             }
             {user?.role === "employe" &&
               <>
-              <button className="p-2  text-black rounded-md " aria-label="Open Scan" onClick={() => setIsOpenSc(true)}><ScanLine  size={24} /></button>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/overview">Overview</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
