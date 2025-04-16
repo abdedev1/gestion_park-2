@@ -17,7 +17,7 @@ import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
 function App() {
   const dispatch = useDispatch();
-  const { isLoading,user } = useSelector((state) => state.auth);
+  const { isLoading, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(setLoading(true));
@@ -68,20 +68,15 @@ function App() {
             <Route path='test' element={<QRCodeScanner/>}/>
             <Route  path='/' element={<Header/>}>
 
-            <Route 
-              index 
+            {/* redirect user to default page */}
+            <Route index 
               element={
-                user?.role === 'admin' ? (
-                  <Navigate to="/dashboard" replace />
-                ) : user?.role === 'employe' ? (
-                  <Navigate to="/overview" replace />
-                ) : (
-                  <Navigate to="" replace />
-                )
-              
-                
-              } 
+                user?.role === 'admin' ? (<Navigate to="/dashboard" replace />)
+                : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
+                : (<Navigate to="" replace />)
+              }
             />
+
               {/* partie employe */}
                 <Route element={<ProtectedRoute requiredRole="employe" />}>
                   <Route index path="overview" element={<SpotsEmploye/>} />
@@ -89,10 +84,10 @@ function App() {
               {/* partie admin */}
 
                 <Route element={<ProtectedRoute requiredRole="admin" />}>
-                <Route  path="users" element={<UsersList/>} />
-                <Route  path="roles" element={<RolesList/>} />
-                <Route  path="parks" element={<ParkList/>} />
-                <Route  path="dashboard" element={<h1>Dashbord</h1>} />
+                  <Route path="dashboard" element={<h1>Dashbord</h1>} />
+                  <Route path="users" element={<UsersList/>} />
+                  <Route path="roles" element={<RolesList/>} />
+                  <Route path="parks" element={<ParkList/>} />
                 </Route>
               
               {/*partie client*/}

@@ -17,7 +17,7 @@ export default function Header() {
     
     const { user, token} = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
-    const [color, setcolor] = useState("primary");
+    const [color, setcolor] = useState("bg-neutral text-neutral-content");
     const [isOpenSc, setIsOpenSc] = useState(false);
 
     const switchTab = (el) => {
@@ -38,22 +38,17 @@ export default function Header() {
 
     useEffect(() => {
       if (user) {
-        const str = user.first_name;
-        const colorMap = {
-          neutral: "bg-neutral text-neutral-content",
-          primary: "bg-primary text-primary-content",
-          secondary: "bg-secondary text-secondary-content",
-          accent: "bg-accent text-accent-content",
-          info: "bg-info text-info-content",
-          success: "bg-success text-success-content",
-          warning: "bg-warning text-warning-content",
-          error: "bg-error text-error-content",
-        };
-        const colorKeys = Object.keys(colorMap);
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {hash = str.charCodeAt(i) + ((hash << 5) - hash);}
-        const index = Math.abs(hash) % colorKeys.length;
-        setcolor(colorMap[colorKeys[index]]);
+        const colors = [
+          "bg-info text-info-content",
+          "bg-error text-error-content",
+          "bg-accent text-accent-content",
+          "bg-neutral text-neutral-content",
+          "bg-primary text-primary-content",
+          "bg-success text-success-content",
+          "bg-warning text-warning-content",
+          "bg-secondary text-secondary-content",
+        ]
+        setcolor(colors[user.id % colors.length]);
       }
     }, [user]);
     
@@ -84,7 +79,7 @@ export default function Header() {
               </>
             )}
             {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
-            <motion.div className="absolute top-7 left-0 h-0.5 bg-primary" animate={controls} initial={{ x: 0, width: 0 }} />
+            <motion.div className="absolute top-7 left-0 h-0.5 bg-primary under" animate={controls} initial={{ x: 0, width: 0 }} />
           </div>
             
           <div className="navbar-end">
@@ -116,8 +111,8 @@ export default function Header() {
           </div>
         </div>
         {/* sidebar */}
-        <div className={`fixed inset-0 z-10 bg-black bg-opacity-50 transition-opacity ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`} onClick={() => setIsOpen(false)} >
-        <aside className={`fixed top-0 left-0 w-full h-fit bg-white shadow-lg p-4 transform transition-transform ${isOpen ? "translate-y-0" : "-translate-y-full"}`}>
+        <div className={`fixed inset-0 z-10 bg-black/50 transition-opacity duration-300 ${isOpen ? "opacity-100 visible" : "opacity-0 invisible"}`} onClick={() => setIsOpen(false)} />
+        <aside className={`fixed top-0 z-20 left-0 w-full h-fit bg-white shadow-lg p-4 transform transition-transform duration-300 ${isOpen ? "translate-y-0" : "-translate-y-full"}`} onClick={() => setIsOpen(false)}>
           <div className='flex justify-between items-center mb-2'>
           { token &&
             <div className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
@@ -149,8 +144,7 @@ export default function Header() {
             : <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>}
           </div>
         </aside>
-
-      </div>
+      
       <Outlet />
         
 

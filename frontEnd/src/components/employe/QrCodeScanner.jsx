@@ -1,14 +1,26 @@
-import { useState } from "react";
-import { Scanner } from "@yudiel/react-qr-scanner";
+import { useEffect, useState } from "react";
+import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
+import Cookies from "js-cookie";
 
 export default function QRCodeScanner() {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
-  const [facingMode, setFacingMode] = useState("environment"); // 'environment' (back) or 'user' (front)
+  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+  const devices = useDevices();
+  const defaultDeviceId = Cookies.get('deviceId');
+
+  // Set default camera on first load
+  useEffect(() => {
+    setSelectedDeviceId(defaultDeviceId || null);
+    if (devices.length > 0 && !selectedDeviceId) {
+      setSelectedDeviceId(devices[0].deviceId);
+    }
+  }, [devices]);
 
   const handleScan = (result) => {
     setScanResult(result);
     setIsScanning(false);
+    Cookies.set('deviceId', selectedDeviceId, { expires: 7 });
   };
 
   const handleError = (error) => {
@@ -20,8 +32,8 @@ export default function QRCodeScanner() {
     setIsScanning(true);
   };
 
-  const toggleCamera = () => {
-    setFacingMode(prev => prev === "environment" ? "user" : "environment");
+  const handleDeviceChange = (e) => {
+    setSelectedDeviceId(e.target.value);
   };
 
   return (
@@ -31,17 +43,27 @@ export default function QRCodeScanner() {
       {isScanning ? (
         <div className="overflow-hidden rounded-lg shadow-lg">
           <Scanner
-          onScan={(result) => handleScan(result[0].rawValue)}
-          onError={handleError}
+            constraints={{
+              deviceId: selectedDeviceId,
+            }}
+            onScan={(result) => handleScan(result[0].rawValue)}
+            onError={handleError}
           />
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={toggleCamera}
-              className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors"
-            >
-              Switch Camera ({facingMode === "environment" ? "Front" : "Back"})
-            </button>
-          </div>
+          {devices.length > 1 && (
+            <div className="flex flex-col my-3 mx-2 gap-2">
+              <select
+                value={selectedDeviceId || ""}
+                onChange={handleDeviceChange}
+                className="select w-full"
+              >
+                {devices.map((device, index) => (
+                  <option key={index} value={device.deviceId}>Selected:&nbsp;
+                    {device.label || `Camera ${index + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       ) : (
         <div className="bg-white p-6 rounded-lg shadow-lg">
