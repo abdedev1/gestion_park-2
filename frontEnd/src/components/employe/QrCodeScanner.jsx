@@ -11,12 +11,12 @@ import { useEffect, useState } from "react";
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import Cookies from "js-cookie";
 
-export default function QRCodeScanner() {
+export default function QRCodeScanner({onClose, openModel}) {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
-  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
-  const devices = useDevices();
   const defaultDeviceId = Cookies.get('deviceId');
+  const [selectedDeviceId, setSelectedDeviceId] = useState(defaultDeviceId || null);
+  const devices = useDevices();
 
   const { parking_tickets } = useSelector(state => state.parking_tickets);
   const { pricing_rates } = useSelector(state => state.pricing_rates);
@@ -24,13 +24,15 @@ export default function QRCodeScanner() {
   const [updateTicketG,setUpdateTicketG] =useState(null)
   const {employes} = useSelector(state=>state.employes) 
   const dispatch = useDispatch();
-  const { user, token} = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   // Set default camera on first load
   useEffect(() => {
-    setSelectedDeviceId(defaultDeviceId || null);
-    if (devices.length > 0 && !selectedDeviceId) {
-      setSelectedDeviceId(devices[0].deviceId);
+    if (devices.length > 0) {
+      setSelectedDeviceId(defaultDeviceId || null);
+      if (!selectedDeviceId) {
+        setSelectedDeviceId(devices[0].deviceId);
+      }
     }
   }, [devices]);
 
@@ -70,7 +72,7 @@ export default function QRCodeScanner() {
       const [key, value] = part.split(':').map(s => s.trim());
       if (key === "Spot_id") data.spot_id = value;
       if (key === "Spot") data.spotName = value;
-      if(key ==="Tickit_id") data.id =value
+      if(key ==="Tickit_id") data.id = value
       
     });
   
@@ -138,21 +140,20 @@ export default function QRCodeScanner() {
          dispatch(getEmployeSpots(employe_id))
       }}
   }, [updateTicketG, employeeSpots, dispatch]);
+
   
   
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-0.5 flex justify-center items-center">
-    <div className="max-w-md mx-auto p-4 ">
+    <div className="fixed inset-0 p-2 bg-black/50 flex justify-center items-center">
+    <div className="max-w-md mx-auto p-2 bg-base-100 rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold text-center mb-6">QR Code Scanner</h1>
 
       {isScanning ? (
         <div className="overflow-hidden rounded-lg shadow-lg">
           
           <Scanner
-            constraints={{
-              deviceId: selectedDeviceId,
-            }}
+            constraints={{deviceId: selectedDeviceId}}
             onScan={(result) => handleScan(result[0].rawValue)}
             onError={handleError}
           />
@@ -169,34 +170,18 @@ export default function QRCodeScanner() {
                   </option>
                 ))}
               </select>
+            <button onClick={onClose} className="btn btn-error w-full"><X size={18} />Close</button>
             </div>
           )}
-          <div className="flex justify-center mt-4 gap-4">
-            <button
-              onClick={toggleCamera}
-              className="flex items-center gap-2 py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors"
-            >
-              <Repeat size={18} />
-              Switch Camera ({facingMode === "environment" ? "Front" : "Back"})
-            </button>
-
-            <button
-              onClick={onClose} 
-              className="flex items-center gap-2 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition-colors"
-            >
-              <X size={18} />
-              Close
-            </button>
-          </div>
         </div>
       ) : (
         <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold mb-2">Scan Result:</h2>
             {updateTicketG && (
               <div className="bg-gray-100 p-4 rounded-md mb-4 break-all">
-                <h1 className="text-xl font-bold text-center text-blue-600 mb-4">
+                {/* <p className="text-xl font-bold text-center text-balance text-primary mb-4">
                   Merci pour votre parking dans le parc ParkEase
-                </h1>
+                </p> */}
                 <p className="font-mono">Client: {updateTicketG.clientName}</p>
                 <p className="font-mono">Spot: {updateTicketG.spotName}</p>
                 <p className="font-mono">Entrée: {updateTicketG.entry_time}</p>
@@ -205,21 +190,9 @@ export default function QRCodeScanner() {
               </div>
             )}
             
-            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              <button
-                onClick={resetScanner}
-                className="flex items-center justify-center gap-2 flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300"
-              >
-                <RotateCcw size={18} />
-                Scan Again
-              </button>
-              <button
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300"
-              >
-                <X size={18} />
-                Close
-              </button>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4 justify-between">
+              <button onClick={resetScanner} className="btn btn-primary min-w-36"><RotateCcw size={18} />Scan Again</button>
+              <button onClick={onClose} className="btn btn-error min-w-36"><X size={18} />Close</button>
             </div>
         </div>
       )}
