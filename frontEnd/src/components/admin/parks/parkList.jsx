@@ -180,13 +180,15 @@ export default function ParkList() {
   ]
 
   // Convert parks to tab items
-  const parkTabs = parks.map((park) => ({
-    label: park.nom || `Park ${park.id}`,
-    children: (
-      <div className="bg-white rounded-lg shadow-sm">
+  const parkTabs = parks.map((park) => {
+    const filteredSpots = spots.filter((spot) => spot.parc_id === park.id);
+    return {
+      label: park.nom || `Park ${park.id}`,
+      children: (
+        <div className="bg-white rounded-lg shadow-sm">
         <div className="park-details p-4 border-b border-gray-100">
           <h3 className="text-xl font-semibold text-gray-800 mb-1">{park.nom}</h3>
-          <p className="text-sm text-gray-600">Number of spots: {park.numberSpots || 0}</p>
+          <p className="text-sm text-gray-600">Number of spots: {filteredSpots.length || 0}</p>
         </div>
         <div className="container mx-auto py-6">
           <div className="flex items-center gap-2 mb-4">
@@ -222,7 +224,7 @@ export default function ParkList() {
           <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={spots.filter((spot) => spot.parc_id === park.id)}
+            dataSource={filteredSpots}
             rowKey="id"
            
             className="spots-table"
@@ -240,7 +242,7 @@ export default function ParkList() {
       </div>
     ),
     key: park.id,
-  }))
+  }})
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-gray-50 min-h-screen">

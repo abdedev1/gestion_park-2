@@ -18,7 +18,6 @@ class ParcFactory extends Factory
     {
         return [
             'nom' => $this->faker->word(),
-            'numberSpots' => $this->faker->numberBetween(1, 30),
             'adresse' => $this->faker->address(),
         ];
     }

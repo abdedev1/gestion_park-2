@@ -26,7 +26,6 @@ class ParcController extends Controller
     
         $park = Parc::create([
             'nom' => $request->nom,
-            'numberSpots' => $request->numberSpots,
             'adresse' => $request->adresse,
         ]);
     

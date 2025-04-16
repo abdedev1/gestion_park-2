@@ -40,11 +40,6 @@ class SpotController extends Controller
             'type' => $request->type ?? 'normal',
         ]);
     
-      
-        $park->update([
-            'numberSpots' => $park->spots()->count()
-        ]);
-    
         return response()->json([
             'message' => 'Spot created and park capacity updated.',
             'spot' => $spot

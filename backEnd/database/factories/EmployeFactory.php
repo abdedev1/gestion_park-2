@@ -23,7 +23,7 @@ class EmployeFactory extends Factory
                              ->where('name', 'employe')
                              ->limit(1); 
             })->inRandomOrder()->value('id'),
-            'parc_id' => Parc::factory(), 
+            'parc_id' => Parc::inRandomOrder()->value('id'), 
         ];
     }
 }
