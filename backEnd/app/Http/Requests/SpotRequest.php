@@ -25,7 +25,7 @@ class SpotRequest extends FormRequest
             'nom' => 'nullable|string|max:255',
             'type' => 'required|string|max:255',
             'status' => 'required|string|max:255',
-            'parc_id' => 'required|exists:parcs,id',
+            'parc_id' => 'nullable|exists:parcs,id',
         ];
     }
 }

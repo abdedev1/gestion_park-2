@@ -30,7 +30,7 @@ class SpotController extends Controller
         $park = Parc::findOrFail($request->parc_id);
     
        
-        $nextNumero = 'P' . ($park->spots()->count() + 1);
+        $nextNumero = 'P ' . ($park->spots()->count() + 1);
     
         $spot = Spot::create([
             

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react"
-import { addPark, getParks, deleteMultipleSpots, addSpot } from "../../../assets/api/parks/park"
+import { addPark,updatePark,updateSpot, getParks, deleteMultipleSpots, addSpot } from "../../../assets/api/parks/park"
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin } from "antd"
 import { Loader2, Plus } from "lucide-react"
+import { UpdateParkModal, UpdateSpotModal } from "./updateModals";
 
 import { EditOutlined, DeleteOutlined, ArrowRightOutlined } from "@ant-design/icons"
 
@@ -17,6 +18,11 @@ export default function ParkList() {
   const [spotForm] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
+
+  const [isUpdateParkModalOpen, setIsUpdateParkModalOpen] = useState(false)
+  const [isUpdateSpotModalOpen, setIsUpdateSpotModalOpen] = useState(false)
+  const [currentPark, setCurrentPark] = useState(null)
+  const [currentSpot, setCurrentSpot] = useState(null)
 
   const fetchParks = async () => {
     setLoading(true)
@@ -42,13 +48,28 @@ export default function ParkList() {
       messageApi.success("Park added successfully")
       setIsAddModalOpen(false)
       form.resetFields()
-      const updatedParks = [...parks, res.park]
-      setParks(updatedParks)
+      fetchParks();
     } catch (error) {
       console.error("Error adding park:", error)
       messageApi.error(error.response?.data?.message || "Failed to add park. Please try again.")
     }
   }
+  const handleUpdatePark = async (updatedData) => {
+    try {
+      
+      const res = await updatePark(currentPark.id, updatedData);
+
+     
+      const updatedParks = parks.map((park) => (park.id === currentPark.id ? { ...park, ...updatedData } : park))
+
+      setParks(updatedParks)
+      messageApi.success("Park updated successfully")
+    } catch (error) {
+      console.error("Error updating park:", error)
+      messageApi.error("Failed to update park. Please try again.")
+    }
+  }
+  
 
   const handleAddSpot = async (values) => {
     try {
@@ -80,6 +101,26 @@ export default function ParkList() {
       messageApi.error(error.response?.data?.message || "Failed to delete spots. Please try again.");
     }
   };
+  const handleUpdateSpot = async (updatedData) => {
+    try {
+      const res = await updateSpot(currentSpot.id, updatedData);
+      const updatedParks = parks.map((park) => {
+        if (park.id === activeKey) {
+          const updatedSpots = park.spots.map((spot) =>
+            spot.id === currentSpot.id ? { ...spot, ...updatedData } : spot,
+          )
+          return { ...park, spots: updatedSpots }
+        }
+        return park
+      })
+
+      setParks(updatedParks)
+      messageApi.success("Spot updated successfully")
+    } catch (error) {
+      console.error("Error updating spot:", error)
+      messageApi.error("Failed to update spot. Please try again.")
+    }
+  }
   
 
   useEffect(() => {
@@ -89,19 +130,6 @@ export default function ParkList() {
   const onChange = (key) => {
     setActiveKey(key)
   }
-
-  const remove = (targetKey) => {
-    const newParks = parks.filter((park) => park.id !== targetKey)
-    setParks(newParks)
-
-    if (newParks.length && targetKey === activeKey) {
-      const newActiveKey = newParks[newParks.length - 1].id
-      setActiveKey(newActiveKey)
-    } else if (newParks.length === 0) {
-      setActiveKey("")
-    }
-  }
-
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys)
   }
@@ -109,6 +137,16 @@ export default function ParkList() {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+  }
+  const openUpdateParkModal = (park) => {
+    setCurrentPark(park)
+    setIsUpdateParkModalOpen(true)
+  }
+
+  // Open update spot modal
+  const openUpdateSpotModal = (spot) => {
+    setCurrentSpot(spot)
+    setIsUpdateSpotModalOpen(true)
   }
 
   const hasSelected = selectedRowKeys.length > 0
@@ -154,10 +192,11 @@ export default function ParkList() {
 
       render: (_, record) => (
         <Space size="middle">
-          <Button
+           <Button
             type="text"
             icon={<EditOutlined className="text-gray-600 hover:text-gray-900" />}
             className="hover:bg-gray-100"
+            onClick={() => openUpdateSpotModal(record)}
           />
           <Button
             type="text"
@@ -169,9 +208,22 @@ export default function ParkList() {
     },
   ]
 
-  // Convert parks to tab items
+
   const parkTabs = parks.map((park) => ({
-      label: park.nom || `Park ${park.id}`,
+    label: (
+      <div className="flex items-center">
+        <span>{park.nom || `Park ${park.id}`}</span>
+        <Button
+          type="text"
+          icon={<EditOutlined className="text-gray-600 hover:text-gray-900" />}
+          className="ml-2 hover:bg-gray-100"
+          onClick={(e) => {
+            e.stopPropagation() 
+            openUpdateParkModal(park)
+          }}
+        />
+      </div>
+    ),
       children: (
         <div className="bg-white rounded-lg shadow-sm">
         <div className="park-details p-4 border-b border-gray-100">
@@ -229,7 +281,7 @@ export default function ParkList() {
         </div>
       </div>
     ),
-    key: park.id,
+    key: String(park.id)
   }))
 
   return (
@@ -267,6 +319,7 @@ export default function ParkList() {
             }}
             items={parkTabs}
             className="p-1"
+            tabBarGutter={5}
           />
         </div>
       )}
@@ -361,6 +414,22 @@ export default function ParkList() {
           </div>
         </Form>
       </Modal>
+      {currentPark && (
+        <UpdateParkModal
+          isOpen={isUpdateParkModalOpen}
+          onClose={() => setIsUpdateParkModalOpen(false)}
+          park={currentPark}
+          onUpdate={handleUpdatePark}
+        />
+      )}
+      {currentSpot && (
+        <UpdateSpotModal
+          isOpen={isUpdateSpotModalOpen}
+          onClose={() => setIsUpdateSpotModalOpen(false)}
+          spot={currentSpot}
+          onUpdate={handleUpdateSpot}
+        />
+      )}
     </div>
   )
 }
