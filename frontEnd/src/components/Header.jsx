@@ -15,10 +15,9 @@ export default function Header() {
     const location = useLocation();
     const controls = useAnimation();
     
-    const { user, token} = useSelector((state) => state.auth);
+    const { user, token, isLoading } = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
     const [color, setcolor] = useState("bg-neutral text-neutral-content");
-    const [isOpenSc, setIsOpenSc] = useState(false);
 
     const switchTab = (el) => {
       const activeTab = el?.getBoundingClientRect ? el : document.querySelector(`[data-path="${location.pathname}"]`);
@@ -34,7 +33,7 @@ export default function Header() {
 
     useEffect(() => {
       switchTab();
-    }, [location.pathname]);    
+    }, [location.pathname]);
 
     useEffect(() => {
       if (user) {
@@ -83,25 +82,33 @@ export default function Header() {
           </div>
             
           <div className="navbar-end">
-          <button className="btn btn-ghost btn-neutral btn-circle md:hidden hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(!isOpen)}><Menu/></button>
-          
-          { token ?
-            <div className="dropdown dropdown-end hidden md:inline-block">
-              <div className='flex items-center gap-1'>
+          {!isLoading && <button className="btn btn-ghost btn-neutral btn-circle md:hidden hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(!isOpen)}><Menu/></button>}
+          { isLoading ? (
+              <span className="loading loading-spinner loading-md text-neutral" />
+            ) : token ? (
+              <div className="dropdown dropdown-end hidden md:inline-block">
+                <div className='flex items-center gap-1'>
                   <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar hover:scale-105 transition-transform duration-100">
                     <div className={`hover:ring ring-offset-2 ring-neutral ring-offset-base-100 w-10 rounded-full ${color} flex! items-center justify-center text-lg font-bold`}>
                       {user.first_name[0]}{user.last_name[0]}
                     </div>
                   </div>
+                </div>
+                <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                  <li className='text-center font-semibold mb-2'>Welcome {user.first_name} ({user.role})</li>
+                  <li><a className="justify-between">Profile</a></li>
+                  <li><a>Settings</a></li>
+                  <li><button onClick={logoutUser}>Logout</button></li>
+                </ul>
               </div>
-              <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                <li className='text-center font-semibold mb-2'>Welcome {user.first_name} ({user.role})</li>
-                <li><a className="justify-between">Profile</a></li>
-                <li><a>Settings</a></li>
-                <li><button onClick={logoutUser}>Logout</button></li>
-              </ul>
-            </div>
-            : <NavLink className={({ isActive }) => `btn btn-sm btn-neutral mx-2 hover:bg-base-100 hover:text-neutral ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>
+            ) : (
+              <NavLink
+                className={({ isActive }) => `btn btn-sm btn-neutral mx-2 hover:bg-base-100 hover:text-neutral ${isActive ? "btn-active" : ""}`}
+                to="/sign"
+              >
+                Login
+              </NavLink>
+            )
           }
           </div>
         </div>
