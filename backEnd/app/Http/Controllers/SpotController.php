@@ -83,6 +83,28 @@ class SpotController extends Controller
     {
         $spot->delete();
 
-        return response()->json(['message' => 'Spot deleted successfully.'], 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Spot deleted successfully.',
+        ], 204);
+    }
+
+    public function destroyMultiple(Request $request)
+    {
+        $spotIds = $request->input('spot_ids');
+
+        if (!is_array($spotIds) || empty($spotIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No spot IDs provided.',
+            ], 400);
+        }
+
+        Spot::whereIn('id', $spotIds)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => count($spotIds) . ' spots deleted successfully.',
+        ], 200);
     }
 }

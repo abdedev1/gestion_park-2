@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use App\Models\Parc;
+use App\Models\User;
+use App\Models\Employe;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EmployeFactory extends Factory
@@ -15,15 +16,17 @@ class EmployeFactory extends Factory
      */
     public function definition(): array
     {
-        
+        $userIds = Employe::pluck("user_id")->toArray();
         return [
             'user_id' => User::where('role_id', function ($query) {
                 return $query->select('id')
                              ->from('roles')
                              ->where('name', 'employe')
                              ->limit(1); 
-            })->inRandomOrder()->value('id'),
-            'parc_id' => Parc::inRandomOrder()->value('id'), 
+            })
+            ->whereNotIn('id', $userIds)
+            ->inRandomOrder()->value('id'),
+            'parc_id' => Parc::inRandomOrder()->value('id'),
         ];
     }
 }

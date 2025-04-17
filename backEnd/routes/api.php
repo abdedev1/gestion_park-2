@@ -26,21 +26,18 @@ Route::middleware("auth:sanctum")->controller(AuthController::class)->group(func
 });
 
 Route::middleware(isAdminMiddleWare::class)->group(function(){
-    // الروت ديال أدمين هنا
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
     Route::apiResource("parcs",ParcController::class);
+    Route::delete('spots', [SpotController::class, 'destroyMultiple'])->name('spots.destroyMultiple');
+
     
 });
 
 Route::middleware(isEmployeMiddleWare::class)->group(function(){
     Route::apiResource('pricing_rates', PricingRateController::class);
-    Route::apiResource('employes', EmployeController::class);
-    Route::apiResource('spots',SpotController::class);
-
-    
-
+    // Route::apiResource('employes', EmployeController::class);
 });
 
 Route::middleware(isClientMiddleWare::class)->group(function(){

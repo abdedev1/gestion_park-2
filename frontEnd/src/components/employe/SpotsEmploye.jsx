@@ -13,6 +13,7 @@ import QRCodeScanner from './QrCodeScanner';
 import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
 import isEqual from "lodash/isEqual";
+import { useRemover } from '../../lib/utils';
 
 
 export default function SpotsEmploye() {
@@ -226,8 +227,6 @@ export default function SpotsEmploye() {
     }
         
     };
-
-
     
 
     return (
@@ -283,8 +282,8 @@ export default function SpotsEmploye() {
 
 
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md">
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center" onClick={() => setIsModalOpen(false)} >
+                    <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md" onClick={(e) => e.stopPropagation()}>
                         <h2 className="text-xl font-bold mb-4">
                             {selectedSpot?.status === "disponible" 
                                 ? "Réservation du Spot" 

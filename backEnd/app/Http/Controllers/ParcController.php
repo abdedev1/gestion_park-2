@@ -15,7 +15,7 @@ class ParcController extends Controller
      */
     public function index()
     {
-        $parcs = Parc::all();
+        $parcs = Parc::with('spots')->get();
         return response()->json($parcs,200);
     }
 
@@ -31,7 +31,7 @@ class ParcController extends Controller
     
         for ($i = 0; $i < $request->numberSpots; $i++) {
             Spot::create([
-                'nom' => 'P' . $i ,
+                'nom' => 'P ' . $i+1 ,
                 'type'=>'normal',
                 'status' => 'disponible', 
                 'parc_id' => $park->id,
@@ -52,11 +52,8 @@ class ParcController extends Controller
      */
     public function show(string $id)
     {
-        $parc = Parc::findOrFail($id);
+        $parc = Parc::with('spots')->findOrFail($id);
         return response()->json($parc);
-        
-
-
     }
 
     /**

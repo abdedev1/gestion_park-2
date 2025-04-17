@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react"
-import { addPark, getParks, getSpots, addSpot, deleteSpot } from "../../../assets/api/parks/park"
+import { addPark, getParks, deleteMultipleSpots, addSpot } from "../../../assets/api/parks/park"
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin } from "antd"
 import { Loader2, Plus } from "lucide-react"
 
@@ -7,7 +7,6 @@ import { EditOutlined, DeleteOutlined, ArrowRightOutlined } from "@ant-design/ic
 
 export default function ParkList() {
   const [parks, setParks] = useState([])
-  const [spots, setSpots] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeKey, setActiveKey] = useState("")
@@ -37,27 +36,14 @@ export default function ParkList() {
     }
   }
 
-  const fetchSpots = async () => {
-    setLoading(true)
-    try {
-      const data = await getSpots()
-      setSpots(data)
-    } catch (error) {
-      console.error("Error fetching spots:", error)
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleAddPark = async (values) => {
     try {
-      await addPark(values)
+      const res = await addPark(values)
       messageApi.success("Park added successfully")
       setIsAddModalOpen(false)
       form.resetFields()
-      fetchParks()
-      fetchSpots()
+      const updatedParks = [...parks, res.park]
+      setParks(updatedParks)
     } catch (error) {
       console.error("Error adding park:", error)
       messageApi.error(error.response?.data?.message || "Failed to add park. Please try again.")
@@ -67,12 +53,12 @@ export default function ParkList() {
   const handleAddSpot = async (values) => {
     try {
       values.parc_id = activeKey // Add the current park ID
-      await addSpot(values)
+      const res = await addSpot(values)
       messageApi.success("Spot added successfully")
       setIsAddSpotModalOpen(false)
       spotForm.resetFields()
-      fetchSpots()
-      fetchParks()
+      const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: [...park.spots, res.spot] }: park);
+      setParks(updatedParks);
     } catch (error) {
       console.error("Error adding spot:", error)
       messageApi.error(error.response?.data?.message || "Failed to add spot. Please try again.")
@@ -81,19 +67,23 @@ export default function ParkList() {
 
   const handleDeleteSpots = async () => {
     try {
-      await deleteSpot(selectedRowKeys)
-      messageApi.success("Spots deleted successfully")
-      setSelectedRowKeys([])
-      fetchSpots()
+      const res = await deleteMultipleSpots(selectedRowKeys);
+      if (res.success) {
+        messageApi.success(`${selectedRowKeys.length} Spots deleted successfully`);
+        setSelectedRowKeys([]);
+  
+        const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: park.spots.filter(spot => !selectedRowKeys.includes(spot.id))}: park);
+        setParks(updatedParks);
+      }
     } catch (error) {
-      console.error("Error deleting spots:", error)
-      messageApi.error(error.response?.data?.message || "Failed to delete spots. Please try again.")
+      console.error("Error deleting spots:", error);
+      messageApi.error(error.response?.data?.message || "Failed to delete spots. Please try again.");
     }
-  }
+  };
+  
 
   useEffect(() => {
     fetchParks()
-    fetchSpots()
   }, [])
 
   const onChange = (key) => {
@@ -180,15 +170,13 @@ export default function ParkList() {
   ]
 
   // Convert parks to tab items
-  const parkTabs = parks.map((park) => {
-    const filteredSpots = spots.filter((spot) => spot.parc_id === park.id);
-    return {
+  const parkTabs = parks.map((park) => ({
       label: park.nom || `Park ${park.id}`,
       children: (
         <div className="bg-white rounded-lg shadow-sm">
         <div className="park-details p-4 border-b border-gray-100">
           <h3 className="text-xl font-semibold text-gray-800 mb-1">{park.nom}</h3>
-          <p className="text-sm text-gray-600">Number of spots: {filteredSpots.length || 0}</p>
+          <p className="text-sm text-gray-600">Number of spots: {park.spots.length || 0}</p>
         </div>
         <div className="container mx-auto py-6">
           <div className="flex items-center gap-2 mb-4">
@@ -224,7 +212,7 @@ export default function ParkList() {
           <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={filteredSpots}
+            dataSource={park.spots}
             rowKey="id"
            
             className="spots-table"
@@ -242,7 +230,7 @@ export default function ParkList() {
       </div>
     ),
     key: park.id,
-  }})
+  }))
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-gray-50 min-h-screen">

@@ -63,3 +63,12 @@ export const deleteSpot = async (spotId) => {
         throw error;
     }
 }
+export const deleteMultipleSpots = async (spotIds) => {
+  try {
+      const response = await axios.delete('/spots', {data: {spot_ids: spotIds}});
+      return response.data;
+  } catch (error) {
+      console.error('Error deleting multiple spots:', error);
+      throw error;
+  }
+};
