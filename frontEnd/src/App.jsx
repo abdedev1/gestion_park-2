@@ -1,6 +1,6 @@
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
-// import '@ant-design/v5-patch-for-react-19';
+import '@ant-design/v5-patch-for-react-19';
 import { ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'

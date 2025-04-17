@@ -42,34 +42,23 @@ export default function ParkList() {
     }
   }
 
+  
+  
   const handleAddPark = async (values) => {
     try {
       const res = await addPark(values)
       messageApi.success("Park added successfully")
       setIsAddModalOpen(false)
       form.resetFields()
-      fetchParks();
+      const updatedParks = [...parks, res.parc]
+      setParks(updatedParks)
     } catch (error) {
       console.error("Error adding park:", error)
       messageApi.error(error.response?.data?.message || "Failed to add park. Please try again.")
     }
   }
-  const handleUpdatePark = async (updatedData) => {
-    try {
-      
-      const res = await updatePark(currentPark.id, updatedData);
 
-     
-      const updatedParks = parks.map((park) => (park.id === currentPark.id ? { ...park, ...updatedData } : park))
 
-      setParks(updatedParks)
-      messageApi.success("Park updated successfully")
-    } catch (error) {
-      console.error("Error updating park:", error)
-      messageApi.error("Failed to update park. Please try again.")
-    }
-  }
-  
 
   const handleAddSpot = async (values) => {
     try {
@@ -86,6 +75,9 @@ export default function ParkList() {
     }
   }
 
+  
+  
+
   const handleDeleteSpots = async () => {
     try {
       const res = await deleteMultipleSpots(selectedRowKeys);
@@ -101,9 +93,26 @@ export default function ParkList() {
       messageApi.error(error.response?.data?.message || "Failed to delete spots. Please try again.");
     }
   };
+
+  const handleUpdatePark = async (updatedData) => {
+    try {
+      
+      const res = await updatePark(currentPark.id, updatedData);
+      const updatedParks = parks.map((park) => (park.id === currentPark.id ? res : park))
+
+      setParks(updatedParks)
+      messageApi.success("Park updated successfully")
+    } catch (error) {
+      console.error("Error updating park:", error)
+      messageApi.error("Failed to update park. Please try again.")
+    }
+  }
+  
+
   const handleUpdateSpot = async (updatedData) => {
     try {
       const res = await updateSpot(currentSpot.id, updatedData);
+      console.log(res)
       const updatedParks = parks.map((park) => {
         if (park.id === activeKey) {
           const updatedSpots = park.spots.map((spot) =>
@@ -128,7 +137,7 @@ export default function ParkList() {
   }, [])
 
   const onChange = (key) => {
-    setActiveKey(key)
+    setActiveKey(Number(key))
   }
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys)
@@ -281,7 +290,7 @@ export default function ParkList() {
         </div>
       </div>
     ),
-    key: String(park.id)
+    key: park.id,
   }))
 
   return (

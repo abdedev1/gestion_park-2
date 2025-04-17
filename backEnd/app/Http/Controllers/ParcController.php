@@ -28,7 +28,8 @@ class ParcController extends Controller
             'nom' => $request->nom,
             'adresse' => $request->adresse,
         ]);
-    
+
+        
         for ($i = 0; $i < $request->numberSpots; $i++) {
             Spot::create([
                 'nom' => 'P ' . $i+1 ,
@@ -39,7 +40,8 @@ class ParcController extends Controller
                 // default or customizable
             ]);
         }
-    
+        
+        $park->load('spots');
         return response()->json([
             'message' => "Park created with {$request->numberSpots} spots.",
             'parc' => $park
@@ -67,7 +69,7 @@ class ParcController extends Controller
     public function update(ParcRequest $request, string $id)
     {
         $request->validated();
-        $parc = Parc::findOrFail($id);
+        $parc = Parc::with('spots')->findOrFail($id);
         $parc->update($request->all());
         
 
