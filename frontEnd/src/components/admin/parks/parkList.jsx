@@ -112,11 +112,10 @@ export default function ParkList() {
   const handleUpdateSpot = async (updatedData) => {
     try {
       const res = await updateSpot(currentSpot.id, updatedData);
-      console.log(res)
       const updatedParks = parks.map((park) => {
         if (park.id === activeKey) {
           const updatedSpots = park.spots.map((spot) =>
-            spot.id === currentSpot.id ? { ...spot, ...updatedData } : spot,
+            spot.id === currentSpot.id ? res.spot : spot,
           )
           return { ...park, spots: updatedSpots }
         }
@@ -157,6 +156,7 @@ export default function ParkList() {
     setCurrentSpot(spot)
     setIsUpdateSpotModalOpen(true)
   }
+
 
   const hasSelected = selectedRowKeys.length > 0
 
@@ -426,7 +426,10 @@ export default function ParkList() {
       {currentPark && (
         <UpdateParkModal
           isOpen={isUpdateParkModalOpen}
-          onClose={() => setIsUpdateParkModalOpen(false)}
+          onClose={() => {
+            setIsUpdateParkModalOpen(false)
+            setCurrentPark(null)
+          }}
           park={currentPark}
           onUpdate={handleUpdatePark}
         />
@@ -434,7 +437,10 @@ export default function ParkList() {
       {currentSpot && (
         <UpdateSpotModal
           isOpen={isUpdateSpotModalOpen}
-          onClose={() => setIsUpdateSpotModalOpen(false)}
+          onClose={() => {
+            setIsUpdateSpotModalOpen(false)
+            setCurrentSpot(null)
+          }}
           spot={currentSpot}
           onUpdate={handleUpdateSpot}
         />
