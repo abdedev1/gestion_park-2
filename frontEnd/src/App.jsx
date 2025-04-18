@@ -3,7 +3,7 @@ import { ConfigProvider } from 'antd'
 import { StyleProvider } from '@ant-design/cssinjs';
 import '@ant-design/v5-patch-for-react-19';
 
-import { ProtectedRoute } from './lib/ProtectedRoute'
+import { LoggedOut, ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'
 import UsersList from './components/admin/UsersList'
@@ -63,9 +63,11 @@ function App() {
           >
             <Routes>
 
-              <Route path="sign" element={<SignTabs />} />
-              <Route path='test' element={<QRCodeScanner/>}/>
               <Route  path='/' element={<Header/>}>
+              
+              <Route element={<LoggedOut />}>
+                <Route index path="sign" element={<SignTabs />} />
+              </Route>
 
               {/* redirect user to default page */}
               <Route index 

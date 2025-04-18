@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { axios } from "../../assets/api/axios"
 import { message, Popconfirm, Modal, Form, Input, Select, Table, Spin } from "antd"

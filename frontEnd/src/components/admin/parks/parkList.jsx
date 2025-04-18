@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react"
-import { addPark,updatePark,updateSpot, getParks, deleteMultipleSpots, addSpot } from "../../../assets/api/parks/park"
-import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin } from "antd"
+import { addPark,updatePark,updateSpot, getParks, deleteMultipleSpots, addMultipleSpots } from "../../../assets/api/parks/park"
+import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin, InputNumber } from "antd"
 import { Loader2, Plus } from "lucide-react"
 import { UpdateParkModal, UpdateSpotModal } from "./updateModals";
 
@@ -58,25 +58,37 @@ export default function ParkList() {
     }
   }
 
-
+  // const handleAddSpot = async (values) => {
+  //   try {
+  //     values.parc_id = activeKey // Add the current park ID
+  //     const res = await addSpot(values)
+  //     messageApi.success("Spot added successfully")
+  //     setIsAddSpotModalOpen(false)
+  //     spotForm.resetFields()
+  //     const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: [...park.spots, res.spot] }: park);
+  //     setParks(updatedParks);
+  //   } catch (error) {
+  //     console.error("Error adding spot:", error)
+  //     messageApi.error(error.response?.data?.message || "Failed to add spot. Please try again.")
+  //   }
+  // }
 
   const handleAddSpot = async (values) => {
     try {
       values.parc_id = activeKey // Add the current park ID
-      const res = await addSpot(values)
-      messageApi.success("Spot added successfully")
-      setIsAddSpotModalOpen(false)
-      spotForm.resetFields()
-      const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: [...park.spots, res.spot] }: park);
-      setParks(updatedParks);
+      const res = await addMultipleSpots(values)
+      if (res.success) {
+        messageApi.success(`${selectedRowKeys.length} Spots added successfully`);
+        setIsAddSpotModalOpen(false)
+        spotForm.resetFields()
+        const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: [...park.spots, ...res.spots] }: park);
+        setParks(updatedParks);
+      }
     } catch (error) {
       console.error("Error adding spot:", error)
       messageApi.error(error.response?.data?.message || "Failed to add spot. Please try again.")
     }
   }
-
-  
-  
 
   const handleDeleteSpots = async () => {
     try {
@@ -361,6 +373,9 @@ export default function ParkList() {
       >
         <Form form={spotForm} layout="vertical" onFinish={handleAddSpot} className="py-4">
          
+          <Form.Item name="count" initialValue={1} label={<span className="font-medium">Spot Count</span>}>
+            <InputNumber min={1} max={1000} className="w-full" />
+          </Form.Item>
           <Form.Item name="type" label={<span className="font-medium">Type</span>}>
             <Select placeholder="Select a type" className="rounded">
               <Select.Option value="Moteur voiture">Voiture</Select.Option>

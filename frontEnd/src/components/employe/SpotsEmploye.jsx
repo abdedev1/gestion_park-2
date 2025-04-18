@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {getEmployeSpots } from '../Redux/slices/spotsSlice';
+import { getEmployeSpots } from '../Redux/slices/spotsSlice';
 import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
 import { addParking_ticket } from '../Redux/slices/parkingTicketsSlice';
 import { updateSpot } from '../Redux/slices/spotsSlice';

@@ -28,12 +28,9 @@ class SpotController extends Controller
     {
         $request->validated();
         $park = Parc::findOrFail($request->parc_id);
-    
-       
         $nextNumero = 'P ' . ($park->spots()->count() + 1);
     
         $spot = Spot::create([
-            
             'status' => $request->status ?? 'available',
             'parc_id' => $park->id,
             'nom' => $nextNumero,
@@ -56,8 +53,40 @@ class SpotController extends Controller
             'spot' => $spot
         ], 200);
     }
-    
 
+    public function storeMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'status' => 'required|string|max:255',
+            'parc_id' => 'nullable|exists:parcs,id',
+            'count' => 'required|integer|min:1',
+        ]);
+
+        $park = Parc::findOrFail($validated['parc_id']);
+
+        $createdSpots = [];
+        $existingCount = $park->spots()->count();
+
+        for ($i = 1; $i <= $validated['count']; $i++) {
+            $nextNumero = 'P ' . ($existingCount + $i);
+
+            $spot = Spot::create([
+                'status' => $validated['status'] ?? 'available',
+                'parc_id' => $park->id,
+                'nom' => $nextNumero,
+                'type' => $validated['type'] ?? 'normal',
+            ]);
+
+            $createdSpots[] = $spot;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$validated['count']} spots created successfully.",
+            'spots' => $createdSpots
+        ], 201);
+    }
 
 
     /**
