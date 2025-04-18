@@ -17,7 +17,6 @@ export default function QRCodeScanner({onClose, openModel}) {
   const defaultDeviceId = Cookies.get('deviceId');
   const [selectedDeviceId, setSelectedDeviceId] = useState(defaultDeviceId || null);
   const devices = useDevices();
-
   const { parking_tickets } = useSelector(state => state.parking_tickets);
   const { pricing_rates } = useSelector(state => state.pricing_rates);
   const employeeSpots = useSelector(state => state.spots.employeeSpots);

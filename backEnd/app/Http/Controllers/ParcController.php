@@ -33,7 +33,7 @@ class ParcController extends Controller
         for ($i = 0; $i < $request->numberSpots; $i++) {
             Spot::create([
                 'nom' => 'P ' . $i+1 ,
-                'type'=>'normal',
+                'type'=>'Moteur voiture',
                 'status' => 'disponible', 
                 'parc_id' => $park->id,
                 

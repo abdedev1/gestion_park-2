@@ -363,11 +363,9 @@ export default function ParkList() {
          
           <Form.Item name="type" label={<span className="font-medium">Type</span>}>
             <Select placeholder="Select a type" className="rounded">
-              <Select.Option value="voiture">Voiture</Select.Option>
-              <Select.Option value="handicap">Handicap</Select.Option>
-              <Select.Option value="electric">Electric Vehicle</Select.Option>
-              <Select.Option value="moto">Moto</Select.Option>
-              <Select.Option value="velo">Velo</Select.Option>
+              <Select.Option value="Moteur voiture">Voiture</Select.Option>
+              <Select.Option value="Handicap">Handicap</Select.Option>
+              <Select.Option value="Electric Vehicle">Electric Vehicle</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="status" label={<span className="font-medium">Status</span>} initialValue="disponible">

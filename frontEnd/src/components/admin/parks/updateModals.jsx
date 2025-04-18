@@ -159,11 +159,9 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             >
               <option value="">Select a type</option>
-              <option value="voiture">Voiture</option>
-              <option value="handicap">Handicap</option>
-              <option value="electric">Electric Vehicle</option>
-              <option value="moto">Moto</option>
-              <option value="velo">Velo</option>
+              <option value="Moteur voiture">Moteur voiture</option>
+              <option value="Handicap">Handicap</option>
+              <option value="Electric Vehicle">Electric Vehicle</option>
             </select>
           </div>
 
