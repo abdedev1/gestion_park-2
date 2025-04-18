@@ -252,7 +252,7 @@ export default function SpotsEmploye() {
                 
             }onClick={()=>setShowScanner(true)}/>
             {employeeSpots && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-10 gap-2 p-4 bg-white rounded">
+                    <div className="grid grid-cols-2 m-1 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-10 gap-2 p-4 bg-white rounded">
                             {employeeSpots.map(spot => (
                                 <button
                                     key={spot.id}

@@ -38,7 +38,7 @@ export function SignupForm({ setActiveTab }) {
         password: "",
         password_confirmation: "",
         birth_date: "",
-        role_id: 1,
+        role_id: 2,
     });
 
     const [errors, setErrors] = useState({});

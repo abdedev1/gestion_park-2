@@ -15,6 +15,7 @@ import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
+import ParksList from './components/client/ParksList'
 function App() {
   const dispatch = useDispatch();
   const { isLoading,user } = useSelector((state) => state.auth);
@@ -92,7 +93,10 @@ function App() {
                 </Route>
               
               {/*partie client*/}
+              <Route element={<ProtectedRoute requiredRole="client" />}>
+                <Route  path="parcs" element={<ParksList/>} />
 
+                </Route>
             </Route>
           </Routes>
         </ConfigProvider>

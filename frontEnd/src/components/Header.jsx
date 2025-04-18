@@ -84,6 +84,7 @@ export default function Header() {
               </>
             )}
             {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
+            {user?.role === "client" && (<div data-path="/parcs" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parcs">Parcs</NavLink></div>)}
             <motion.div className="absolute top-7 left-0 h-0.5 bg-primary" animate={controls} initial={{ x: 0, width: 0 }} />
           </div>
             
@@ -137,6 +138,11 @@ export default function Header() {
               <>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/overview">Overview</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
+              </>
+            }
+            {user?.role === "client" &&
+              <>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parcs">Parcs</NavLink>
               </>
             }
             { token ? <button className="btn btn-outline btn-neutral mx-2 w-full mt-2" onClick={logoutUser} >Logout</button>
