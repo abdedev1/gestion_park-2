@@ -165,23 +165,25 @@ export default function ParkList() {
       title: "Name of spot",
       dataIndex: "nom",
       key: "nom",
-      className: "font-medium",
+      className: "text-center",
     },
     {
       title: "Type",
       dataIndex: "type",
       key: "type",
+      className: "text-center",
       render: (text) => <span className="text-gray-700">{text || "No restrictions"}</span>,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      className: "text-center",
       render: (status) => {
-        let statusClass = "bg-gray-100 text-gray-800"
-        if (status === "disponible") statusClass = "bg-green-100 text-green-800"
-        else if (status === "reserve") statusClass = "bg-yellow-100 text-yellow-800"
-        else if (status === "maintenance") statusClass = "bg-red-100 text-red-800"
+        let statusClass = "badge badge-neutrel"
+        if (status === "disponible") statusClass = "badge badge-success"
+        else if (status === "reserve") statusClass = "badge badge-warning"
+        else if (status === "maintenance") statusClass = "badge badge-error"
 
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass}`}>{status || "Unknown"}</span>
@@ -192,26 +194,17 @@ export default function ParkList() {
       title: "Park ID",
       dataIndex: "parc_id",
       key: "parc_id",
-      className: "text-gray-600",
+      className: "text-center",
     },
 
     {
       title: "Actions",
       key: "action",
-
+      className: "text-center",
       render: (_, record) => (
         <Space size="middle">
-           <Button
-            type="text"
-            icon={<EditOutlined className="text-gray-600 hover:text-gray-900" />}
-            className="hover:bg-gray-100"
-            onClick={() => openUpdateSpotModal(record)}
-          />
-          <Button
-            type="text"
-            icon={<ArrowRightOutlined className="text-gray-600 hover:text-gray-900" />}
-            className="hover:bg-gray-100"
-          />
+          <Button className="btn btn-ghost btn-sm" onClick={() => openUpdateSpotModal(record)}><EditOutlined /></Button>
+          <Button className="btn btn-ghost btn-sm"><ArrowRightOutlined /></Button>
         </Space>
       ),
     },
@@ -222,38 +215,35 @@ export default function ParkList() {
     label: (
       <div className="flex items-center">
         <span>{park.nom || `Park ${park.id}`}</span>
-        <Button
-          type="text"
-          icon={<EditOutlined className="text-gray-600 hover:text-gray-900" />}
-          className="ml-2 hover:bg-gray-100"
-          onClick={(e) => {
-            e.stopPropagation() 
-            openUpdateParkModal(park)
-          }}
-        />
+        {activeKey == park.id &&
+          <Button
+            icon={<EditOutlined />}
+            className="btn btn-ghost btn-sm ml-3 p-2"
+            onClick={(e) => {
+              e.stopPropagation() 
+              openUpdateParkModal(park)
+            }}
+          />
+        }
       </div>
     ),
       children: (
         <div className="bg-white rounded-lg shadow-sm">
         <div className="park-details p-4 border-b border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-800 mb-1">{park.nom}</h3>
-          <p className="text-sm text-gray-600">Number of spots: {park.spots.length || 0}</p>
+          <h3 className="text-xl font-semibold mb-1">{park.nom}</h3>
+          <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
         </div>
         <div className="container mx-auto py-6">
           <div className="flex items-center gap-2 mb-4">
             <Button
-              type="primary"
               onClick={() => setIsAddSpotModalOpen(true)}
-              icon={<Plus className="h-4 w-4 mr-2" />}
-              style={{
-                backgroundColor: "#0891b2",
-                display: "flex",
-                alignItems: "center",
-              }}
-              className="hover:opacity-90 transition-opacity shadow-sm"
-            >
-              Add spots
+              className="btn btn-primary btn-sm"
+            ><Plus size={16} />
+              Add Spot
             </Button>
+            {/* <span className="flex items-center ml-auto text-sm text-gray-500">
+              {hasSelected ? `${selectedRowKeys.length} items selected ` : ""}
+            </span> */}
             <Popconfirm
               title="Are you sure you want to delete these spots?"
               onConfirm={handleDeleteSpots}
@@ -261,13 +251,8 @@ export default function ParkList() {
               cancelText="No"
               disabled={!hasSelected}
             >
-              <Button danger disabled={!hasSelected} icon={<DeleteOutlined />} className="flex items-center">
-                Delete
-              </Button>
+              <Button disabled={!hasSelected} className="btn btn-error ml-auto btn-sm" ><DeleteOutlined />Delete {hasSelected ? `${selectedRowKeys.length}` : ""}</Button>
             </Popconfirm>
-            <span className="flex items-center text-sm text-gray-500">
-              {hasSelected ? `Selected ${selectedRowKeys.length} items` : ""}
-            </span>
           </div>
 
           <Table
@@ -278,7 +263,7 @@ export default function ParkList() {
            
             className="spots-table"
             loading={{
-              indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-cyan-600" />} />,
+              indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />} />,
               spinning: loading,
             }}
             pagination={{
@@ -303,16 +288,9 @@ export default function ParkList() {
             form.resetFields()
             setIsAddModalOpen(true)
           }}
-          type="primary"
-          icon={<Plus className="h-4 w-4 mr-2" />}
-          style={{
-            backgroundColor: "#0891b2",
-            display: "flex",
-            alignItems: "center",
-          }}
-          className="hover:opacity-90 transition-opacity shadow-sm"
-        >
-          ADD PARK
+          className="btn btn-primary btn-sm"
+        ><Plus size={16} />
+          Add Park
         </Button>
       </div>
 
@@ -367,18 +345,9 @@ export default function ParkList() {
           >
             <Input type="number" className="rounded" placeholder="Enter number of spots" />
           </Form.Item>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={() => setIsAddModalOpen(false)} className="rounded">
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ backgroundColor: "#0891b2" }}
-              className="rounded hover:opacity-90"
-            >
-              Add Park
-            </Button>
+          <div className="flex justify-between gap-2 mt-4">
+            <Button onClick={() => setIsAddModalOpen(false)} className="rounded">Cancel</Button>
+            <Button htmlType="submit" className="btn btn-primary btn-sm">Add Park</Button>
           </div>
         </Form>
       </Modal>
@@ -408,18 +377,9 @@ export default function ParkList() {
               <Select.Option value="maintenance">Maintenance</Select.Option>
             </Select>
           </Form.Item>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={() => setIsAddSpotModalOpen(false)} className="rounded">
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ backgroundColor: "#0891b2" }}
-              className="rounded hover:opacity-90"
-            >
-              Add Spot
-            </Button>
+          <div className="flex justify-between gap-2 mt-4">
+            <Button onClick={() => setIsAddSpotModalOpen(false)} className="rounded">Cancel</Button>
+            <Button htmlType="submit" className="btn btn-primary btn-sm">Add Spot</Button>
           </div>
         </Form>
       </Modal>
