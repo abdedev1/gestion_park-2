@@ -164,19 +164,13 @@ export default function RolesList() {
   return (
     <div className="container mx-auto py-6">
       {contextHolder}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center mt-7 justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Roles Management</h1>
          
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            onClick={() => fetchRoles()}
-            icon={<RefreshCw className="h-4 w-4 mr-2" />}
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            Refresh
-          </Button>
+          
           <Button
             type="primary"
             onClick={() => {

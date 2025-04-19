@@ -28,21 +28,13 @@ class SpotController extends Controller
     {
         $request->validated();
         $park = Parc::findOrFail($request->parc_id);
-    
-       
-        $nextNumero = 'P' . ($park->spots()->count() + 1);
+        $nextNumero = 'P ' . ($park->spots()->count() + 1);
     
         $spot = Spot::create([
-            
             'status' => $request->status ?? 'available',
             'parc_id' => $park->id,
             'nom' => $nextNumero,
             'type' => $request->type ?? 'normal',
-        ]);
-    
-      
-        $park->update([
-            'numberSpots' => $park->spots()->count()
         ]);
     
         return response()->json([
@@ -61,8 +53,40 @@ class SpotController extends Controller
             'spot' => $spot
         ], 200);
     }
-    
 
+    public function storeMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|string|max:255',
+            'status' => 'required|string|max:255',
+            'parc_id' => 'nullable|exists:parcs,id',
+            'count' => 'required|integer|min:1',
+        ]);
+
+        $park = Parc::findOrFail($validated['parc_id']);
+
+        $createdSpots = [];
+        $existingCount = $park->spots()->count();
+
+        for ($i = 1; $i <= $validated['count']; $i++) {
+            $nextNumero = 'P ' . ($existingCount + $i);
+
+            $spot = Spot::create([
+                'status' => $validated['status'] ?? 'available',
+                'parc_id' => $park->id,
+                'nom' => $nextNumero,
+                'type' => $validated['type'] ?? 'normal',
+            ]);
+
+            $createdSpots[] = $spot;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$validated['count']} spots created successfully.",
+            'spots' => $createdSpots
+        ], 201);
+    }
 
 
     /**
@@ -88,6 +112,28 @@ class SpotController extends Controller
     {
         $spot->delete();
 
-        return response()->json(['message' => 'Spot deleted successfully.'], 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Spot deleted successfully.',
+        ], 204);
+    }
+
+    public function destroyMultiple(Request $request)
+    {
+        $spotIds = $request->input('spot_ids');
+
+        if (!is_array($spotIds) || empty($spotIds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No spot IDs provided.',
+            ], 400);
+        }
+
+        Spot::whereIn('id', $spotIds)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => count($spotIds) . ' spots deleted successfully.',
+        ], 200);
     }
 }

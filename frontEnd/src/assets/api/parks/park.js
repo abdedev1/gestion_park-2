@@ -45,6 +45,15 @@ export const addSpot = async (spotData) => {
         throw error;
     }
 }
+export const addMultipleSpots = async (spotData) => {
+  try {
+      const response = await axios.post('/spots/multiple', spotData);
+      return response.data;
+  } catch (error) {
+      console.error('Error adding multiple spots:', error);
+      throw error;
+  }
+};
 export const updateSpot = async (spotId, spotData) => {
     try {
         const response = await axios.put(`/spots/${spotId}`, spotData);
@@ -63,3 +72,12 @@ export const deleteSpot = async (spotId) => {
         throw error;
     }
 }
+export const deleteMultipleSpots = async (spotIds) => {
+  try {
+      const response = await axios.delete('/spots', {data: {spot_ids: spotIds}});
+      return response.data;
+  } catch (error) {
+      console.error('Error deleting multiple spots:', error);
+      throw error;
+  }
+};

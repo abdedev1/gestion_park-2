@@ -23,7 +23,7 @@ class CartFactory extends Factory
             'client_id' => Client::factory(),
             'base_rate_id' => PricingRate::factory(),
             'duration' => $this->faker->date(),
-            'parc_id' => Parc::factory(),
+            'parc_id' => Parc::inRandomOrder()->value('id'),
             'status' => $this->faker->boolean(),
         ];
     }

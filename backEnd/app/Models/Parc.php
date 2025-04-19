@@ -13,7 +13,6 @@ class Parc extends Model
   
     protected $fillable = [
         'nom',
-        'numberSpots',
         'adresse',
     ];
     
