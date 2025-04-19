@@ -1,28 +1,29 @@
-import { fetchParking_tickets } from '../Redux/slices/parkingTicketsSlice';
+import { fetchParking_tickets,updateParking_ticket } from '../Redux/slices/parkingTicketsSlice';
 import { useSelector,useDispatch } from "react-redux";
 import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
 import isEqual from "lodash/isEqual";
-import { RotateCcw, X,Repeat } from "lucide-react";
-import { updateParking_ticket } from "../Redux/slices/parkingTicketsSlice";
-import { updateSpot } from "../Redux/slices/spotsSlice";
+import { RotateCcw, X } from "lucide-react";
+import { updateSpot,getEmployeSpots  } from "../Redux/slices/spotsSlice";
 import { fetchEmployes } from '../Redux/slices/employesSlice';
-import { getEmployeSpots } from "../Redux/slices/spotsSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import Cookies from "js-cookie";
-
 export default function QRCodeScanner({onClose, openModel}) {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
   const defaultDeviceId = Cookies.get('deviceId');
   const [selectedDeviceId, setSelectedDeviceId] = useState(defaultDeviceId || null);
+  const [updateTicketG,setUpdateTicketG] =useState(null)
+  const hasProcessed = useRef(false);
+
+  const dispatch = useDispatch();
   const devices = useDevices();
+
+
   const { parking_tickets } = useSelector(state => state.parking_tickets);
   const { pricing_rates } = useSelector(state => state.pricing_rates);
   const employeeSpots = useSelector(state => state.spots.employeeSpots);
-  const [updateTicketG,setUpdateTicketG] =useState(null)
   const {employes} = useSelector(state=>state.employes) 
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
   // Set default camera on first load
@@ -43,7 +44,8 @@ export default function QRCodeScanner({onClose, openModel}) {
   },[dispatch])
 
   const handleScan = (result) => {
-    setScanResult(result);
+    if (!result?.[0]?.rawValue) return;
+    setScanResult(result[0].rawValue);
     setIsScanning(false);
     Cookies.set('deviceId', selectedDeviceId, { expires: 7 });
   };
@@ -55,6 +57,8 @@ export default function QRCodeScanner({onClose, openModel}) {
   const resetScanner = () => {
     setScanResult(null);
     setIsScanning(true);
+    setUpdateTicketG(null);
+    hasProcessed.current = false;
   };
 
   const handleDeviceChange = (e) => {
@@ -80,66 +84,68 @@ export default function QRCodeScanner({onClose, openModel}) {
   
 
 
-  useEffect(() => {
-    if (!scanResult) return;
-  
+  const processScannedResult = async () => {
+    if (hasProcessed.current || !scanResult) return;
+
     const parsedObject = parseQRTextToObject(scanResult);
     if (!parsedObject) return;
-  
-    const ticket = parking_tickets.find(ticket => 
-      Number(ticket.spot_id) === Number(parsedObject.spot_id) && ticket.status === "active" && Number(ticket.id) === Number(parsedObject.id)
+
+    const ticket = parking_tickets.find(ticket =>
+      Number(ticket.spot_id) === Number(parsedObject.spot_id) &&
+      ticket.status === "active" &&
+      Number(ticket.id) === Number(parsedObject.id)
     );
-  
+
     if (!ticket) return;
-  
+
     const entryTime = new Date(ticket.entry_time);
     const now = new Date();
     const exitTimeStr = now.toISOString().slice(0, 16);
     const durationInHours = (now - entryTime) / (1000 * 60 * 60);
-  
+
     const rate = pricing_rates.find(r => r.id === ticket.base_rate_id);
     const pricePerHour = rate ? rate.price_per_hour : 0;
-  
+
     const updatedTicket = {
       ...ticket,
       exit_time: exitTimeStr,
       total_price: parseFloat((durationInHours * pricePerHour).toFixed(2)),
       spotName: parsedObject.spotName
     };
-  
+
     if (!isEqual(updateTicketG, updatedTicket)) {
       setUpdateTicketG(updatedTicket);
     }
-  }, [scanResult, parking_tickets, pricing_rates]);
 
-  
-  useEffect(() => {
-    if (!updateTicketG || !employeeSpots) return;
-    if(!user || !employes) return;
-  
-    const { spotName, ...ticketupdate } = updateTicketG;
-    const spot = employeeSpots.find(spot => Number(spot.id) === Number(ticketupdate.spot_id));
+    const spot = employeeSpots.find(s => Number(s.id) === Number(ticket.spot_id));
     if (!spot) return;
-  
-    dispatch(updateParking_ticket({
-      id: ticketupdate.id,
-      updatedParking_ticket: { 
-        ...ticketupdate, 
-        status: 'completed',
+
+    await dispatch(updateParking_ticket({
+      id: ticket.id,
+      updatedParking_ticket: {
+        ...updatedTicket,
+        status: 'completed'
       }
     }));
-  
-    dispatch(updateSpot({
-      id: ticketupdate.spot_id,
+
+    await dispatch(updateSpot({
+      id: ticket.spot_id,
       updatedSpot: { ...spot, status: "disponible" }
     }));
-    if (user && employes.length > 0) {
-      const employe_id = employes.find(employe => Number(employe.user_id) === Number(user.id))?.id;
-      if (employe_id) {
-         dispatch(getEmployeSpots(employe_id))
-      }}
-  }, [updateTicketG, employeeSpots, dispatch]);
 
+    if (user && employes.length > 0) {
+      const employe_id = employes.find(emp => Number(emp.user_id) === Number(user.id))?.id;
+      if (employe_id) {
+        dispatch(getEmployeSpots(employe_id));
+      }
+    }
+
+    hasProcessed.current = true;
+  };
+
+  useEffect(() => {
+    processScannedResult();
+  }, [scanResult]);
   
   
 
@@ -153,7 +159,7 @@ export default function QRCodeScanner({onClose, openModel}) {
           
           <Scanner
             constraints={{deviceId: selectedDeviceId}}
-            onScan={(result) => handleScan(result[0].rawValue)}
+            onScan={handleScan}
             onError={handleError}
           />
           {devices.length > 1  && (

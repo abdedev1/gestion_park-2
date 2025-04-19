@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getEmployeSpots } from '../Redux/slices/spotsSlice';
+import { fetchEmployes } from '../Redux/slices/employesSlice';
+import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
-import { addParking_ticket } from '../Redux/slices/parkingTicketsSlice';
-import { updateSpot } from '../Redux/slices/spotsSlice';
-import { fetchParking_tickets } from '../Redux/slices/parkingTicketsSlice';
+import { addParking_ticket,fetchParking_tickets  } from '../Redux/slices/parkingTicketsSlice';
 import { FloatButton } from 'antd';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import QRCode from 'qrcode';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
-import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
 import isEqual from "lodash/isEqual";
-import { useRemover } from '../../lib/utils';
-
+import { generateTicketPDF } from './ticketPdf';
 
 export default function SpotsEmploye() {
     const employeeSpots = useSelector(state => state.spots.employeeSpots);
@@ -81,86 +76,7 @@ export default function SpotsEmploye() {
       
     };
     
-    
-     const generateQRBase64 = async (text) => {
-        try {
-            const base64Image = await QRCode.toDataURL(text, { margin: 2 });
-            return base64Image;
-        } catch (err) {
-            console.error("Makaynch QR", err);
-            return null;
-        }
-        };
 
-
-      const generateTicketPDF = async (formData, selectedSpot, pricePerHour) => {
-        const pdfDoc = await PDFDocument.create();
-        const page = pdfDoc.addPage([400, 500]);
-        const { width, height } = page.getSize();
-        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-      
-        const fontSize = 14;
-      
-        const logoUrl = "/Logo/logo.png"; 
-        const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
-        const logoImage = await pdfDoc.embedPng(logoBytes);
-        const logoDims = logoImage.scale(0.3);
-        page.drawImage(logoImage, {
-          x: width / 2 - logoDims.width / 2,
-          y: height - 140,
-          width: logoDims.width,
-          height: logoDims.height,
-        });
-      
-        page.drawText("Ticket de Stationnement", {
-          x: width / 2 - 100,
-          y: height - 135,
-          size: 18,
-          font,
-          color: rgb(0, 0, 0.6),
-        });
-      
-        const startY = height - 180;
-        const lineHeight = 35;
-      
-        const drawLine = (label, value, yOffset) => {
-          page.drawText(`${label}: ${value}`, {
-            x: 40,
-            y: startY - yOffset,
-            size: fontSize,
-            font,
-            color: rgb(0.2, 0.2, 0.2),
-          });
-        };
-      
-        drawLine("Client", formData.clientName, 0);
-        drawLine("Prix / Heure", `${pricePerHour} MAD`, lineHeight);
-        drawLine("Spot", selectedSpot.nom, lineHeight * 2);
-        drawLine("Entrée", new Date(formData.entry_time).toLocaleString(), lineHeight * 3);
-      
-        const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.nom}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id},Tickit_id:${formData.id}`;
-        const qrBase64 = await generateQRBase64(qrData);
-        const qrImageBytes = await fetch(qrBase64).then(res => res.arrayBuffer());
-        const qrImage = await pdfDoc.embedPng(qrImageBytes);
-      
-        const qrDims = qrImage.scale(1.0);
-        page.drawImage(qrImage, {
-          x: width / 2 - qrDims.width / 2,
-          y: 40,
-          width: qrDims.width,
-          height: qrDims.height,
-        });
-      
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-      
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ticket-${selectedSpot.nom}.pdf`;
-        link.click();
-      };
-      
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (selectedSpot) {
@@ -338,46 +254,12 @@ export default function SpotsEmploye() {
                                     />
                                 </div>
                             </div>
-
-                            {selectedSpot?.status === "reserve" && (
-                                <div>
-                                    <label htmlFor="exit_time" className="block text-sm font-medium">
-                                        Date et Heure de Sortie
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        id="exit_time"
-                                        name="exit_time"
-                                        value={formData.exit_time || ''}
-                                        onChange={handleInputChange}
-                                        required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded"
-                                    />
-                                </div>
-                            )}
-
-                            {formData.exit_time && (
-                                <div>
-                                    <label htmlFor="total_price" className="block text-sm font-medium">
-                                        Prix Total
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="total_price"
-                                        name="total_price"
-                                        value={formData.total_price}
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
-                                    />
-                                </div>
-                            )}
-
                             <div className="mt-6 flex justify-between">
                                 <button
                                     type="submit"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                                 >
-                                    {selectedSpot?.status === "disponible" ? 'Confirmer' : 'Terminer'}
+                                    Confirmer
                                 </button>
                                 <button
                                     type="button"
