@@ -156,7 +156,7 @@ export default function QRCodeScanner({onClose, openModel}) {
             onScan={(result) => handleScan(result[0].rawValue)}
             onError={handleError}
           />
-          {devices.length > 1 && (
+          {devices.length > 1  && (
             <div className="flex flex-col my-3 mx-2 gap-2">
               <select
                 value={selectedDeviceId || ""}
@@ -169,9 +169,10 @@ export default function QRCodeScanner({onClose, openModel}) {
                   </option>
                 ))}
               </select>
-            <button onClick={onClose} className="btn btn-error w-full"><X size={18} />Close</button>
+            
             </div>
           )}
+        <button onClick={onClose} className="btn btn-error w-full mt-2"><X size={18} />Close</button>
         </div>
       ) : (
         <div className="bg-white p-6 rounded-lg shadow-lg">
