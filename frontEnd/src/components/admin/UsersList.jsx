@@ -42,10 +42,7 @@ function UsersList() {
 
   const fetchEmployeeData = async (userIds) => {
     try {
-      // Fetch employee data for the given user IDs
       const response = await getEmployes(userIds)
-
-      // Create a mapping of user_id to employee data
       const employeeMapping = {}
       response.forEach((emp) => {
         employeeMapping[emp.user_id] = emp
@@ -87,16 +84,11 @@ function UsersList() {
     fetchParks()
   }, [])
 
-  // Apply filters when users, activeFilter, or searchQuery changes
   useEffect(() => {
     let result = [...users]
-
-    // Apply role filter
     if (activeFilter) {
       result = result.filter((user) => user.role && user.role.toLowerCase() === activeFilter.toLowerCase())
     }
-
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(
@@ -125,7 +117,6 @@ function UsersList() {
     const roleId = getRoleIdByName(user.role)
     setSelectedRole(user.role)
 
-    // Get employee data if this user is an employee
     const employeeInfo = employeeData[user.id] || {}
 
     form.setFieldsValue({
@@ -160,40 +151,32 @@ function UsersList() {
     try {
       if (!selectedUser) return
 
-      // Format the data properly before sending
       const formattedValues = {
         ...values,
         birth_date: values.birth_date || selectedUser.birth_date,
       }
 
-      // Remove park_id from user update data
       const { park_id, ...userData } = formattedValues
 
-      // Update user in users table
       const updatedUser = await updateUser(selectedUser.id, userData)
 
-      // Get the new role name
       const roleName = getRoleNameById(values.role_id)
 
-      // If the user is now an employee, update or create their employee record
       if (roleName === "employe") {
         try {
           const employeeExists = employeeData[selectedUser.id]
 
           if (employeeExists) {
-            // Update existing employee record
             await axios.put(`http://localhost:8000/api/employes/${employeeData[selectedUser.id].id}`, {
               parc_id: park_id,
             })
           } else {
-            // Create new employee record
             await axios.post(`http://localhost:8000/api/employes`, {
               user_id: selectedUser.id,
               parc_id: park_id,
             })
           }
 
-          // Update local employee data
           setEmployeeData((prev) => ({
             ...prev,
             [selectedUser.id]: {
@@ -207,15 +190,13 @@ function UsersList() {
           messageApi.error("User updated but failed to update employee data.")
         }
       }
-
-      // Update the local state with the updated user
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === selectedUser.id
             ? {
                 ...user,
                 ...updatedUser,
-                role: roleName, // Make sure the role is updated in the UI
+                role: roleName, 
               }
             : user,
         ),
@@ -293,7 +274,7 @@ function UsersList() {
       responsive: ["lg"],
       render: (_, record) => {
         // Only show park for employees
-        if (record.role !== "employe") return "N/A"
+        if (record.role !== "employe") return "Not applicable"
 
         // Get employee data for this user
         const employee = employeeData[record.id]
