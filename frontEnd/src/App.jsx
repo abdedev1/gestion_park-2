@@ -19,6 +19,7 @@ import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
 import ParksList from './components/client/ParksList'
+import HomePage from './components/home/HomePage';
 function App() {
   const dispatch = useDispatch();
   const { isLoading, user } = useSelector((state) => state.auth);
@@ -63,9 +64,8 @@ function App() {
             }}
           >
             <Routes>
-
-              <Route  path='/' element={<Header/>}>
-              
+            <Route path='/' element={<HomePage/>}/>
+              <Route  path='/.' element={<Header/>}>
               <Route element={<LoggedOut />}>
                 <Route index path="sign" element={<SignTabs />} />
               </Route>
