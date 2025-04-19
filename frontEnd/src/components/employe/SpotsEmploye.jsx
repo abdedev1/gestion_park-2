@@ -7,7 +7,7 @@ import { updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchParking_tickets } from '../Redux/slices/parkingTicketsSlice';
 import { FloatButton } from 'antd';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import QRCode from "react-qr-code";
+import QRCode from 'qrcode';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
 import { fetchEmployes } from '../Redux/slices/employesSlice';
@@ -80,51 +80,19 @@ export default function SpotsEmploye() {
       }
       
     };
-    const generateQRBase64 = (text) => {
-        return new Promise((resolve) => {
-            const qr = (
-                <QRCode
-                    value={text}
-                    size={128}
-                    level="H"
-                    includeMargin={true}
-                    bgColor="#ffffff"
-                    fgColor="#000000"
-                />
-            );
     
-            const container = document.createElement("div");
-            document.body.appendChild(container);
     
-            import("react-dom/client").then((ReactDOM) => {
-                const root = ReactDOM.createRoot(container);
-                root.render(qr);
-    
-                setTimeout(() => {
-                    const svg = container.querySelector("svg");
-                    const canvas = document.createElement("canvas");
-                    const ctx = canvas.getContext("2d");
-    
-                    const svgData = new XMLSerializer().serializeToString(svg);
-                    const img = new Image();
-                    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-                    const url = URL.createObjectURL(svgBlob);
-    
-                    img.onload = () => {
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        ctx.drawImage(img, 0, 0);
-                        const pngBase64 = canvas.toDataURL("image/png");
-                        URL.revokeObjectURL(url);
-                        document.body.removeChild(container);
-                        resolve(pngBase64);
-                    };
-    
-                    img.src = url;
-                }, 100); 
-            });
-        });
-    };
+     const generateQRBase64 = async (text) => {
+        try {
+            const base64Image = await QRCode.toDataURL(text, { margin: 2 });
+            return base64Image;
+        } catch (err) {
+            console.error("Makaynch QR", err);
+            return null;
+        }
+        };
+
+
       const generateTicketPDF = async (formData, selectedSpot, pricePerHour) => {
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage([400, 500]);
@@ -139,7 +107,7 @@ export default function SpotsEmploye() {
         const logoDims = logoImage.scale(0.3);
         page.drawImage(logoImage, {
           x: width / 2 - logoDims.width / 2,
-          y: height - 100,
+          y: height - 140,
           width: logoDims.width,
           height: logoDims.height,
         });
