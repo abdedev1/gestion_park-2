@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react"
-import { addPark,updatePark,updateSpot, getParks, deleteMultipleSpots, addMultipleSpots } from "../../../assets/api/parks/park"
+import { addPark,updatePark,updateSpot, getParks, deleteMultipleSpots, addMultipleSpots, deletePark } from "../../../assets/api/parks/park"
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin, InputNumber } from "antd"
-import { Loader2, Plus } from "lucide-react"
+import { Loader2, Plus ,CircleHelp,Trash2} from "lucide-react"
 import { UpdateParkModal, UpdateSpotModal } from "./updateModals";
 
 import { EditOutlined, DeleteOutlined, ArrowRightOutlined } from "@ant-design/icons"
@@ -57,21 +57,17 @@ export default function ParkList() {
       messageApi.error(error.response?.data?.message || "Failed to add park. Please try again.")
     }
   }
-
-  // const handleAddSpot = async (values) => {
-  //   try {
-  //     values.parc_id = activeKey // Add the current park ID
-  //     const res = await addSpot(values)
-  //     messageApi.success("Spot added successfully")
-  //     setIsAddSpotModalOpen(false)
-  //     spotForm.resetFields()
-  //     const updatedParks = parks.map((park) => park.id === activeKey ? { ...park, spots: [...park.spots, res.spot] }: park);
-  //     setParks(updatedParks);
-  //   } catch (error) {
-  //     console.error("Error adding spot:", error)
-  //     messageApi.error(error.response?.data?.message || "Failed to add spot. Please try again.")
-  //   }
-  // }
+  const handleDeletepak = async (id)=> {
+    try {
+      const res = await deletePark(id)
+      messageApi.success("Park deleted successfully")
+      const updatedParks = parks.filter((park) => park.id !== id)
+      setParks(updatedParks)
+    } catch (error) {
+      console.error("Error deleting park:", error)
+      messageApi.error(error.response?.data?.message || "Failed to delete park. Please try again.")
+    }
+  }
 
   const handleAddSpot = async (values) => {
     try {
@@ -241,10 +237,27 @@ export default function ParkList() {
     ),
       children: (
         <div className="bg-white rounded-lg shadow-sm">
-        <div className="park-details p-4 border-b border-gray-100">
-          <h3 className="text-xl font-semibold mb-1">{park.nom}</h3>
-          <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
+        <div className="park-details p-4 border-b border-black-100 relative flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-semibold mb-1">{park.nom}</h3>
+            <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
+          </div>
+
+          <Popconfirm
+            placement="topLeft"
+            title="Delete the Park?"
+            description={`Are you sure you want to delete this Park ID ${park.id}?`}
+            okText="Yes"
+            cancelText="No"
+            icon={<CircleHelp size={16} className="m-1" />}
+            onConfirm={() => handleDeletepak(park.id)}
+          >
+            <button className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md flex items-center">
+              <Trash2 size={16} />
+            </button>
+          </Popconfirm>
         </div>
+       
         <div className="container mx-auto py-6">
           <div className="flex items-center gap-2 mb-4">
             <Button

@@ -48,6 +48,8 @@ Route::middleware(isClientMiddleWare::class)->group(function(){
 Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
+    Route::apiResource('employes', EmployeController::class);
+
 
 });
 
