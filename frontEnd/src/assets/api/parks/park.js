@@ -45,6 +45,15 @@ export const updatePark = async (parkId, parkData) => {
     throw error;
   }
 };
+export const deletePark = async (parkId) => {
+  try {
+    const response = await axios.delete(`/parcs/${parkId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting park:', error);
+    throw error;
+  }
+}
 export const addSpot = async (spotData) => {
     try {
         const response = await axios.post('/spots', spotData);

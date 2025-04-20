@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import { axios } from "../../assets/api/axios"
 import { message, Popconfirm, Modal, Form, Input, Select, Table, Spin } from "antd"
 import { CircleHelp, Pencil, Trash2, Loader2 } from "lucide-react"
-import { getUsers, updateUser } from "../../assets/api/admin/users"
+import { getEmployes, getUsers, updateUser } from "../../assets/api/admin/users"
 import { getRoles } from "../../assets/api/roles/roles"
+import { getParks } from "../../assets/api/parks/park"
 
 function UsersList() {
   const [users, setUsers] = useState([])
@@ -17,6 +18,9 @@ function UsersList() {
   const [messageApi, contextHolder] = message.useMessage()
   const [activeFilter, setActiveFilter] = useState(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [parks, setParks] = useState([])
+  const [selectedRole, setSelectedRole] = useState(null)
+  const [employeeData, setEmployeeData] = useState({})
 
   const fetchUsers = async () => {
     setLoading(true)
@@ -24,11 +28,30 @@ function UsersList() {
       const data = await getUsers()
       setUsers(data)
       setFilteredUsers(data)
+      const employeeIds = data.filter((user) => user.role === "employe").map((user) => user.id)
+      if (employeeIds.length > 0) {
+        await fetchEmployeeData(employeeIds)
+      }
     } catch (error) {
       console.error("Error fetching Users:", error)
       messageApi.error(error.response?.data?.message || "Failed to load Users. Please try again.")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchEmployeeData = async (userIds) => {
+    try {
+      const response = await getEmployes(userIds)
+      const employeeMapping = {}
+      response.forEach((emp) => {
+        employeeMapping[emp.user_id] = emp
+      })
+
+      setEmployeeData(employeeMapping)
+    } catch (error) {
+      console.error("Error fetching employee data:", error)
+      messageApi.error("Failed to load employee data. Please try again.")
     }
   }
 
@@ -45,21 +68,27 @@ function UsersList() {
     }
   }
 
+  const fetchParks = async () => {
+    try {
+      const data = await getParks()
+      setParks(data)
+    } catch (error) {
+      console.error("Error fetching parks:", error)
+      messageApi.error("Failed to load parks. Please try again.")
+    }
+  }
+
   useEffect(() => {
     fetchUsers()
     fetchRoles()
+    fetchParks()
   }, [])
 
-  // Apply filters when users, activeFilter, or searchQuery changes
   useEffect(() => {
     let result = [...users]
-
-    // Apply role filter
     if (activeFilter) {
       result = result.filter((user) => user.role && user.role.toLowerCase() === activeFilter.toLowerCase())
     }
-
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(
@@ -85,12 +114,18 @@ function UsersList() {
 
   const showUpdateModal = (user) => {
     setSelectedUser(user)
+    const roleId = getRoleIdByName(user.role)
+    setSelectedRole(user.role)
+
+    const employeeInfo = employeeData[user.id] || {}
+
     form.setFieldsValue({
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
       birth_date: user.birth_date?.split("T")[0],
-      role_id: getRoleIdByName(user.role),
+      role_id: roleId,
+      park_id: employeeInfo.parc_id || undefined,
     })
     setIsModalOpen(true)
   }
@@ -100,9 +135,15 @@ function UsersList() {
     return role ? role.id : null
   }
 
+  const getRoleNameById = (roleId) => {
+    const role = roles.find((r) => r.id === roleId)
+    return role ? role.name : null
+  }
+
   const handleModalCancel = () => {
     setIsModalOpen(false)
     setSelectedUser(null)
+    setSelectedRole(null)
     form.resetFields()
   }
 
@@ -110,26 +151,52 @@ function UsersList() {
     try {
       if (!selectedUser) return
 
-      // Format the data properly before sending
       const formattedValues = {
         ...values,
         birth_date: values.birth_date || selectedUser.birth_date,
       }
 
-      const updatedUser = await updateUser(selectedUser.id, formattedValues)
+      const { park_id, ...userData } = formattedValues
 
-      // Find the role name for display
-      const selectedRole = roles.find((role) => role.id === values.role_id)
-      const roleName = selectedRole ? selectedRole.name : ""
+      const updatedUser = await updateUser(selectedUser.id, userData)
 
-      // Update the local state with the updated user
+      const roleName = getRoleNameById(values.role_id)
+
+      if (roleName === "employe") {
+        try {
+          const employeeExists = employeeData[selectedUser.id]
+
+          if (employeeExists) {
+            await axios.put(`http://localhost:8000/api/employes/${employeeData[selectedUser.id].id}`, {
+              parc_id: park_id,
+            })
+          } else {
+            await axios.post(`http://localhost:8000/api/employes`, {
+              user_id: selectedUser.id,
+              parc_id: park_id,
+            })
+          }
+
+          setEmployeeData((prev) => ({
+            ...prev,
+            [selectedUser.id]: {
+              ...(prev[selectedUser.id] || {}),
+              user_id: selectedUser.id,
+              parc_id: park_id,
+            },
+          }))
+        } catch (error) {
+          console.error("Error updating employee data:", error)
+          messageApi.error("User updated but failed to update employee data.")
+        }
+      }
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === selectedUser.id
             ? {
                 ...user,
                 ...updatedUser,
-                role: roleName, // Make sure the role is updated in the UI
+                role: roleName, 
               }
             : user,
         ),
@@ -139,8 +206,13 @@ function UsersList() {
       handleModalCancel()
     } catch (error) {
       console.error("Update error:", error)
-      message.error(error.response?.data?.message || error.response?.data?.error || "Error updating user")
+      messageApi.error(error.response?.data?.message || error.response?.data?.error || "Error updating user")
     }
+  }
+
+  const handleRoleChange = (value) => {
+    const roleName = getRoleNameById(value)
+    setSelectedRole(roleName)
   }
 
   const handleFilterClick = (role) => {
@@ -149,6 +221,12 @@ function UsersList() {
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value)
+  }
+
+  // Function to get park name by ID
+  const getParkName = (parkId) => {
+    const park = parks.find((p) => p.id === parkId)
+    return park ? park.nom : `Park ${parkId}`
   }
 
   const columns = [
@@ -189,6 +267,21 @@ function UsersList() {
       dataIndex: "role",
       key: "role",
       responsive: ["lg"],
+    },
+    {
+      title: "Assigned Park",
+      key: "park",
+      responsive: ["lg"],
+      render: (_, record) => {
+        // Only show park for employees
+        if (record.role !== "employe") return "Not applicable"
+
+        // Get employee data for this user
+        const employee = employeeData[record.id]
+        if (!employee || !employee.parc_id) return "Not assigned"
+
+        return getParkName(employee.parc_id)
+      },
     },
     {
       title: "Actions",
@@ -298,7 +391,7 @@ function UsersList() {
             <Input type="date" />
           </Form.Item>
           <Form.Item name="role_id" label="Role" rules={[{ required: true, message: "Please select a role" }]}>
-            <Select>
+            <Select onChange={handleRoleChange}>
               {roles.map((role) => (
                 <Select.Option key={role.id} value={role.id}>
                   {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
@@ -306,6 +399,24 @@ function UsersList() {
               ))}
             </Select>
           </Form.Item>
+
+          {/* Park ID field - only visible when role is "employe" */}
+          {(selectedRole === "employe" || form.getFieldValue("role_id") === getRoleIdByName("employe")) && (
+            <Form.Item
+              name="park_id"
+              label="Assigned Park"
+              rules={[{ required: true, message: "Please select a park for this employee" }]}
+            >
+              <Select placeholder="Select a park">
+                {parks.map((park) => (
+                  <Select.Option key={park.id} value={park.id}>
+                    {park.nom || `Park ID: ${park.id}`}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          )}
+
           <Form.Item className="mb-0 text-right">
             <button type="button" className="btn btn-outline btn-sm mr-2" onClick={handleModalCancel}>
               Cancel
