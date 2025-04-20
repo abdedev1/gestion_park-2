@@ -13,6 +13,8 @@ class Spot extends Model
         'nom',
         'type',
         'status',
+        'x',
+        'y',
         'parc_id',
     ];
    

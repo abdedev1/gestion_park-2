@@ -240,12 +240,12 @@ export default function ParkList() {
       </div>
     ),
       children: (
-        <div className="bg-white rounded-lg shadow-sm">
-        <div className="park-details p-4 border-b border-gray-100">
+      <div className="rounded-lg shadow-sm">
+        <div className="p-4 border-b border-gray-100">
           <h3 className="text-xl font-semibold mb-1">{park.nom}</h3>
           <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
         </div>
-        <div className="container mx-auto py-6">
+        <div className="container w-full mx-auto py-4">
           <div className="flex items-center gap-2 mb-4">
             <Button
               onClick={() => setIsAddSpotModalOpen(true)}
@@ -253,9 +253,6 @@ export default function ParkList() {
             ><Plus size={16} />
               Add Spot
             </Button>
-            {/* <span className="flex items-center ml-auto text-sm text-gray-500">
-              {hasSelected ? `${selectedRowKeys.length} items selected ` : ""}
-            </span> */}
             <Popconfirm
               title="Are you sure you want to delete these spots?"
               onConfirm={handleDeleteSpots}

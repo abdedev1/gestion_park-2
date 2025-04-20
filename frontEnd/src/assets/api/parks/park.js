@@ -9,6 +9,15 @@ export const getParks = async () => {
     throw error;
   }
 };
+export const getPark = async (id) => {
+  try {
+    const response = await axios.get('/parcs/' + id);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching parks:', error);
+    throw error;
+  }
+};
 export const getSpots = async () => {
     try {
       const response = await axios.get('/spots');

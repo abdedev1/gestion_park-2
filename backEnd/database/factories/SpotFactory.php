@@ -18,10 +18,12 @@ class SpotFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom' => $this->faker->numberBetween(1, 30),
+            'nom' => 'P ' . $this->faker->numberBetween(1, 50),
             'status' => $this->faker->randomElement(['disponible', 'reserve']),
             'type' => $this->faker->randomElement(['voiture', 'moto', 'velo', 'handicape', 'electric']),
             'parc_id' => Parc::inRandomOrder()->value('id'),
+            'x' => $this->faker->numberBetween(0, 15),
+            'y' => $this->faker->numberBetween(0, 20),
         ];
     }
 }

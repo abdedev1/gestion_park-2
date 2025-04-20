@@ -18,6 +18,7 @@ import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
+import ParkOverview from './components/ParkOverview';
 function App() {
   const dispatch = useDispatch();
   const { isLoading, user } = useSelector((state) => state.auth);
@@ -64,34 +65,37 @@ function App() {
             <Routes>
 
               <Route  path='/' element={<Header/>}>
+                <Route path="parks/:id" element={<ParkOverview />} />
               
-              <Route element={<LoggedOut />}>
-                <Route index path="sign" element={<SignTabs />} />
-              </Route>
+                <Route element={<LoggedOut />}>
+                  <Route index path="sign" element={<SignTabs />} />
+                </Route>
 
-              {/* redirect user to default page */}
-              <Route index 
-                element={
-                  user?.role === 'admin' ? (<Navigate to="/users" replace />)
-                  : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
-                  : (<Navigate to="" replace />)
+                {/* redirect user to default page */}
+                {!isLoading &&
+                  <Route index 
+                    element={
+                      user?.role === 'admin' ? (<Navigate to="/users" replace />)
+                      : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
+                      : (<Navigate to="" replace />)
+                    }
+                  />
                 }
-              />
 
-                {/* partie employe */}
-                  <Route element={<ProtectedRoute requiredRole="employe" />}>
-                    <Route index path="overview" element={<SpotsEmploye/>} />
-                  </Route>
-                {/* partie admin */}
+                  {/* partie employe */}
+                    <Route element={<ProtectedRoute requiredRole="employe" />}>
+                      <Route index path="overview" element={<SpotsEmploye/>} />
+                    </Route>
+                  {/* partie admin */}
 
-                  <Route element={<ProtectedRoute requiredRole="admin" />}>
-                    <Route path="dashboard" element={<h1>Dashbord</h1>} />
-                    <Route path="users" element={<UsersList/>} />
-                    <Route path="roles" element={<RolesList/>} />
-                    <Route path="parks" element={<ParkList/>} />
-                  </Route>
-                
-                {/*partie client*/}
+                    <Route element={<ProtectedRoute requiredRole="admin" />}>
+                      <Route path="dashboard" element={<h1>Dashbord</h1>} />
+                      <Route path="users" element={<UsersList/>} />
+                      <Route path="roles" element={<RolesList/>} />
+                      <Route path="parks" element={<ParkList/>} />
+                    </Route>
+                  
+                  {/*partie client*/}
 
               </Route>
             </Routes>

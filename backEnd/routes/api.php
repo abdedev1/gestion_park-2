@@ -29,7 +29,7 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
-    Route::apiResource("parcs",ParcController::class);
+    Route::apiResource("parcs",ParcController::class)->except(['index', 'show']);
     Route::delete('spots', [SpotController::class, 'destroyMultiple'])->name('spots.destroyMultiple');
     Route::post('spots/multiple', [SpotController::class, 'storeMultiple'])->name('spots.storeMultiple');
 
@@ -51,13 +51,13 @@ Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
 
 });
 
+// internaute routes
+Route::get("/parcs", [ParcController::class, 'index']);
+Route::get("/parcs/{id}", [ParcController::class, 'show']);
 
-
+// routes li mazal ma tkhchaw f blasthomm
 Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
 Route::get('/parcs/{id}/spots',[ParcController::class,'getParcSpots']);
-Route::get("/parcs", [ParcController::class, 'index']);
-
-Route::post("/parcs", [ParcController::class, 'store']);
 
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
 Route::apiResource('parking-tickets', ParkingTicketController::class);

@@ -68,7 +68,7 @@ export default function SpotsEmploye() {
       if(spot.status === "disponible"){
         setFormData({
             clientName: '',
-            spot_id: spot.id,  
+            spot_id: spot.id,
             client_id: null,
             base_rate_id: pricing_rates[0]?.id,
             entry_time: new Date().toISOString().slice(0, 16),
