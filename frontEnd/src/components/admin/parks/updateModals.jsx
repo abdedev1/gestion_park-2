@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Modal, Form, Input, Select, InputNumber, Button } from "antd"
+import { Modal, Form, Input, Select, InputNumber, Button, Checkbox, Switch } from "antd"
 
 export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
   const [form] = Form.useForm()
@@ -148,46 +148,97 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
   )
 }
 
-export function UpdateMultipleSpotModal({ isOpen, onClose, selected, setSpots }) {
+export function UpdateMultipleSpotModal({ isOpen, onClose, park_id, selected, setSelected, spots, setSpots, setRows, setColumns }) {
   const [form] = Form.useForm()
-  const [empty, setEmpty] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const [empty, setEmpty] = useState(false)
 
   const handleSubmit = async () => {
-    try {
-      setLoading(true)
-      const values = await form.validateFields()
-      onUpdate(values)
-      onClose()
-    } finally {
-      setLoading(false)
+    const values = await form.validateFields()
+  
+    let updatedSpots = [...spots]
+  
+    if (empty) {
+      // Remove selected spots
+      updatedSpots = updatedSpots.filter(
+        (spot) => !selected.some(sel => sel.x === spot.x && sel.y === spot.y)
+      )
+    } else {
+      // Update existing spots and add new ones
+      selected.forEach(sel => {
+        const existingSpotIndex = updatedSpots.findIndex(
+          spot => spot.x === sel.x && spot.y === sel.y
+        )
+  
+        const newOrUpdatedSpot = {
+          ...updatedSpots[existingSpotIndex],
+          name: `${values.name} ${sel.x}`,
+          type: values.type,
+          status: values.status,
+          x: sel.x,
+          y: sel.y,
+          park_id,
+        }
+  
+        if (existingSpotIndex !== -1) {
+          updatedSpots[existingSpotIndex] = newOrUpdatedSpot
+        } else {
+          updatedSpots.push(newOrUpdatedSpot)
+        }
+      })
     }
+  
+    setSpots(updatedSpots)
+    setSelected([])
+    form.resetFields()
+    setEmpty(false)
+    setRows(1)
+    setColumns(1)
+    onClose()
   }
+  
 
   return (
     <Modal
       title={<span className="text-lg font-medium">Edit {selected.length} Spots</span>}
       open={isOpen}
-      onCancel={onClose}
+      onCancel={() => {
+        form.resetFields()
+        setEmpty(false)
+        onClose()
+      }}
       footer={null}
     >
       <Form
         form={form}
-        layout="vertical"
+        labelCol={{ xs: { span: 24 }, sm: { span: 6 } }}
+        wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }}
+        layout="horizontal"
         className="py-4"
       >
+        <Form.Item label="Empty Spots" valuePropName="checked">
+          <Switch
+            value={empty}
+            onChange={(checked) => {
+              checked && form.resetFields()
+              setEmpty(checked)
+            }}
+          />
+        </Form.Item>
+
         <Form.Item
           name="name"
           label={<span className="font-medium">Spot Name</span>}
+          rules={!empty ? [{ required: true, message: 'Please enter a prefix for the name' }] : []}
         >
-          <Input placeholder="Enter spot name" />
+          <Input disabled={empty} placeholder="Enter a prefix for the name" />
         </Form.Item>
 
         <Form.Item
           name="type"
           label={<span className="font-medium">Type</span>}
+          rules={!empty ? [{ required: true, message: 'Please select a type!' }] : []}
         >
-          <Select placeholder="Select a type" className="rounded">
+          <Select disabled={empty} placeholder="Select a type" className="rounded">
             <Select.Option value="">Select a type</Select.Option>
             <Select.Option value="standard">Standard</Select.Option>
             <Select.Option value="accessible">Accessible</Select.Option>
@@ -198,9 +249,9 @@ export function UpdateMultipleSpotModal({ isOpen, onClose, selected, setSpots })
         <Form.Item
           name="status"
           label={<span className="font-medium">Status</span>}
-          rules={[{ required: true, message: 'Please select a status!' }]}
+          rules={!empty ? [{ required: true, message: 'Please select a status!' }] : []}
         >
-          <Select className="rounded">
+          <Select disabled={empty} placeholder="Select a status" className="rounded">
             <Select.Option value="available">Available</Select.Option>
             <Select.Option value="reserved">Reserved</Select.Option>
             <Select.Option value="maintenance">Maintenance</Select.Option>
@@ -208,19 +259,23 @@ export function UpdateMultipleSpotModal({ isOpen, onClose, selected, setSpots })
         </Form.Item>
 
         <div className="flex justify-between gap-2 mt-4">
-          <Button onClick={onClose} className="rounded">
+          <Button onClick={() => {
+            form.resetFields()
+            setEmpty(false)
+            onClose()
+          }} className="rounded">
             Cancel
           </Button>
-          <Button 
-            type="primary" 
-            onClick={handleSubmit} 
-            loading={loading}
+          <Button
+            type="primary"
+            onClick={handleSubmit}
             className="rounded"
           >
-            Update Spot
+            Confirm
           </Button>
         </div>
       </Form>
     </Modal>
   )
 }
+

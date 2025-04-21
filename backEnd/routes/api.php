@@ -32,7 +32,8 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::apiResource("parks",ParkController::class)->except(['index', 'show']);
     Route::delete('spots', [SpotController::class, 'destroyMultiple'])->name('spots.destroyMultiple');
     Route::post('spots/multiple', [SpotController::class, 'storeMultiple'])->name('spots.storeMultiple');
-
+    Route::post('spots/exact', [SpotController::class, 'storeMultipleExact'])->name('spots.storeMultipleExact');
+    Route::put('spots/multiple', [SpotController::class, 'updateMultiple'])->name('spots.updateMultiple');
 });
 
 Route::middleware(isEmployeMiddleWare::class)->group(function(){

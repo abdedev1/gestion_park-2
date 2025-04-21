@@ -27,7 +27,10 @@ class SpotController extends Controller
         $park = Park::findOrFail($request->park_id);
         $nextNumber = 'P ' . ($park->spots()->count() + 1);
 
-        $xy = $this->getNextAvailableXY($park, 1)[0];
+        // Use provided x/y or get the next available one
+        $xy = isset($request->x, $request->y)
+            ? ['x' => $request->x, 'y' => $request->y]
+            : $this->getNextAvailableXY($park, 1)[0];
 
         $spot = Spot::create([
             'status' => $request->status ?? 'available',
@@ -44,6 +47,7 @@ class SpotController extends Controller
         ], 201);
     }
 
+
     
     public function storeMultiple(Request $request)
     {
@@ -52,6 +56,8 @@ class SpotController extends Controller
             'status' => 'required|string|max:255',
             'park_id' => 'nullable|exists:parks,id',
             'count' => 'required|integer|min:1',
+            'x' => 'nullable|integer',
+            'y' => 'nullable|integer',
         ]);
 
         $park = Park::findOrFail($validated['park_id']);
@@ -83,6 +89,40 @@ class SpotController extends Controller
     }
 
 
+    public function storeMultipleExact(Request $request)
+    {
+        $validated = $request->validate([
+            '*.park_id' => 'required|exists:parks,id',
+            '*.name' => 'required|string|max:255',
+            '*.x' => 'required|integer',
+            '*.y' => 'required|integer',
+            '*.type' => 'required|string|max:255',
+            '*.status' => 'required|string|max:255',
+        ]);
+
+        $createdSpots = [];
+
+        foreach ($validated as $spotData) {
+            $spot = Spot::create([
+                'park_id' => $spotData['park_id'],
+                'name' => $spotData['name'],
+                'x' => $spotData['x'],
+                'y' => $spotData['y'],
+                'type' => $spotData['type'],
+                'status' => $spotData['status'],
+            ]);
+
+            $createdSpots[] = $spot;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($createdSpots) . ' spot(s) created successfully.',
+            'spots' => $createdSpots,
+        ], 201);
+    }
+
+
 
     /**
      * Display the specified resource.
@@ -105,10 +145,39 @@ class SpotController extends Controller
         $spot->update($request->all());
     
         return response()->json([
+            'success' => true,
             'message' => 'Spot updated successfully.',
             'spot' => $spot
         ], 200);
     }
+
+
+    public function updateMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            '*.id' => 'required|exists:spots,id',
+            '*.name' => 'sometimes|string|max:255',
+            '*.x' => 'sometimes|integer',
+            '*.y' => 'sometimes|integer',
+            '*.type' => 'sometimes|string|max:255',
+            '*.status' => 'sometimes|string|max:255',
+        ]);
+
+        $updatedSpots = [];
+
+        foreach ($validated as $spotData) {
+            $spot = Spot::findOrFail($spotData['id']);
+            $spot->update($spotData);
+            $updatedSpots[] = $spot;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($updatedSpots) . ' spot(s) updated successfully.',
+            'spots' => $updatedSpots
+        ], 200);
+    }
+
 
     /**
      * Remove the specified resource from storage.

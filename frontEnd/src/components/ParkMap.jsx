@@ -1,8 +1,9 @@
-import { Accessibility, Car, GripHorizontal, GripVertical, Pencil, Plus, PlusCircle, SmartphoneCharging, Trash } from "lucide-react";
-import { useState } from "react";
+import { Accessibility, Car, GripHorizontal, GripVertical, Pencil, Plus, PlusCircle, Save, SmartphoneCharging, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
+import { addMultipleSpotsExact, updateMultipleSpots, deleteMultipleSpots } from "../assets/api/parks/park";
 import { cn } from "../lib/utils";
-import { Button, Popconfirm, Select } from "antd";
-import { UpdateSpotModal } from "./admin/parks/updateModals";
+import { Button, message, Popconfirm, Select } from "antd";
+import { UpdateMultipleSpotModal } from "./admin/parks/updateModals";
 
 export function EditableParkMap({ park }) {
   const [spots, setSpots] = useState([...park.spots]);
@@ -13,9 +14,16 @@ export function EditableParkMap({ park }) {
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [selectValue, setSelectValue] = useState(null);
   const [deleteSpot, setDeleteSpot] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const rows = Math.max(...spots.map(s => s.y)) + extraRows;
   const columns = Math.max(...spots.map(s => s.x)) + extraColumns;
+
+  useEffect(() => {
+    setHasChanges(JSON.stringify(spots) === JSON.stringify(park.spots));
+  }, [spots]);
 
   const spotMap = new Map();
   spots.forEach(spot => {
@@ -226,11 +234,36 @@ export function EditableParkMap({ park }) {
     setSelected(newSelected);
     if (col >= columns-extraColumns+1) setExtraColumns(extraColumns-1)
   };
+
+  const saveChanges = async () => {
+    const originalSpots = [...park.spots];
+
+    const spotsToAdd = spots.filter(s => !s.id);
+    const spotsToUpdate = spots.filter(s => s.id);
+    const currentIds = new Set(spotsToUpdate.map(s => s.id));
+    const spotsToDelete = originalSpots.filter(s => !currentIds.has(s.id)).map(s => s.id);
+
+    try {
   
+      let addRes = spotsToAdd.length ? await addMultipleSpotsExact(spotsToAdd) : { success: false };
+      let updateRes = spotsToUpdate.length ? await updateMultipleSpots(spotsToUpdate) : { success: false };
+      let deleteRes = spotsToDelete.length ? await deleteMultipleSpots(spotsToDelete) : { success: false };
+
+      if (addRes.success && updateRes.success && deleteRes.success ) {
+          messageApi.success("All changes are saved successfully");
+        }
+  
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      messageApi.error(
+        error.response?.data?.message || "Failed to save changes. Please try again."
+      );
+    }
+  }; 
   
 
   return (
-    <div className="flex flex-col justify-center gap-4 border w-fit">
+    <div className="flex flex-col justify-center gap-4 border w-fit">{contextHolder}
       <div className="flex items-center justify-between gap-2 mx-4">
         <div className="flex items-center justify-center gap-2">
           <Select
@@ -250,24 +283,24 @@ export function EditableParkMap({ park }) {
           <Button
             className="btn btn-primary btn-sm"
             disabled={!selected.length}
-            onClick={() => console.log("Edit selected spots:", selected)}
+            onClick={() => setIsModalOpen(true)}
           >
             <Pencil size={16} /> Edit Spots
           </Button>
         </div>
 
         <Popconfirm
-          title="Are you sure you want to delete these spots?"
-          onConfirm={() => console.log("Deleting spots:", selected)}
+          title="Are you sure you want to save these changes?"
+          onConfirm={saveChanges}
           okText="Yes"
           cancelText="No"
-          disabled={!hasFullRowOrColumnSelected()}
+          disabled={hasChanges}
         >
           <Button
-            disabled={!hasFullRowOrColumnSelected()}
-            className="btn btn-error btn-sm"
+            disabled={hasChanges}
+            className="btn btn-primary btn-sm"
           >
-            <Trash /> Delete {hasFullRowOrColumnSelected() ? `${selected.length}` : ""}
+            <Save /> Save
           </Button>
         </Popconfirm>
       </div>
@@ -388,17 +421,19 @@ export function EditableParkMap({ park }) {
           </div>
         ))}
       </div>
-      {/* {currentSpot && (
-        <UpdateSpotModal
-          isOpen={isUpdateSpotModalOpen}
-          onClose={() => {
-            setIsUpdateSpotModalOpen(false)
-            setCurrentSpot(null)
-          }}
-          spot={currentSpot}
-          onUpdate={handleUpdateSpot}
+      {Boolean(selected.length) && (
+        <UpdateMultipleSpotModal
+          isOpen={isModalOpen}
+          onClose={() => {setIsModalOpen(false)}}
+          park_id={park.id}
+          selected={selected}
+          setSelected={setSelected}
+          spots={spots}
+          setSpots={setSpots}
+          setRows={setExtraRows}
+          setColumns={setExtraColumns}
         />
-      )} */}
+      )}
     </div>
   );
 }
@@ -447,110 +482,6 @@ export function ParkMap({park}) {
                   ) : (
                     <div className="text-[10px] text-gray-600">Empty</div>
                   )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-
-
-export function test({ park }) {
-  const [spots, setSpots] = useState([...park.spots]);
-  const [rows, setRows] = useState(Math.max(...spots.map(s => s.y)) + 1);
-  const [columns, setColumns] = useState(Math.max(...spots.map(s => s.x)) + 1);
-
-  const spotMap = new Map();
-  spots.forEach(spot => {
-    spotMap.set(`${spot.x},${spot.y}`, spot);
-  });
-
-
-  const addRow = (row) => {
-    console.log(row, "  :  ", rows)
-    const newSpots = spots.map(spot => {
-      if (spot.y >= row) {
-        return { ...spot, y: spot.y + 1 };
-      }
-      return spot;
-    });
-    setSpots(newSpots);
-  };
-
-  const insertRow = () => {
-    setRows(rows+1)
-  };
-  
-  const addColumn = (column) => {
-    const newSpots = spots.map(spot => {
-      if (spot.x >= column) {
-        return { ...spot, x: spot.x + 1 };
-      }
-      return spot;
-    });
-    setSpots(newSpots);
-  };
-  
-    const insertColumn = () => {
-      setColumns(columns+1)
-    };
-  
-  return (
-    <div className="inline-block border p-20 bg-gray-100">
-      <div className="flex flex-col">
-        {Array.from({ length: rows }, (_, y) => (
-          <div key={y} className="flex items-center relative">
-            <div className="absolute -left-6 -top-3 p-1 rounded border bg-white cursor-pointer hover:bg-gray-200" onClick={() => addRow(y)} >
-              <Plus size={12} />
-            </div>
-            { y == rows-1 &&
-              <div className="absolute z-20 -left-6 -bottom-3 p-1 rounded border bg-white cursor-pointer hover:bg-gray-200" onClick={insertRow} >
-                <Plus size={12} />
-              </div>
-            }
-
-            {/* Grid cells */}
-            {Array.from({ length: columns }, (_, x) => {
-              const spot = spotMap.get(`${x},${y}`);
-              return (
-                <div key={x} className="relative">
-                  { y == 0 &&
-                    <div className="absolute -left-3 -top-6 p-1 rounded border bg-white cursor-pointer hover:bg-gray-200" onClick={() => addColumn(x)}>
-                      <Plus size={12} />
-                    </div>
-                  }
-                  { y == 0 && x == columns-1 &&
-                    <div className="absolute z-20 -right-3 -top-6 p-1 rounded border bg-white cursor-pointer hover:bg-gray-200" onClick={insertColumn} >
-                      <Plus size={12} />
-                    </div>
-                  }
-                  <div
-                    key={`${x}-${y}`}
-                    className={`w-16 h-16 ${spot && "border"} m-0.5 rounded flex flex-col justify-center items-center text-xs ${
-                      spot
-                      ? spot.status === "available"
-                      ? "bg-green-400"
-                      : spot.status === "reserved"
-                      ? "bg-yellow-400"
-                      : "bg-red-400"
-                        : "bg-white"
-                      }`}
-                      >
-                    {spot ? (
-                      <>
-                        <div className="font-semibold">{spot.name}</div>
-                        <div className="text-[10px] text-gray-600">
-                          x:{x}, y:{y}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-[10px] text-gray-600"></div>
-                    )}
-                  </div>
                 </div>
               );
             })}

@@ -72,6 +72,15 @@ export const addMultipleSpots = async (spotData) => {
       throw error;
   }
 };
+export const addMultipleSpotsExact = async (spotsArray) => {
+  try {
+      const response = await axios.post('/spots/exact', spotsArray);
+      return response.data;
+  } catch (error) {
+      console.error('Error adding multiple spots:', error);
+      throw error;
+  }
+};
 export const updateSpot = async (spotId, spotData) => {
     try {
         const response = await axios.put(`/spots/${spotId}`, spotData);
@@ -80,6 +89,15 @@ export const updateSpot = async (spotId, spotData) => {
         console.error('Error updating spot:', error);
         throw error;
     }
+}
+export const updateMultipleSpots = async (spotsArray) => {
+  try {
+    const response = await axios.put('/spots/multiple', spotsArray)
+    return response.data
+  } catch (error) {
+    console.error('Error updating multiple spots:', error)
+    throw error
+  }
 }
 export const deleteSpot = async (spotId) => {
     try {
