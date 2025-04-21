@@ -2,6 +2,7 @@ import { Accessibility, Car, GripHorizontal, GripVertical, Pencil, Plus, PlusCir
 import { useState } from "react";
 import { cn } from "../lib/utils";
 import { Button, Popconfirm, Select } from "antd";
+import { UpdateSpotModal } from "./admin/parks/updateModals";
 
 export function EditableParkMap({ park }) {
   const [spots, setSpots] = useState([...park.spots]);
@@ -11,15 +12,16 @@ export function EditableParkMap({ park }) {
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredColumn, setHoveredColumn] = useState(null);
   const [selectValue, setSelectValue] = useState(null);
+  const [deleteSpot, setDeleteSpot] = useState(false);
+
+  const rows = Math.max(...spots.map(s => s.y)) + extraRows;
+  const columns = Math.max(...spots.map(s => s.x)) + extraColumns;
 
   const spotMap = new Map();
   spots.forEach(spot => {
     spotMap.set(`${spot.x},${spot.y}`, spot);
   });
   
-  
-  const rows = Math.max(...spots.map(s => s.y)) + extraRows;
-  const columns = Math.max(...spots.map(s => s.x)) + extraColumns;
 
   const addRow = (row) => {
     let found = false;
@@ -97,7 +99,7 @@ export function EditableParkMap({ park }) {
     setSelectValue(null);
   }
 
-  const toggeleSelect = (spot, { x, y }) => {
+  const toggleSelect = (spot, { x, y }) => {
     const key = `${x},${y}`;
     const isSelected = selected.some(sel => sel.x === x && sel.y === y);
   
@@ -192,6 +194,39 @@ export function EditableParkMap({ park }) {
   
     return false;
   };
+
+  const deleteRow = (row) => {
+    const newSpots = spots.filter(spot => spot.y !== row).map(spot => ({
+      ...spot,
+      y: spot.y > row ? spot.y - 1 : spot.y
+    }));
+  
+    const newSelected = selected.filter(sel => sel.y !== row).map(sel => ({
+      ...sel,
+      y: sel.y > row ? sel.y - 1 : sel.y
+    }));
+  
+    setSpots(newSpots);
+    setSelected(newSelected);
+    if (row >= rows-extraRows+1) setExtraRows(extraRows-1)
+  };
+
+  const deleteColumn = (col) => {
+    const newSpots = spots.filter(spot => spot.x !== col).map(spot => ({
+      ...spot,
+      x: spot.x > col ? spot.x - 1 : spot.x
+    }));
+  
+    const newSelected = selected.filter(sel => sel.x !== col).map(sel => ({
+      ...sel,
+      x: sel.x > col ? sel.x - 1 : sel.x
+    }));
+  
+    setSpots(newSpots);
+    setSelected(newSelected);
+    if (col >= columns-extraColumns+1) setExtraColumns(extraColumns-1)
+  };
+  
   
 
   return (
@@ -200,7 +235,7 @@ export function EditableParkMap({ park }) {
         <div className="flex items-center justify-center gap-2">
           <Select
             value={selectValue}
-            placeholder={`${selected.length} Selected`}
+            placeholder={<span className="text-neutral">{selected.length} Selected</span>}
             className="rounded w-40"
             onChange={(value) => {
               setSelectValue(value);
@@ -214,6 +249,7 @@ export function EditableParkMap({ park }) {
 
           <Button
             className="btn btn-primary btn-sm"
+            disabled={!selected.length}
             onClick={() => console.log("Edit selected spots:", selected)}
           >
             <Pencil size={16} /> Edit Spots
@@ -235,28 +271,6 @@ export function EditableParkMap({ park }) {
           </Button>
         </Popconfirm>
       </div>
-
-      {/* <div className="flex items-center justify-between gap-2 mx-4">
-        <div className="flex items-center justify-center gap-2">
-          <Select placeholder={`${selected.length} Selected`} className="rounded">
-            <Select.Option value="">Select all</Select.Option>
-            <Select.Option value="">Deselect all</Select.Option>
-            <Select.Option value="">Inverse</Select.Option>
-          </Select>
-          <Button className="btn btn-primary btn-sm" onClick={}>
-            <Pencil size={16} />Edit Spots
-          </Button>
-        </div>
-        <Popconfirm
-          title="Are you sure you want to delete these spots?"
-          onConfirm={}
-          okText="Yes"
-          cancelText="No"
-          disabled={}
-        >
-          <Button disabled={} className="btn btn-error btn-sm" ><Trash />Delete {hasSelected ? `${selected.length}` : ""}</Button>
-        </Popconfirm>
-      </div> */}
       <div className="flex flex-col p-20 bg-base-200">
         {Array.from({ length: rows }, (_, y) => (
           <div key={y} className="flex items-center relative">
@@ -274,6 +288,18 @@ export function EditableParkMap({ park }) {
               onMouseLeave={() => setHoveredRow(null)}
             >
               <GripVertical size={16} />
+            </div>
+            <div
+              className="absolute z-20 -right-7.5 top-6 p-0.5 rounded border cursor-pointer transition hover:scale-110 bg-red-100 hover:border-red-500 hover:text-red-500"
+              onClick={() => deleteRow(y)}
+              onMouseEnter={() => {
+                setDeleteSpot(true)
+                setHoveredRow(y)}}
+              onMouseLeave={() => {
+                setDeleteSpot(false)
+                setHoveredRow(null)}}
+            >
+              <Trash size={16} />
             </div>
             { y == rows-1 &&
               <div className="absolute z-20 -left-8 -bottom-[11px] flex items-center arrow">
@@ -318,28 +344,42 @@ export function EditableParkMap({ park }) {
                       </span>
                   </div>
                   }
+                  {y === rows - 1 && (
+                    <div
+                      className="absolute z-20 left-6 -bottom-7.5 p-0.5 rounded border cursor-pointer transition hover:scale-110 bg-red-100 hover:border-red-500 hover:text-red-500"
+                      onClick={() => deleteColumn(x)}
+                      onMouseEnter={() => {
+                        setDeleteSpot(true)
+                        setHoveredColumn(x)}}
+                      onMouseLeave={() => {
+                        setDeleteSpot(false)
+                        setHoveredColumn(null)}}
+                    >
+                      <Trash size={16} />
+                    </div>
+                  )}
                   <div
                     key={`${x}-${y}`}
-                    onClick={() => toggeleSelect(spot, {x, y})}
+                    onClick={() => toggleSelect(spot, {x, y})}
                     className={cn(
-                      "w-16 h-16 m-0.5 select-none transition hover:scale-105 hover:cursor-pointer rounded flex flex-col justify-center items-center text-xs",
+                      "w-16 h-16 m-0.5 arrow select-none transition-[scale] hover:scale-105 hover:cursor-pointer rounded flex flex-col justify-center items-center text-xs",
                       spot ? "border border-neutral bg-white" : "border border-primary bg-white/50 opacity-0 hover:opacity-100",
                       isSelected && "ring-4 ring-primary border-0 ring-offset-0 bg-blue-200 opacity-100",
-                      hoveredRow === y && "bg-blue-100 border-primary opacity-100",
-                      hoveredColumn === x && "bg-blue-100 border-primary opacity-100"
+                      (hoveredRow === y || hoveredColumn === x) && `${deleteSpot ? "bg-red-100 border-error" : "bg-blue-100 border-primary"} opacity-100`,
+                      spot?.status == 'maintenance' && "bg-yellow-400",
                     )}
                       >
                     {spot ? (
                       <>
-                        <div className="font-semibold">{spot.nom}</div>
+                        <div className="font-semibold">{spot.name}</div>
                         <div className="text-[10px] text-gray-600">
                           x:{x}, y:{y}
                         </div>
                       </>
                     ) : (
-                      <div className="flex justify-center items-center">
-                        <PlusCircle className={`text-primary ${isSelected && "opacity-0"}`} size={20} />
-                      </div>
+                      <span className="flex justify-center items-center opacity-0">
+                        <PlusCircle className="text-primary" size={20} />
+                      </span>
                     )}
                   </div>
                 </div>
@@ -348,6 +388,17 @@ export function EditableParkMap({ park }) {
           </div>
         ))}
       </div>
+      {/* {currentSpot && (
+        <UpdateSpotModal
+          isOpen={isUpdateSpotModalOpen}
+          onClose={() => {
+            setIsUpdateSpotModalOpen(false)
+            setCurrentSpot(null)
+          }}
+          spot={currentSpot}
+          onUpdate={handleUpdateSpot}
+        />
+      )} */}
     </div>
   );
 }
@@ -378,9 +429,9 @@ export function ParkMap({park}) {
                   key={`${x}-${y}`}
                   className={`w-16 h-16 border m-0.5 rounded flex flex-col justify-center items-center text-xs ${
                     spot
-                      ? spot.status === 'disponible'
+                      ? spot.status === 'available'
                         ? 'bg-green-400'
-                        : spot.status === 'reserve'
+                        : spot.status === 'reserved'
                         ? 'bg-yellow-400'
                         : 'bg-red-400'
                       : 'bg-white'
@@ -388,7 +439,7 @@ export function ParkMap({park}) {
                 >
                   {spot ? (
                     <>
-                      <div className="font-semibold">{spot.nom}</div>
+                      <div className="font-semibold">{spot.name}</div>
                       <div className="text-[10px] text-gray-600">
                         x:{x}, y:{y}
                       </div>
@@ -481,9 +532,9 @@ export function test({ park }) {
                     key={`${x}-${y}`}
                     className={`w-16 h-16 ${spot && "border"} m-0.5 rounded flex flex-col justify-center items-center text-xs ${
                       spot
-                      ? spot.status === "disponible"
+                      ? spot.status === "available"
                       ? "bg-green-400"
-                      : spot.status === "reserve"
+                      : spot.status === "reserved"
                       ? "bg-yellow-400"
                       : "bg-red-400"
                         : "bg-white"
@@ -491,7 +542,7 @@ export function test({ park }) {
                       >
                     {spot ? (
                       <>
-                        <div className="font-semibold">{spot.nom}</div>
+                        <div className="font-semibold">{spot.name}</div>
                         <div className="text-[10px] text-gray-600">
                           x:{x}, y:{y}
                         </div>

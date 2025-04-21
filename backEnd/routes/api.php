@@ -3,7 +3,7 @@
 use App\Http\Middleware\IsAdminEmployeeMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ParcController;
+use App\Http\Controllers\ParkController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpotController;
 use App\Http\Controllers\UserController;
@@ -29,7 +29,7 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
-    Route::apiResource("parcs",ParcController::class)->except(['index', 'show']);
+    Route::apiResource("parks",ParkController::class)->except(['index', 'show']);
     Route::delete('spots', [SpotController::class, 'destroyMultiple'])->name('spots.destroyMultiple');
     Route::post('spots/multiple', [SpotController::class, 'storeMultiple'])->name('spots.storeMultiple');
 
@@ -54,12 +54,12 @@ Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
 });
 
 // internaute routes
-Route::get("/parcs", [ParcController::class, 'index']);
-Route::get("/parcs/{id}", [ParcController::class, 'show']);
+Route::get("/parks", [ParkController::class, 'index']);
+Route::get("/parks/{id}", [ParkController::class, 'show']);
 
 // routes li mazal ma tkhchaw f blasthomm
-Route::get('/parcs/{id}/employes',[ParcController::class,'getParcEmployes']);
-Route::get('/parcs/{id}/spots',[ParcController::class,'getParcSpots']);
+Route::get('/parks/{id}/employes',[ParkController::class,'getParkEmployes']);
+Route::get('/parks/{id}/spots',[ParkController::class,'getParkSpots']);
 
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
 Route::apiResource('parking-tickets', ParkingTicketController::class);

@@ -22,10 +22,12 @@ class SpotRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255',
             'type' => 'required|string|max:255',
             'status' => 'required|string|max:255',
-            'parc_id' => 'required|exists:parcs,id',
+            'park_id' => 'required|exists:parks,id',
+            'x' => 'nullable|integer',
+            'y' => 'nullable|integer',
         ];
     }
 }

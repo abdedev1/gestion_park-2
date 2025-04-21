@@ -1,28 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getEmployeSpots } from '../Redux/Reducer/spotsSlice';
-import { fetchPricing_rates } from '../Redux/Reducer/pracingRatesSlice';
-import { addParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
+import { getEmployeeSpots } from '../Redux/Reducer/spotsSlice';
+import { fetchPricingRates } from '../Redux/Reducer/pricingRatesSlice';
+import { addParkingTicket, updateParkingTicket, fetchParkingTickets } from '../Redux/Reducer/parkingTicketsSlice';
 import { updateSpot } from '../Redux/Reducer/spotsSlice';
-import { updateParking_ticket } from '../Redux/Reducer/parkingTicketsSlice';
-import { fetchParking_tickets } from '../Redux/Reducer/parkingTicketsSlice';
 import { FloatButton } from 'antd';
 
-
-const selectTicketForSpot = (tickets, spotId) => 
+const selectTicketForSpot = (tickets, spotId) =>
     tickets.find(t => Number(t.spot_id) === Number(spotId) && t.status === "active");
 
-export default function SpotsEmploye() {
+export default function SpotsEmployee() {
     const { spots } = useSelector(state => state.spots);
     const { pricing_rates } = useSelector(state => state.pricing_rates);
     const { parking_tickets } = useSelector(state => state.parking_tickets);
     const dispatch = useDispatch();
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
     const [formData, setFormData] = useState({
         clientName: '',
-        spot_id: '',  
+        spot_id: '',
         client_id: null,
         base_rate_id: null,
         entry_time: '',
@@ -32,22 +29,22 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
-        dispatch(getEmployeSpots(1));
-        dispatch(fetchPricing_rates());
-        dispatch(fetchParking_tickets());
+        dispatch(getEmployeeSpots(1));
+        dispatch(fetchPricingRates());
+        dispatch(fetchParkingTickets());
     }, [dispatch]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
+
         if (name === 'exit_time' && formData.entry_time) {
             const entryTime = new Date(formData.entry_time);
             const exitTime = new Date(value);
             const durationInHours = (exitTime - entryTime) / (1000 * 60 * 60);
-            
+
             const rate = pricing_rates.find(r => r.id === formData.base_rate_id);
             const pricePerHour = rate ? rate.price_per_hour : 0;
-            
+
             setFormData(prev => ({
                 ...prev,
                 [name]: value,
@@ -64,82 +61,82 @@ export default function SpotsEmploye() {
     const handleSpotClick = (spot) => {
         setSelectedSpot(spot);
         const ticket = selectTicketForSpot(parking_tickets, spot.id);
-        
-        if (spot.status === "disponible") {
+
+        if (spot.status === "available") {
             setFormData({
-                clientName: '',  
-                spot_id: spot.id, 
-                base_rate_id: pricing_rates[0]?.id || null, 
-                client_id: null,  
+                clientName: '',
+                spot_id: spot.id,
+                base_rate_id: pricing_rates[0]?.id || null,
+                client_id: null,
                 entry_time: new Date().toISOString().slice(0, 16),
-                exit_time: null,  
-                total_price: 0,  
+                exit_time: null,
+                total_price: 0,
                 status: 'active'
             });
         } else if (ticket) {
             console.log(ticket)
             setFormData({
-                clientName: ticket.clientName,  
-                spot_id: spot.id, 
-                base_rate_id: ticket.base_rate_id, 
-                client_id: ticket.client_id,  
+                clientName: ticket.clientName,
+                spot_id: spot.id,
+                base_rate_id: ticket.base_rate_id,
+                client_id: ticket.client_id,
                 entry_time: ticket.entry_time,
-                exit_time: ticket.exit_time || null,  
-                total_price: ticket.total_price || 0,  
+                exit_time: ticket.exit_time || null,
+                total_price: ticket.total_price || 0,
                 status: ticket.status
             });
         }
-        
+
         setIsModalOpen(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedSpot) return;
-        
+
         try {
-            if (selectedSpot.status === "disponible") {
-                 await dispatch(addParking_ticket(formData));
-                 await dispatch(updateSpot({
+            if (selectedSpot.status === "available") {
+                await dispatch(addParkingTicket(formData));
+                await dispatch(updateSpot({
                     id: formData.spot_id,
-                    updatedSpot: { ...selectedSpot, status: "reserve" }
+                    updatedSpot: { ...selectedSpot, status: "reserved" }
                 }));
             } else {
                 const ticket = selectTicketForSpot(parking_tickets, selectedSpot.id);
-                
+
                 if (ticket) {
-                     await dispatch(updateParking_ticket({
+                    await dispatch(updateParkingTicket({
                         id: ticket.id,
-                        updatedParking_ticket: { 
-                            ...formData, 
+                        updatedParking_ticket: {
+                            ...formData,
                             status: 'completed',
                             exit_time: formData.exit_time
                         }
                     }));
-                    
-                     await dispatch(updateSpot({
+
+                    await dispatch(updateSpot({
                         id: formData.spot_id,
-                        updatedSpot: { ...selectedSpot, status: "disponible" }
+                        updatedSpot: { ...selectedSpot, status: "available" }
                     }));
                 }
             }
-            
+
             // Refresh data
-            await dispatch(getEmployeSpots(1));
-            await dispatch(fetchParking_tickets());
-            
+            await dispatch(getEmployeeSpots(1));
+            await dispatch(fetchParkingTickets());
+
             setIsModalOpen(false);
         } catch (error) {
-            console.error("Erreur lors de la mise à jour:", error);
+            console.error("Error during update:", error);
         }
     };
 
     const renderSpotButton = (spot) => {
         const ticket = selectTicketForSpot(parking_tickets, spot.id);
-        const isReserved = spot.status === 'reserve';
-        const isAvailable = spot.status === 'disponible';
-        
+        const isReserved = spot.status === 'reserved';
+        const isAvailable = spot.status === 'available';
+
         return (
             <button
                 key={spot.id}
@@ -151,12 +148,12 @@ export default function SpotsEmploye() {
                             ? 'bg-white text-black border-gray-300'
                             : 'bg-gray-300 text-gray-600'
                     }
-                    ${spot.type === 'handicap' ? 'flex items-center justify-center gap-1' : ''}`}
+                    ${spot.type === 'accessible' ? 'flex items-center justify-center gap-1' : ''}`}
             >
-                {isReserved && ticket 
-                    ? `${spot.nom}` 
-                    : spot.nom}
-                {spot.type === 'handicap' && <span className="text-lg">♿</span>}
+                {isReserved && ticket
+                    ? `${spot.name}`
+                    : spot.name}
+                {spot.type === 'accessible' && <span className="text-lg">♿</span>}
             </button>
         );
     };
@@ -177,14 +174,14 @@ export default function SpotsEmploye() {
                 <div className="fixed inset-0 bg-black bg-opacity-1 flex justify-center items-center z-500">
                     <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md">
                         <h2 className="text-xl font-bold mb-4">
-                            {selectedSpot?.status === "disponible" 
-                                ? "Réservation du Spot" 
-                                : "Libération du Spot"}
+                            {selectedSpot?.status === "available"
+                                ? "Spot Reservation"
+                                : "Spot Release"}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label htmlFor="clientName" className="block text-sm font-medium">
-                                    Nom du Client
+                                    Client Name
                                 </label>
                                 <input
                                     type="text"
@@ -192,11 +189,11 @@ export default function SpotsEmploye() {
                                     name="clientName"
                                     value={formData.clientName}
                                     onChange={handleInputChange}
-                                    required={selectedSpot?.status === "disponible"}
-                                    disabled={selectedSpot?.status === "reserve"}
+                                    required={selectedSpot?.status === "available"}
+                                    disabled={selectedSpot?.status === "reserved"}
                                     className={`w-full px-3 py-2 border rounded ${
-                                        selectedSpot?.status === "reserve" 
-                                            ? "bg-gray-200" 
+                                        selectedSpot?.status === "reserved"
+                                            ? "bg-gray-200"
                                             : "border-gray-300"
                                     }`}
                                 />
@@ -219,7 +216,7 @@ export default function SpotsEmploye() {
 
                                 <div>
                                     <label htmlFor="price" className="block text-sm font-medium">
-                                        Prix Par Heure
+                                        Price Per Hour
                                     </label>
                                     <input
                                         type="number"
@@ -237,20 +234,20 @@ export default function SpotsEmploye() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="spotName" className="block text-sm font-medium">
-                                        Nom du Spot
+                                        Spot Name
                                     </label>
                                     <input
                                         type="text"
                                         id="spotName"
                                         name="spotName"
-                                        value={selectedSpot?.nom || ''}
+                                        value={selectedSpot?.name || ''}
                                         readOnly
                                         className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
                                     />
                                 </div>
                                 <div>
                                     <label htmlFor="entry_time" className="block text-sm font-medium">
-                                        Date et Heure d'Entrée
+                                        Entry Date and Time
                                     </label>
                                     <input
                                         type="datetime-local"
@@ -263,10 +260,10 @@ export default function SpotsEmploye() {
                                 </div>
                             </div>
 
-                            {selectedSpot?.status === "reserve" && (
+                            {selectedSpot?.status === "reserved" && (
                                 <div>
                                     <label htmlFor="exit_time" className="block text-sm font-medium">
-                                        Date et Heure de Sortie
+                                        Exit Date and Time
                                     </label>
                                     <input
                                         type="datetime-local"
@@ -283,7 +280,7 @@ export default function SpotsEmploye() {
                             {formData.exit_time && (
                                 <div>
                                     <label htmlFor="total_price" className="block text-sm font-medium">
-                                        Prix Total
+                                        Total Price
                                     </label>
                                     <input
                                         type="number"
@@ -301,14 +298,14 @@ export default function SpotsEmploye() {
                                     type="submit"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                                 >
-                                    {selectedSpot?.status === "disponible" ? 'Confirmer' : 'Terminer'}
+                                    {selectedSpot?.status === "available" ? 'Confirm' : 'Finish'}
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setIsModalOpen(false)} 
+                                    onClick={() => setIsModalOpen(false)}
                                     className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                                 >
-                                    Annuler
+                                    Cancel
                                 </button>
                             </div>
                         </form>

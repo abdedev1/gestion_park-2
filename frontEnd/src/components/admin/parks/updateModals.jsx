@@ -27,14 +27,14 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
         form={form}
         layout="vertical"
         initialValues={{
-          nom: park?.nom || "",
-          adresse: park?.adresse || "",
+          name: park?.name || "",
+          address: park?.address || "",
           numberSpots: park?.numberSpots || 0,
         }}
         className="py-4"
       >
         <Form.Item
-          name="nom"
+          name="name"
           label={<span className="font-medium">Park Name</span>}
           rules={[{ required: true, message: 'Please input the park name!' }]}
         >
@@ -42,7 +42,7 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
         </Form.Item>
 
         <Form.Item
-          name="adresse"
+          name="address"
           label={<span className="font-medium">Address</span>}
           rules={[{ required: true, message: 'Please input the address!' }]}
         >
@@ -101,14 +101,14 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
         form={form}
         layout="vertical"
         initialValues={{
-          nom: spot?.nom || "",
-          status: spot?.status || "disponible",
+          name: spot?.name || "",
+          status: spot?.status || "available",
           type: spot?.type || "",
         }}
         className="py-4"
       >
         <Form.Item
-          name="nom"
+          name="name"
           label={<span className="font-medium">Spot Name</span>}
         >
           <Input placeholder="Enter spot name" />
@@ -120,9 +120,9 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
         >
           <Select placeholder="Select a type" className="rounded">
             <Select.Option value="">Select a type</Select.Option>
-            <Select.Option value="Moteur voiture">Moteur voiture</Select.Option>
-            <Select.Option value="Handicap">Handicap</Select.Option>
-            <Select.Option value="Electric Vehicle">Electric Vehicle</Select.Option>
+            <Select.Option value="standard">Standard</Select.Option>
+            <Select.Option value="accessible">Accessible</Select.Option>
+            <Select.Option value="electric">Electric</Select.Option>
           </Select>
         </Form.Item>
 
@@ -132,8 +132,85 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
           rules={[{ required: true, message: 'Please select a status!' }]}
         >
           <Select className="rounded">
-            <Select.Option value="disponible">Available</Select.Option>
-            <Select.Option value="reserve">Reserved</Select.Option>
+            <Select.Option value="available">Available</Select.Option>
+            <Select.Option value="reserved">Reserved</Select.Option>
+            <Select.Option value="maintenance">Maintenance</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <div className="flex justify-between gap-2 mt-4">
+          <Button onClick={onClose} className="rounded">
+            Cancel
+          </Button>
+          <Button 
+            type="primary" 
+            onClick={handleSubmit} 
+            loading={loading}
+            className="rounded"
+          >
+            Update Spot
+          </Button>
+        </div>
+      </Form>
+    </Modal>
+  )
+}
+
+export function UpdateMultipleSpotModal({ isOpen, onClose, selected, setSpots }) {
+  const [form] = Form.useForm()
+  const [empty, setEmpty] = useState(true)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true)
+      const values = await form.validateFields()
+      onUpdate(values)
+      onClose()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Modal
+      title={<span className="text-lg font-medium">Edit {selected.length} Spots</span>}
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        className="py-4"
+      >
+        <Form.Item
+          name="name"
+          label={<span className="font-medium">Spot Name</span>}
+        >
+          <Input placeholder="Enter spot name" />
+        </Form.Item>
+
+        <Form.Item
+          name="type"
+          label={<span className="font-medium">Type</span>}
+        >
+          <Select placeholder="Select a type" className="rounded">
+            <Select.Option value="">Select a type</Select.Option>
+            <Select.Option value="standard">Standard</Select.Option>
+            <Select.Option value="accessible">Accessible</Select.Option>
+            <Select.Option value="electric">Electric</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="status"
+          label={<span className="font-medium">Status</span>}
+          rules={[{ required: true, message: 'Please select a status!' }]}
+        >
+          <Select className="rounded">
+            <Select.Option value="available">Available</Select.Option>
+            <Select.Option value="reserved">Reserved</Select.Option>
             <Select.Option value="maintenance">Maintenance</Select.Option>
           </Select>
         </Form.Item>

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Parc;
+use App\Models\Park;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,10 +18,10 @@ class SpotFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom' => 'P ' . $this->faker->numberBetween(1, 50),
-            'status' => $this->faker->randomElement(['disponible', 'reserve']),
-            'type' => $this->faker->randomElement(['voiture', 'moto', 'velo', 'handicape', 'electric']),
-            'parc_id' => Parc::inRandomOrder()->value('id'),
+            'name' => 'P ' . $this->faker->numberBetween(1, 50),
+            'status' => $this->faker->randomElement(['available', 'reserved']),
+            'type' => $this->faker->randomElement(['standard', 'accessible', 'electric']),
+            'park_id' => Park::inRandomOrder()->value('id'),
             'x' => $this->faker->numberBetween(0, 15),
             'y' => $this->faker->numberBetween(0, 20),
         ];

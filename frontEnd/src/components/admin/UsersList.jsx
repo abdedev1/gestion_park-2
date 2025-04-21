@@ -125,7 +125,7 @@ function UsersList() {
       email: user.email,
       birth_date: user.birth_date?.split("T")[0],
       role_id: roleId,
-      park_id: employeeInfo.parc_id || undefined,
+      park_id: employeeInfo.park_id || undefined,
     })
     setIsModalOpen(true)
   }
@@ -168,12 +168,12 @@ function UsersList() {
 
           if (employeeExists) {
             await axios.put(`http://localhost:8000/api/employes/${employeeData[selectedUser.id].id}`, {
-              parc_id: park_id,
+              park_id: park_id,
             })
           } else {
             await axios.post(`http://localhost:8000/api/employes`, {
               user_id: selectedUser.id,
-              parc_id: park_id,
+              park_id: park_id,
             })
           }
 
@@ -182,7 +182,7 @@ function UsersList() {
             [selectedUser.id]: {
               ...(prev[selectedUser.id] || {}),
               user_id: selectedUser.id,
-              parc_id: park_id,
+              park_id: park_id,
             },
           }))
         } catch (error) {
@@ -226,7 +226,7 @@ function UsersList() {
   // Function to get park name by ID
   const getParkName = (parkId) => {
     const park = parks.find((p) => p.id === parkId)
-    return park ? park.nom : `Park ${parkId}`
+    return park ? park.name : `Park ${parkId}`
   }
 
   const columns = [
@@ -278,9 +278,9 @@ function UsersList() {
 
         // Get employee data for this user
         const employee = employeeData[record.id]
-        if (!employee || !employee.parc_id) return "Not assigned"
+        if (!employee || !employee.park_id) return "Not assigned"
 
-        return getParkName(employee.parc_id)
+        return getParkName(employee.park_id)
       },
     },
     {
@@ -410,7 +410,7 @@ function UsersList() {
               <Select placeholder="Select a park">
                 {parks.map((park) => (
                   <Select.Option key={park.id} value={park.id}>
-                    {park.nom || `Park ID: ${park.id}`}
+                    {park.name || `Park ID: ${park.id}`}
                   </Select.Option>
                 ))}
               </Select>

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             PricingRateSeeder::class,
             UserSeeder::class,
             AdminSeeder::class,
-            ParcSeeder::class,
+            ParkSeeder::class,
             EmployeSeeder::class,
             ClientSeeder::class,
             CartSeeder::class,

@@ -12,8 +12,8 @@ class PricingRateController extends Controller
      */
     public function index()
     {
-        $pracing_rate = PricingRate::all();
-        return response()->json($pracing_rate,201);
+        $pricing_rate = PricingRate::all();
+        return response()->json($pricing_rate,201);
     }
 
   

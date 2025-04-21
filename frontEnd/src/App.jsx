@@ -89,7 +89,7 @@ function App() {
                   {/* partie admin */}
 
                     <Route element={<ProtectedRoute requiredRole="admin" />}>
-                      <Route path="dashboard" element={<h1>Dashbord</h1>} />
+                      <Route path="dashboard" element={<h1>Dashboard</h1>} />
                       <Route path="users" element={<UsersList/>} />
                       <Route path="roles" element={<RolesList/>} />
                       <Route path="parks" element={<ParkList/>} />
