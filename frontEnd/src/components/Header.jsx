@@ -17,7 +17,7 @@ export default function Header() {
     
     const { user, token, isLoading } = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
-    const [color, setcolor] = useState("bg-neutral text-neutral-content");
+    const [color, setColor] = useState("bg-neutral text-neutral-content");
 
     const switchTab = (el) => {
       const activeTab = el?.getBoundingClientRect ? el : document.querySelector(`[data-path="${location.pathname}"]`);
@@ -47,7 +47,7 @@ export default function Header() {
           "bg-warning text-warning-content",
           "bg-secondary text-secondary-content",
         ]
-        setcolor(colors[user.id % colors.length]);
+        setColor(colors[user.id % colors.length]);
       }
     }, [user]);
     
@@ -71,7 +71,7 @@ export default function Header() {
           <div className="gap-5 hidden md:inline-flex relative">
             {user?.role === "admin" && (
               <>
-                <div data-path="/dashboard" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashborad</NavLink></div>
+                <div data-path="/dashboard" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashboard</NavLink></div>
                 <div data-path="/users" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">Users</NavLink></div>
                 <div data-path="/parks" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks">Parks</NavLink></div>
                 <div data-path="/roles" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">Roles</NavLink></div>

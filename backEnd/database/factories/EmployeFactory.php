@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Parc;
+use App\Models\Park;
 use App\Models\User;
 use App\Models\Employe;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,7 +26,7 @@ class EmployeFactory extends Factory
             })
             ->whereNotIn('id', $userIds)
             ->inRandomOrder()->value('id'),
-            'parc_id' => Parc::inRandomOrder()->value('id'),
+            'park_id' => Park::inRandomOrder()->value('id'),
         ];
     }
 }

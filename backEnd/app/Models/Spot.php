@@ -10,15 +10,17 @@ class Spot extends Model
     /** @use HasFactory<\Database\Factories\SpotFactory> */
     use HasFactory;
     protected $fillable = [
-        'nom',
+        'name',
         'type',
         'status',
-        'parc_id',
+        'x',
+        'y',
+        'park_id',
     ];
    
-    public function parc()
+    public function park()
     {
-        return $this->belongsTo(Parc::class);
+        return $this->belongsTo(Park::class);
     }
 
 }

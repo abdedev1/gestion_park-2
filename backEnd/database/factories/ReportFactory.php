@@ -18,7 +18,7 @@ class ReportFactory extends Factory
     public function definition(): array
     {
         return [
-            'sujet' => $this->faker->sentence(),
+            'subject' => $this->faker->sentence(),
             'date' => $this->faker->date(),
             'client_id' => Client::factory(),
         ];

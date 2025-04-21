@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('base_rate_id')->constrained('pricing_rates')->onDelete('cascade');
             $table->date('duration');
-            $table->foreignId('parc_id')->constrained('parcs')->onDelete('cascade');
+            $table->foreignId('park_id')->constrained('parks')->onDelete('cascade');
             $table->boolean('status');
             $table->timestamps();
         });

@@ -38,3 +38,12 @@ export const deleteUser = async (userId) => {
   }
 };
 
+export const getEmployes = async () => {
+  try {
+    const response = await axios.get('employes');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Employes:', error);
+    throw error;
+  }
+}

@@ -16,7 +16,7 @@ export default function Headerr() {
                         <li><Link to="/admin/users">Users</Link></li>
                         <li><Link to="/admin/roles">Roles</Link></li>
                         <li><Link to="/admin/reservations">Reservations</Link></li>
-                        <li><Link to="/admin/parcs">Parcs</Link></li>
+                        <li><Link to="/admin/parks">Parks</Link></li>
                         <li><Link to="/admin/test">QR Scanner</Link></li>
                     </ul>
                 </div>

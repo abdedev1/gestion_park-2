@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Parc;
+use App\Models\Park;
 use App\Models\User;
 use App\Models\Employe;
 use Illuminate\Database\Seeder;
@@ -26,7 +26,7 @@ class EmployeSeeder extends Seeder
         foreach ($userIds as $userId) {
             Employe::create([
                 'user_id' => $userId,
-                'parc_id' => Parc::inRandomOrder()->value('id'),
+                'park_id' => Park::inRandomOrder()->value('id'),
             ]);
         }
     }
