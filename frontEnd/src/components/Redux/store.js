@@ -11,7 +11,7 @@ export const store = configureStore({
         auth: AuthReducer,
         employes:employesReducer,
         spots:spotsReducer,
-        parcs: parcsReducer,
+        parks: parcsReducer,
         pricingRates:pricingRatesReducer,
         parkingTickets:parkingTicketsReducer
     }

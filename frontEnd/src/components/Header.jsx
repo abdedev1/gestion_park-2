@@ -18,7 +18,7 @@ export default function Header() {
     const { user, token, isLoading } = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
     const [color, setColor] = useState("bg-neutral text-neutral-content");
-
+    console.log(token)
     const switchTab = (el) => {
       const activeTab = el?.getBoundingClientRect ? el : document.querySelector(`[data-path="${location.pathname}"]`);
       if (activeTab) {

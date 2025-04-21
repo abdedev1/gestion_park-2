@@ -185,9 +185,7 @@ export default function QRCodeScanner({onClose, openModel}) {
           <h2 className="text-lg font-semibold mb-2">Scan Result:</h2>
             {updateTicketG && (
               <div className="bg-gray-100 p-4 rounded-md mb-4 break-all">
-                {/* <p className="text-xl font-bold text-center text-balance text-primary mb-4">
-                  Merci pour votre parking dans le parc ParkEase
-                </p> */}
+                
                 <p className="font-mono">Client: {updateTicketG.clientName}</p>
                 <p className="font-mono">Spot: {updateTicketG.spotName}</p>
                 <p className="font-mono">Entrée: {updateTicketG.entry_time}</p>

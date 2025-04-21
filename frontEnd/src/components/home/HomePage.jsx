@@ -15,7 +15,7 @@ const HomePage = () => {
 
   // Redux
   const dispatch = useDispatch();
-  const { parcs, currentParcSpots, status, searchQuery } = useSelector(state => state.parcs);
+  const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
 
   // Animation variants
   const parkVariants = {
@@ -73,7 +73,7 @@ const HomePage = () => {
   };
 
   // Display logic
-  const displayedParks = showAllParks ? parcs : parcs.slice(0, 3);
+  const displayedParks = showAllParks ? parks : parks.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -240,8 +240,8 @@ const HomePage = () => {
                       </div>
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-xl mb-1">{park.nom}</h3>
-                      <p className="text-gray-600 mb-4">{park.adresse}</p>
+                      <h3 className="font-bold text-xl mb-1">{park.name}</h3>
+                      <p className="text-gray-600 mb-4">{park.address}</p>
                       <div className="flex justify-between items-center mb-4">
                         <div>
                           <p className="text-gray-500 text-sm">Available spots</p>
@@ -260,7 +260,7 @@ const HomePage = () => {
                 ))}
               </div>
               
-              {!showAllParks && parcs.length > 3 && (
+              {!showAllParks && parks.length > 3 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}

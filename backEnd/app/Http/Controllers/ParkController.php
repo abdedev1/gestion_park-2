@@ -117,11 +117,11 @@ class ParkController extends Controller
         ], 400);
     }
 
-    $parcs = Park::with('spots')
-        ->where('nom', 'like', "%{$query}%")
-        ->orWhere('adresse', 'like', "%{$query}%")
+    $parks = Park::with('spots')
+        ->where('name', 'like', "%{$query}%")
+        ->orWhere('address', 'like', "%{$query}%")
         ->get();
 
-    return response()->json($parcs, 200);
+    return response()->json($parks, 200);
 }
 }
