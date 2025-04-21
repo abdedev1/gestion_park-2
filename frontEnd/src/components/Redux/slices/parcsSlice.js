@@ -1,18 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axios } from "../../../assets/api/axios";
 
-export const fetchParcs = createAsyncThunk('parcs/fetchParcs', async () => {
-    const response = await axios.get('parcs');
+export const fetchParcs = createAsyncThunk('parks/fetchParcs', async () => {
+    const response = await axios.get('parks');
     return response.data;
 });
 
-export const searchParcs = createAsyncThunk('parcs/searchParcs', async (query) => {
-    const response = await axios.get(`parcs/search?q=${query}`);
+export const searchParcs = createAsyncThunk('parks/searchParcs', async (query) => {
+    const response = await axios.get(`parks/search?q=${query}`);
     return response.data;
 });
 
-export const getParcSpots = createAsyncThunk("parcs/getParcSpots", async (parcId) => {
-    const response = await axios.get(`parcs/${parcId}/spots`);
+export const getParcSpots = createAsyncThunk("parks/getParcSpots", async (parcId) => {
+    const response = await axios.get(`parks/${parcId}/spots`);
     return response.data;
 });
 
