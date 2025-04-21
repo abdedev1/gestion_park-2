@@ -22,20 +22,20 @@ export const deleteParkingTicket = createAsyncThunk("parking_ticket/deleteParkin
 });
 
 const parkingTicketSlice = createSlice({
-  name: 'parking_tickets',
-  initialState: { parking_tickets: [], status: 'idle', error: null },
+  name: 'parkingTickets',
+  initialState: { parkingTickets: [], status: 'idle', error: null },
   extraReducers: (builder) => {
     builder
       .addCase(fetchParkingTickets.pending, (state) => { state.status = 'loading'; })
-      .addCase(fetchParkingTickets.fulfilled, (state, action) => { state.status = 'succeeded'; state.parking_tickets = action.payload; })
+      .addCase(fetchParkingTickets.fulfilled, (state, action) => { state.status = 'succeeded'; state.parkingTickets = action.payload; })
       .addCase(fetchParkingTickets.rejected, (state, action) => { state.status = 'failed'; state.error = action.error.message; })
-      .addCase(addParkingTicket.fulfilled, (state, action) => { state.parking_tickets.push(action.payload); })
+      .addCase(addParkingTicket.fulfilled, (state, action) => { state.parkingTickets.push(action.payload); })
       .addCase(updateParkingTicket.fulfilled, (state, action) => {
-        const index = state.parking_tickets.findIndex(parking_ticket => parking_ticket.id === action.payload.id);
-        if (index !== -1) state.parking_tickets[index] = action.payload;
+        const index = state.parkingTickets.findIndex(parking_ticket => parking_ticket.id === action.payload.id);
+        if (index !== -1) state.parkingTickets[index] = action.payload;
       })
       .addCase(deleteParkingTicket.fulfilled, (state, action) => {
-        state.parking_tickets = state.parking_tickets.filter(ticket => ticket.id !== action.payload);
+        state.parkingTickets = state.parkingTickets.filter(ticket => ticket.id !== action.payload);
       });
   }
 });

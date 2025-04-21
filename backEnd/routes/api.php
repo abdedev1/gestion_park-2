@@ -1,19 +1,19 @@
 <?php
 
-use App\Http\Middleware\IsAdminEmployeeMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpotController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\isAdminMiddleWare;
 use App\Http\Controllers\EmployeController;
+use App\Http\Middleware\isClientMiddleWare;
+use App\Http\Middleware\isEmployeMiddleWare;
 use App\Http\Controllers\PricingRateController;
 use App\Http\Controllers\ParkingTicketController;
 use App\Http\Middleware\AlreadyLoggedInMiddleware;
-use App\Http\Middleware\isAdminMiddleWare;
-use App\Http\Middleware\isClientMiddleWare;
-use App\Http\Middleware\isEmployeMiddleWare;
+use App\Http\Middleware\IsAdminEmployeeMiddleware;
 
 Route::middleware(AlreadyLoggedInMiddleware::class)->group(function(){
     Route::post("/register", [AuthController::class, 'register']);
@@ -38,11 +38,12 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
 Route::middleware(isEmployeMiddleWare::class)->group(function(){
     Route::apiResource('pricing_rates', PricingRateController::class);
     Route::apiResource('employes', EmployeController::class);
+    Route::get('/parcs/search', [ParkController::class, 'search']);
     
 });
 
 Route::middleware(isClientMiddleWare::class)->group(function(){
-    // client routes
+    
 });
 Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
     // admin and employe routes

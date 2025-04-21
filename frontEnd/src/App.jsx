@@ -18,6 +18,7 @@ import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
+import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
 function App() {
   const dispatch = useDispatch();

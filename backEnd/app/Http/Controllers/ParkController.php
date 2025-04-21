@@ -107,4 +107,21 @@ class ParkController extends Controller
         $spots = Park::find($id)->spots;
         return response()->json($spots,200);
     }
+    public function search(Request $request)
+{
+    $query = $request->query('q');
+    
+    if (!$query) {
+        return response()->json([
+            'message' => 'Search query is required'
+        ], 400);
+    }
+
+    $parcs = Park::with('spots')
+        ->where('nom', 'like', "%{$query}%")
+        ->orWhere('adresse', 'like', "%{$query}%")
+        ->get();
+
+    return response()->json($parcs, 200);
+}
 }
