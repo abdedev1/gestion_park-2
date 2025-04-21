@@ -12,7 +12,7 @@ export const store = configureStore({
         employes:employesReducer,
         spots:spotsReducer,
         parcs: parcsReducer,
-        pricing_rates:pricingRatesReducer,
-        parking_tickets:parkingTicketsReducer
+        pricingRates:pricingRatesReducer,
+        parkingTickets:parkingTicketsReducer
     }
 })

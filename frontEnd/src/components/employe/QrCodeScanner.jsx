@@ -1,6 +1,6 @@
-import { fetchParking_tickets,updateParking_ticket } from '../Redux/slices/parkingTicketsSlice';
+import { fetchParkingTickets,updateParkingTicket } from '../Redux/slices/parkingTicketsSlice';
 import { useSelector,useDispatch } from "react-redux";
-import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
+import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 import isEqual from "lodash/isEqual";
 import { RotateCcw, X } from "lucide-react";
 import { updateSpot,getEmployeSpots  } from "../Redux/slices/spotsSlice";
@@ -20,8 +20,8 @@ export default function QRCodeScanner({onClose, openModel}) {
   const devices = useDevices();
 
 
-  const { parking_tickets } = useSelector(state => state.parking_tickets);
-  const { pricing_rates } = useSelector(state => state.pricing_rates);
+  const { parkingTickets } = useSelector(state => state.parkingTickets);
+  const { pricingRates } = useSelector(state => state.pricingRates);
   const employeeSpots = useSelector(state => state.spots.employeeSpots);
   const {employes} = useSelector(state=>state.employes) 
   const { user } = useSelector((state) => state.auth);
@@ -38,8 +38,8 @@ export default function QRCodeScanner({onClose, openModel}) {
 
   
   useEffect(()=>{
-     dispatch(fetchParking_tickets())
-     dispatch(fetchPricing_rates());
+     dispatch(fetchParkingTickets())
+     dispatch(fetchPricingRates());
      dispatch(fetchEmployes())
   },[dispatch])
 
@@ -90,7 +90,7 @@ export default function QRCodeScanner({onClose, openModel}) {
     const parsedObject = parseQRTextToObject(scanResult);
     if (!parsedObject) return;
 
-    const ticket = parking_tickets.find(ticket =>
+    const ticket = parkingTickets.find(ticket =>
       Number(ticket.spot_id) === Number(parsedObject.spot_id) &&
       ticket.status === "active" &&
       Number(ticket.id) === Number(parsedObject.id)
@@ -103,7 +103,7 @@ export default function QRCodeScanner({onClose, openModel}) {
     const exitTimeStr = now.toISOString().slice(0, 16);
     const durationInHours = (now - entryTime) / (1000 * 60 * 60);
 
-    const rate = pricing_rates.find(r => r.id === ticket.base_rate_id);
+    const rate = pricingRates.find(r => r.id === ticket.base_rate_id);
     const pricePerHour = rate ? rate.price_per_hour : 0;
 
     const updatedTicket = {
@@ -120,9 +120,9 @@ export default function QRCodeScanner({onClose, openModel}) {
     const spot = employeeSpots.find(s => Number(s.id) === Number(ticket.spot_id));
     if (!spot) return;
 
-    await dispatch(updateParking_ticket({
+    await dispatch(updateParkingTicket({
       id: ticket.id,
-      updatedParking_ticket: {
+      updatedParkingTicket: {
         ...updatedTicket,
         status: 'completed'
       }
@@ -130,7 +130,7 @@ export default function QRCodeScanner({onClose, openModel}) {
 
     await dispatch(updateSpot({
       id: ticket.spot_id,
-      updatedSpot: { ...spot, status: "disponible" }
+      updatedSpot: { ...spot, status: "available" }
     }));
 
     if (user && employes.length > 0) {

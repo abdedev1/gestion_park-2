@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ParcController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpotController;

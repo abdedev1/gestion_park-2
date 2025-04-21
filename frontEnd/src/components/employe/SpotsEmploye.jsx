@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
-import { fetchPricing_rates } from '../Redux/slices/pracingRatesSlice';
-import { addParking_ticket,fetchParking_tickets  } from '../Redux/slices/parkingTicketsSlice';
+import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
+import { addParkingTicket,fetchParkingTickets  } from '../Redux/slices/parkingTicketsSlice';
 import { FloatButton } from 'antd';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
@@ -13,7 +13,7 @@ import { generateTicketPDF } from './ticketPdf';
 
 export default function SpotsEmploye() {
     const employeeSpots = useSelector(state => state.spots.employeeSpots);
-    const { pricing_rates } = useSelector(state => state.pricing_rates);
+    const { pricingRates } = useSelector(state => state.pricingRates);
     const [showScanner, setShowScanner] = useState(false);
     const dispatch = useDispatch();
     const { user, token} = useSelector((state) => state.auth);
@@ -33,8 +33,8 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
-        dispatch(fetchPricing_rates());
-        dispatch(fetchParking_tickets());
+        dispatch(fetchPricingRates());
+        dispatch(fetchParkingTickets());
         dispatch(fetchEmployes())
     }, [dispatch]);
 
@@ -60,12 +60,12 @@ export default function SpotsEmploye() {
 
     const handleSpotClick = (spot) => {
       setSelectedSpot(spot)
-      if(spot.status === "disponible"){
+      if(spot.status === "available"){
         setFormData({
             clientName: '',
             spot_id: spot.id,  
             client_id: null,
-            base_rate_id: pricing_rates[0]?.id,
+            base_rate_id: pricingRates[0]?.id,
             entry_time: new Date().toISOString().slice(0, 16),
             exit_time: null,
             total_price: 0,
@@ -80,12 +80,12 @@ export default function SpotsEmploye() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (selectedSpot) {
-            const pricePerHour = pricing_rates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0;
+            const pricePerHour = pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0;
     
-            if (selectedSpot.status === "disponible") {
-                const resultAction = await dispatch(addParking_ticket(formData));
+            if (selectedSpot.status === "available") {
+                const resultAction = await dispatch(addParkingTicket(formData));
     
-                if (addParking_ticket.fulfilled.match(resultAction)) {
+                if (addParkingTicket.fulfilled.match(resultAction)) {
                     const newTicket = resultAction.payload;
                     const ticketId = newTicket.id;
     
@@ -96,7 +96,7 @@ export default function SpotsEmploye() {
     
                     await dispatch(updateSpot({
                         id: formData.spot_id,
-                        updatedSpot: { ...selectedSpot, status: "reserve" }
+                        updatedSpot: { ...selectedSpot, status: "reserved" }
                     }));
     
                     if (employeIdStock) {
@@ -141,24 +141,24 @@ export default function SpotsEmploye() {
                                     key={spot.id}
                                     onClick={() => handleSpotClick(spot)}
                                     className={`text-center py-2 px-3 rounded border  font-medium text-sm w-full flex items-center justify-center
-                                    ${spot.status === "reserve"
+                                    ${spot.status === "reserved"
                                         ? 'bg-gray-800 text-white'
-                                        : spot.status === "disponible"
+                                        : spot.status === "available"
                                         ? 'bg-white text-black border-gray-300 hover:bg-gray-500'
                                         : 'bg-gray-300 text-gray-600'
                                     }`}
                                 >
-                                    {spot.type === 'Handicap' && (
+                                    {spot.type === 'accessible' && (
                                     <FaWheelchair className="w-6 h-6 text-blue-600 mb-1 mr-4" />
                                     )}
-                                    {spot.type === 'Electric Vehicle' && (
+                                    {spot.type === 'electric' && (
                                     <FaChargingStation className="w-6 h-6 text-green-600 mb-1 mr-4" />
                                     )}
-                                    {spot.type === 'Moteur voiture' && (
+                                    {spot.type === 'standard' && (
                                     <FaCar className="w-6 h-6 text-gray-600 mb-1 mr-4" />
                                     )}
 
-                                    {spot.nom}
+                                    {spot.name}
                                 </button>
                             ))}
                         </div>
@@ -169,14 +169,14 @@ export default function SpotsEmploye() {
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center" onClick={() => setIsModalOpen(false)} >
                     <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md" onClick={(e) => e.stopPropagation()}>
                         <h2 className="text-xl font-bold mb-4">
-                            {selectedSpot?.status === "disponible" 
+                            {selectedSpot?.status === "available" 
                                 ? "Réservation du Spot" 
                                 : "Libération du Spot"}
                         </h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label htmlFor="clientName" className="block text-sm font-medium">
-                                    Nom du Client
+                                    Client Name
                                 </label>
                                 <input
                                     type="text"
@@ -184,10 +184,10 @@ export default function SpotsEmploye() {
                                     name="clientName"
                                     value={formData.clientName}
                                     onChange={handleInputChange}
-                                    required={selectedSpot?.status === "disponible"}
-                                    disabled={selectedSpot?.status === "reserve"}
+                                    required={selectedSpot?.status === "available"}
+                                    disabled={selectedSpot?.status === "reserved"}
                                     className={`w-full px-3 py-2 border rounded ${
-                                        selectedSpot?.status === "reserve" 
+                                        selectedSpot?.status === "reserved" 
                                             ? "bg-gray-200" 
                                             : "border-gray-300"
                                     }`}
@@ -218,7 +218,7 @@ export default function SpotsEmploye() {
                                         id="price"
                                         name="price"
                                         value={
-                                            pricing_rates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0
+                                            pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0
                                         }
                                         readOnly
                                         className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
@@ -229,20 +229,20 @@ export default function SpotsEmploye() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="spotName" className="block text-sm font-medium">
-                                        Nom du Spot
+                                        Spot Name
                                     </label>
                                     <input
                                         type="text"
                                         id="spotName"
                                         name="spotName"
-                                        value={selectedSpot?.nom || ''}
+                                        value={selectedSpot?.name || ''}
                                         readOnly
                                         className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
                                     />
                                 </div>
                                 <div>
                                     <label htmlFor="entry_time" className="block text-sm font-medium">
-                                        Date et Heure d'Entrée
+                                        Entry Date and Time
                                     </label>
                                     <input
                                         type="datetime-local"
@@ -259,14 +259,14 @@ export default function SpotsEmploye() {
                                     type="submit"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                                 >
-                                    Confirmer
+                                    Confirm
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setIsModalOpen(false)} 
                                     className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                                 >
-                                    Annuler
+                                    Cancel
                                 </button>
                             </div>
                         </form>

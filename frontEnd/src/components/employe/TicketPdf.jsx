@@ -49,10 +49,10 @@ export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) =>
 
   drawLine("Client", formData.clientName, 0);
   drawLine("Prix / Heure", `${pricePerHour} MAD`, 35);
-  drawLine("Spot", selectedSpot.nom, 70);
+  drawLine("Spot", selectedSpot.name, 70);
   drawLine("Entrée", new Date(formData.entry_time).toLocaleString(), 105);
 
-  const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.nom}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id},Tickit_id:${formData.id}`;
+  const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.name}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id},Tickit_id:${formData.id}`;
   const qrBase64 = await generateQRBase64(qrData);
   const qrImageBytes = await fetch(qrBase64).then(res => res.arrayBuffer());
   const qrImage = await pdfDoc.embedPng(qrImageBytes);
@@ -70,6 +70,6 @@ export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) =>
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `ticket-${selectedSpot.nom}.pdf`;
+  link.download = `ticket-${selectedSpot.name}.pdf`;
   link.click();
 };
