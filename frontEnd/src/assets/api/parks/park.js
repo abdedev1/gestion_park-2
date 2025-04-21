@@ -2,7 +2,16 @@ import {axios} from "../axios"
 
 export const getParks = async () => {
   try {
-    const response = await axios.get('/parcs');
+    const response = await axios.get('/parks');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching parks:', error);
+    throw error;
+  }
+};
+export const getPark = async (id) => {
+  try {
+    const response = await axios.get('/parks/' + id);
     return response.data;
   } catch (error) {
     console.error('Error fetching parks:', error);
@@ -20,7 +29,7 @@ export const getSpots = async () => {
     };
 export const addPark = async (parkData) => {
   try {
-    const response = await axios.post('/parcs', parkData);
+    const response = await axios.post('/parks', parkData);
     return response.data;
   } catch (error) {
     console.error('Error adding park:', error);
@@ -29,13 +38,22 @@ export const addPark = async (parkData) => {
 };
 export const updatePark = async (parkId, parkData) => {
   try {
-    const response = await axios.put(`/parcs/${parkId}`, parkData);
+    const response = await axios.put(`/parks/${parkId}`, parkData);
     return response.data;
   } catch (error) {
     console.error('Error updating park:', error);
     throw error;
   }
 };
+export const deletePark = async (parkId) => {
+  try {
+    const response = await axios.delete(`/parks/${parkId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting park:', error);
+    throw error;
+  }
+}
 export const addSpot = async (spotData) => {
     try {
         const response = await axios.post('/spots', spotData);
@@ -45,6 +63,15 @@ export const addSpot = async (spotData) => {
         throw error;
     }
 }
+export const addMultipleSpots = async (spotData) => {
+  try {
+      const response = await axios.post('/spots/multiple', spotData);
+      return response.data;
+  } catch (error) {
+      console.error('Error adding multiple spots:', error);
+      throw error;
+  }
+};
 export const updateSpot = async (spotId, spotData) => {
     try {
         const response = await axios.put(`/spots/${spotId}`, spotData);
@@ -63,3 +90,12 @@ export const deleteSpot = async (spotId) => {
         throw error;
     }
 }
+export const deleteMultipleSpots = async (spotIds) => {
+  try {
+      const response = await axios.delete('/spots', {data: {spot_ids: spotIds}});
+      return response.data;
+  } catch (error) {
+      console.error('Error deleting multiple spots:', error);
+      throw error;
+  }
+};

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Parc;
+use App\Models\Park;
 use App\Models\Client;
 use App\Models\PricingRate;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,7 +23,7 @@ class CartFactory extends Factory
             'client_id' => Client::factory(),
             'base_rate_id' => PricingRate::factory(),
             'duration' => $this->faker->date(),
-            'parc_id' => Parc::factory(),
+            'park_id' => Park::inRandomOrder()->value('id'),
             'status' => $this->faker->boolean(),
         ];
     }

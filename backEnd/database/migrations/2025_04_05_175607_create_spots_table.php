@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('spots', function (Blueprint $table) {
             $table->id();
-            $table->string("nom");
-            $table->string("status");
-            $table->string("type");
-            $table->foreignId(column: 'parc_id')->constrained('parcs')->onDelete('cascade');
+            $table->string("name");
+            $table->enum("status", [ 'available', 'reserved', 'maintenance']);
+            $table->enum("type", [ 'standard', 'accessible', 'electric']);
+            $table->integer("x");
+            $table->integer("y");
+            $table->foreignId(column: 'park_id')->constrained('parks')->onDelete('cascade');
             $table->timestamps();
         });
     }

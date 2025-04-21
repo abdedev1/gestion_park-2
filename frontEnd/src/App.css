@@ -1,3 +1,5 @@
+@layer theme, base, antd, components, utilities;
+
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: corporate --default;
@@ -23,4 +25,8 @@ input[type=number] {
 }
 .input:focus-within, .select:focus-within{
   outline: none;
+}
+
+.arrow:hover span:first-of-type{
+  opacity: 100%;
 }

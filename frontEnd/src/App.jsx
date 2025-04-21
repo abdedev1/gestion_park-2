@@ -1,6 +1,9 @@
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
 import { ConfigProvider } from 'antd'
-import { ProtectedRoute } from './lib/ProtectedRoute'
+import { StyleProvider } from '@ant-design/cssinjs';
+import '@ant-design/v5-patch-for-react-19';
+
+import { LoggedOut, ProtectedRoute } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'
 import UsersList from './components/admin/UsersList'
@@ -15,9 +18,11 @@ import ParkList from './components/admin/parks/parkList'
 import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
+import HomePage from './components/home/HomePage';
+import ParkOverview from './components/ParkOverview';
 function App() {
   const dispatch = useDispatch();
-  const { isLoading,user } = useSelector((state) => state.auth);
+  const { isLoading, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(setLoading(true));
@@ -37,65 +42,66 @@ function App() {
   return (
     <>
       <BrowserRouter>
-              
-              <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: "#0082ce",
-              colorInfo: "#0082ce",
-              colorSuccess: "#01a43b",
-              colorWarning: "#fcc700",
-              colorError: "#fe6266",
-              borderRadius: 4
-            },
-            components: {
-              Button: {
-                dangerColor: "rgb(0,0,0)"
+        <StyleProvider layer>
+          <ConfigProvider
+            theme={{
+              token: {
+                colorPrimary: "#0082ce",
+                colorInfo: "#0082ce",
+                colorSuccess: "#01a43b",
+                colorWarning: "#fcc700",
+                colorError: "#fe6266",
+                borderRadius: 4
               },
-              Badge: {
-                colorTextLightSolid: "rgb(0,0,0)"
+              components: {
+                Button: {
+                  dangerColor: "rgb(0,0,0)"
+                },
+                Badge: {
+                  colorTextLightSolid: "rgb(0,0,0)"
+                }
               }
-            }
-          }}
-        >
-          <Routes>
+            }}
+          >
+            <Routes>
 
-            <Route path="sign" element={<SignTabs />} />
-            <Route path='test' element={<QRCodeScanner/>}/>
-            <Route  path='/' element={<Header/>}>
-
-            <Route 
-              index 
-              element={
-                user?.role === 'admin' ? (
-                  <Navigate to="/dashboard" replace />
-                ) : user?.role === 'employe' ? (
-                  <Navigate to="/overview" replace />
-                ) : (
-                  <Navigate to="" replace />
-                )
+              <Route  path='/' element={<Header/>}>
+                <Route path="parks/:id" element={<ParkOverview />} />
               
-                
-              } 
-            />
-              {/* partie employe */}
-                <Route element={<ProtectedRoute requiredRole="employe" />}>
-                  <Route index path="overview" element={<SpotsEmploye/>} />
+                <Route element={<LoggedOut />}>
+                  <Route index path="sign" element={<SignTabs />} />
                 </Route>
-              {/* partie admin */}
 
-                <Route element={<ProtectedRoute requiredRole="admin" />}>
-                <Route  path="users" element={<UsersList/>} />
-                <Route  path="roles" element={<RolesList/>} />
-                <Route  path="parks" element={<ParkList/>} />
-                <Route  path="dashboard" element={<h1>Dashbord</h1>} />
-                </Route>
-              
-              {/*partie client*/}
+                {/* redirect user to default page */}
+                {!isLoading &&
+                  <Route index 
+                    element={
+                      user?.role === 'admin' ? (<Navigate to="/users" replace />)
+                      : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
+                      : (<Navigate to="" replace />)
+                    }
+                  />
+                }
 
-            </Route>
-          </Routes>
-        </ConfigProvider>
+                  {/* partie employe */}
+                    <Route element={<ProtectedRoute requiredRole="employe" />}>
+                      <Route index path="overview" element={<SpotsEmploye/>} />
+                    </Route>
+                  {/* partie admin */}
+
+                    <Route element={<ProtectedRoute requiredRole="admin" />}>
+                      <Route path="dashboard" element={<h1>Dashboard</h1>} />
+                      <Route path="users" element={<UsersList/>} />
+                      <Route path="roles" element={<RolesList/>} />
+                      <Route path="parks" element={<ParkList/>} />
+                    </Route>
+                  
+                  {/*partie client*/}
+
+              </Route>
+            </Routes>
+          </ConfigProvider>
+        </StyleProvider>
       </BrowserRouter>
     </>
   )

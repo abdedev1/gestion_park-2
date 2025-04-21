@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use App\Models\Admin;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class AdminSeeder extends Seeder
 {
@@ -13,6 +14,18 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        Admin::factory(10)->create();
+        $userIds = User::where('role_id', function ($query) {
+            $query->select('id')
+                  ->from('roles')
+                  ->where('name', 'client');
+        })
+        ->pluck('id')
+        ->toArray();
+
+        foreach ($userIds as $userId) {
+            Admin::create([
+                'user_id' => $userId,
+            ]);
+        }
     }
 }

@@ -6,25 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Parc extends Model
+class Park extends Model
 {
-    /** @use HasFactory<\Database\Factories\ParcFactory> */
-    use HasFactory,SoftDeletes;
+    /** @use HasFactory<\Database\Factories\ParkFactory> */
+    use HasFactory, SoftDeletes;
   
     protected $fillable = [
-        'nom',
-        'numberSpots',
-        'adresse',
+        'name',
+        'address',
     ];
     
-    public function employes(){
+    public function employees(){
         return $this->hasMany(Employe::class);
     }
-
 
     public function spots(){
         return $this->hasMany(Spot::class);
     }
-   
-    
 }
+
