@@ -24,7 +24,7 @@ class ParkRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
-            'numberSpots' => 'required|integer|min:1',
+            'numberSpots' => 'nullable|integer|min:1',
         ];
     }
 

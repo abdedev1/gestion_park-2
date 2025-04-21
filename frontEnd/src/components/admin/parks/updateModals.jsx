@@ -29,7 +29,7 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
         initialValues={{
           name: park?.name || "",
           address: park?.address || "",
-          numberSpots: park?.numberSpots || 0,
+          
         }}
         className="py-4"
       >
@@ -49,13 +49,7 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
           <Input placeholder="Enter address" />
         </Form.Item>
 
-        <Form.Item
-          name="numberSpots"
-          label={<span className="font-medium">Number of Spots</span>}
-          rules={[{ required: true, message: 'Please input the number of spots!' }]}
-        >
-          <InputNumber min={0} className="w-full" />
-        </Form.Item>
+        
 
         <div className="flex justify-between gap-2 mt-4">
           <Button onClick={onClose} className="rounded">

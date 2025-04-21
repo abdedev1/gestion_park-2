@@ -84,8 +84,6 @@ class ParkController extends Controller
         $request->validated();
         $park = Park::with('spots')->findOrFail($id);
         $park->update($request->all());
-        
-
         return response()->json($park,201);
         
     }

@@ -29,7 +29,7 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
-    Route::apiResource("parks",ParkController::class)->except(['index', 'show']);
+    Route::apiResource("parks",ParkController::class);
     Route::delete('spots', [SpotController::class, 'destroyMultiple'])->name('spots.destroyMultiple');
     Route::post('spots/multiple', [SpotController::class, 'storeMultiple'])->name('spots.storeMultiple');
 
@@ -49,8 +49,6 @@ Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
     Route::apiResource('employes', EmployeController::class);
-
-
 });
 
 // internaute routes
