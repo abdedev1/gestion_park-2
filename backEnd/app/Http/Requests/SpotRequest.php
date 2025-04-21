@@ -30,4 +30,22 @@ class SpotRequest extends FormRequest
             'y' => 'nullable|integer',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.string' => 'The name must be a string.',
+            'name.max' => 'The name may not be greater than 255 characters.',
+            'type.required' => 'The type field is required.',
+            'type.string' => 'The type must be a string.',
+            'type.max' => 'The type may not be greater than 255 characters.',
+            'status.required' => 'The status field is required.',
+            'status.string' => 'The status must be a string.',
+            'status.max' => 'The status may not be greater than 255 characters.',
+            'park_id.required' => 'The park_id field is required.',
+            'park_id.exists' => 'The selected park_id is invalid.',
+            'x.integer' => 'The x coordinate must be an integer.',
+            'y.integer' => 'The y coordinate must be an integer.',
+        ];
+    }   
 }

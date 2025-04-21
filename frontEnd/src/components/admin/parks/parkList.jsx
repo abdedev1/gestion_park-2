@@ -139,7 +139,7 @@ export default function ParkList() {
 
   const handleUpdateSpot = async (updatedData) => {
     try {
-      const res = await updateSpot(currentSpot.id, updatedData);
+      const res = await updateSpot(currentSpot.id, {...currentSpot, ...updatedData});
       const updatedParks = parks.map((park) => {
         if (park.id === activeKey) {
           const updatedSpots = park.spots.map((spot) =>

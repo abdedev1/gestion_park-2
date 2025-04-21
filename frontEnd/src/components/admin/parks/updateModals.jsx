@@ -49,8 +49,6 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
           <Input placeholder="Enter address" />
         </Form.Item>
 
-        
-
         <div className="flex justify-between gap-2 mt-4">
           <Button onClick={onClose} className="rounded">
             Cancel
