@@ -64,7 +64,7 @@ function App() {
             }}
           >
             <Routes>
-
+              <Route path='/parkease' element={<HomePage/>}/>
               <Route  path='/' element={<Header/>}>
                 <Route path="parks/:id" element={<ParkOverview />} />
               

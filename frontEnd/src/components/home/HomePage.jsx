@@ -93,7 +93,7 @@ const HomePage = () => {
                     <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
                   </button>
                   <button className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    <span className="hidden sm:inline">Sign Up</span>
+                    <span className="hidden sm:inline"><Link to="/sign">Sign Up</Link></span>
                     <span className="sm:hidden">Join</span>
                   </button>
                 </div>
