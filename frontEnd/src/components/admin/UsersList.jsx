@@ -21,6 +21,8 @@ function UsersList() {
   const [parks, setParks] = useState([])
   const [selectedRole, setSelectedRole] = useState(null)
   const [employeeData, setEmployeeData] = useState({})
+  
+  const employeeInfo = employeeData[selectedUser?.id] || {}
 
   const fetchUsers = async () => {
     setLoading(true)
@@ -114,19 +116,7 @@ function UsersList() {
 
   const showUpdateModal = (user) => {
     setSelectedUser(user)
-    const roleId = getRoleIdByName(user.role)
     setSelectedRole(user.role)
-
-    const employeeInfo = employeeData[user.id] || {}
-
-    form.setFieldsValue({
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      birth_date: user.birth_date?.split("T")[0],
-      role_id: roleId,
-      park_id: employeeInfo.park_id || undefined,
-    })
     setIsModalOpen(true)
   }
 
@@ -362,7 +352,16 @@ function UsersList() {
       </div>
 
       <Modal title="Update User" open={isModalOpen} onCancel={handleModalCancel} footer={null} destroyOnClose>
-        <Form form={form} layout="vertical" onFinish={handleUpdateUser} className="mt-4">
+        <Form form={form} layout="vertical"
+          initialValues={{
+            first_name: selectedUser?.first_name,
+            last_name: selectedUser?.last_name,
+            email: selectedUser?.email,
+            birth_date: selectedUser?.birth_date?.split("T")[0],
+            role_id: getRoleIdByName(selectedUser?.role),
+            park_id: employeeInfo?.park_id || undefined,
+          }}
+          onFinish={handleUpdateUser} className="mt-4">
           <Form.Item
             name="first_name"
             label="First Name"
@@ -401,7 +400,7 @@ function UsersList() {
           </Form.Item>
 
           {/* Park ID field - only visible when role is "employe" */}
-          {(selectedRole === "employe" || form.getFieldValue("role_id") === getRoleIdByName("employe")) && (
+          {selectedRole === "employe" && (
             <Form.Item
               name="park_id"
               label="Assigned Park"
