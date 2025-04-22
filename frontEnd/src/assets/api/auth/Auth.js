@@ -57,7 +57,9 @@ export default class Auth {
       return res.data;
 
     } catch (error) {
-      if (!isAxiosError(error)) return defaultError;
+      if (!isAxiosError(error)) {
+        return defaultError
+      }
       
       if (error.response?.status === 422) {
         return {
@@ -66,7 +68,7 @@ export default class Auth {
           message: error.response.data.message
         };
       }
-      
+
       return defaultError;
     }
   }
@@ -87,7 +89,9 @@ export default class Auth {
       return res.data;
       
     } catch (error) {
-      if (!isAxiosError(error)) return defaultError;
+      if (!isAxiosError(error)) {
+        return defaultError
+      }
       
       if ([400, 401, 422].includes(error.response?.status)) {
         return {
@@ -96,7 +100,7 @@ export default class Auth {
           message: error.response.data.message
         };
       }
-      
+
       return defaultError;
     }
   }

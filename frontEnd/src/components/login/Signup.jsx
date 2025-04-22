@@ -14,7 +14,7 @@ export default function SignTabs() {
         { label: "Login", child: <LoginForm setActiveTab={setActiveTab} /> }
     ];
     return (
-        <div className="max-w-lg w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input">
+        <div className={`max-w-lg w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input`}>
             <Tabs
                 activeKey={activeTab}
                 animated

@@ -32,10 +32,6 @@ export default function Header() {
     };
 
     useEffect(() => {
-      switchTab();
-    }, [location.pathname]);
-
-    useEffect(() => {
       if (user) {
         const colors = [
           "bg-info text-info-content",
@@ -59,7 +55,10 @@ export default function Header() {
         navigate("/");
       }
     };
-    const navLinkClass = ({ isActive }) =>`px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 ${isActive ? "text-primary": ""}`;
+    const navLinkClass = ({ isActive }) => {
+      if (isActive) { switchTab()}
+      return `px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 ${isActive ? "text-primary": ""}`;
+    }
 
     return (
       <>

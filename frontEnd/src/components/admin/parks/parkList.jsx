@@ -3,6 +3,7 @@ import { addPark, updatePark, updateSpot, getParks, deleteMultipleSpots, addMult
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin, InputNumber, } from "antd";
 import { Loader2, Plus, CircleHelp, Trash2 } from "lucide-react";
 import { UpdateParkModal, UpdateSpotModal } from "./updateModals";
+import { EditableParkMap } from "../../ParkMap";
 
 import { EditOutlined, DeleteOutlined, ArrowRightOutlined } from "@ant-design/icons";
 
@@ -249,101 +250,116 @@ export default function ParkList() {
     },
   ];
 
+  function ParkDetails({park}) {
+    return (
+      <div className="rounded-lg shadow-sm">
+          <div className="park-details p-4 border-b border-black-100 relative flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold mb-1">{park.name}</h3>
+              <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
+            </div>
+  
+            <Popconfirm
+              placement="topLeft"
+              title="Delete the Park?"
+              description={`Are you sure you want to delete this Park ID ${park.id}?`}
+              okText="Yes"
+              cancelText="No"
+              icon={<CircleHelp size={16} className="m-1" />}
+              onConfirm={() => handleDeletePark(park.id)}
+            >
+              <button className="btn btn-error btn-sm">
+                <Trash2 size={16} /> Delete park
+              </button>
+            </Popconfirm>
+          </div>
+  
+          <div className="container mx-auto py-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Button
+                onClick={() => setIsAddSpotModalOpen(true)}
+                className="btn btn-primary btn-sm"
+              >
+                <Plus size={16} />
+                Add Spot
+              </Button>
+              <Popconfirm
+                title="Are you sure you want to delete these spots?"
+                onConfirm={handleDeleteSpots}
+                okText="Yes"
+                cancelText="No"
+                disabled={!hasSelected}
+              >
+                <Button
+                  disabled={!hasSelected}
+                  className="btn btn-error ml-auto btn-sm"
+                >
+                  <DeleteOutlined />
+                  Delete {hasSelected ? `${selectedRowKeys.length}` : ""}
+                </Button>
+              </Popconfirm>
+            </div>
+  
+            <Table
+              rowSelection={rowSelection}
+              columns={columns}
+              dataSource={park.spots}
+              rowKey="id"
+              className="spots-table"
+              loading={{
+                indicator: (
+                  <Spin
+                    indicator={
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    }
+                  />
+                ),
+                spinning: loading,
+              }}
+              pagination={{
+                pageSize: 5,
+                className: "flex justify-end",
+              }}
+              rowClassName="hover:bg-gray-50"
+            />
+          </div>
+        </div>
+    )
+  }
+
   const parkTabs = parks.map((park) => ({
     label: (
       <div className="flex items-center">
         <span>{park.name || `Park ${park.id}`}</span>
-        {activeKey == park.id &&
+        {activeKey == park.id && (
           <Button
             icon={<EditOutlined />}
             className="btn btn-ghost btn-sm ml-3 p-2"
             onClick={(e) => {
-              e.stopPropagation() 
-              openUpdateParkModal(park)
+              e.stopPropagation();
+              openUpdateParkModal(park);
             }}
           />
-        }
+        )}
       </div>
     ),
-      children: (
-      // <div className="rounded-lg shadow-sm">
-      //   <div className="p-4 border-b border-gray-100">
-      //     <h3 className="text-xl font-semibold mb-1">{park.name}</h3>
-      //     <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
-      //   </div>
-      //   <div className="container w-full mx-auto py-4">
-        <div className="bg-white rounded-lg shadow-sm">
-        <div className="park-details p-4 border-b border-black-100 relative flex items-center justify-between">
-          <div>
-            <h3 className="text-xl font-semibold mb-1">{park.name}</h3>
-            <p className="text-sm">Number of spots: {park.spots.length || 0}</p>
-          </div>
-
-          <Popconfirm
-            placement="topLeft"
-            title="Delete the Park?"
-            description={`Are you sure you want to delete this Park ID ${park.id}?`}
-            okText="Yes"
-            cancelText="No"
-            icon={<CircleHelp size={16} className="m-1" />}
-            onConfirm={() => handleDeletePark(park.id)}
-          >
-            <button className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md flex items-center">
-              <Trash2 size={16} />
-            </button>
-          </Popconfirm>
-        </div>
-
-        <div className="container mx-auto py-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Button
-              onClick={() => setIsAddSpotModalOpen(true)}
-              className="btn btn-primary btn-sm"
-            >
-              <Plus size={16} />
-              Add Spot
-            </Button>
-            <Popconfirm
-              title="Are you sure you want to delete these spots?"
-              onConfirm={handleDeleteSpots}
-              okText="Yes"
-              cancelText="No"
-              disabled={!hasSelected}
-            >
-              <Button
-                disabled={!hasSelected}
-                className="btn btn-error ml-auto btn-sm"
-              >
-                <DeleteOutlined />
-                Delete {hasSelected ? `${selectedRowKeys.length}` : ""}
-              </Button>
-            </Popconfirm>
-          </div>
-
-          <Table
-            rowSelection={rowSelection}
-            columns={columns}
-            dataSource={park.spots}
-            rowKey="id"
-            className="spots-table"
-            loading={{
-              indicator: (
-                <Spin
-                  indicator={
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  }
-                />
-              ),
-              spinning: loading,
-            }}
-            pagination={{
-              pageSize: 5,
-              className: "flex justify-end",
-            }}
-            rowClassName="hover:bg-gray-50"
-          />
-        </div>
-      </div>
+    children: (
+      <Tabs
+        defaultActiveKey="details"
+        centered
+        items={[
+          {
+            label: "Details",
+            key: "details",
+            children: <ParkDetails park={park} />,
+          },
+          {
+            label: "Map",
+            key: "map",
+            children: <EditableParkMap park={park} />,
+          },
+        ]}
+      />
     ),
     key: park.id,
   }));
@@ -377,6 +393,7 @@ export default function ParkList() {
               form.resetFields();
               setIsAddModalOpen(true);
             }}
+            animated
             items={parkTabs}
             className="p-1"
             tabBarGutter={5}
@@ -524,3 +541,4 @@ export default function ParkList() {
     </div>
   );
 }
+

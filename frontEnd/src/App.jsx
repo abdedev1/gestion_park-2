@@ -3,7 +3,7 @@ import { ConfigProvider } from 'antd'
 import { StyleProvider } from '@ant-design/cssinjs';
 import '@ant-design/v5-patch-for-react-19';
 
-import { LoggedOut, ProtectedRoute } from './lib/ProtectedRoute'
+import { LoggedOut, ProtectedRoute, RedirectByRole } from './lib/ProtectedRoute'
 import './App.css'
 import SignTabs from './components/login/Signup'
 import UsersList from './components/admin/UsersList'
@@ -11,33 +11,23 @@ import RolesList from './components/admin/RolesList'
 import { useEffect } from 'react'
 import Auth from './assets/api/auth/Auth'
 import { useDispatch, useSelector } from 'react-redux'
-import { Loader2 } from 'lucide-react'
-import { setLoading } from './components/Redux/slices/AuthSlice'
+import { setLoading, setStatus } from './components/Redux/slices/AuthSlice'
 import SpotsEmploye from './components/employe/SpotsEmploye'
 import ParkList from './components/admin/parks/parkList'
-import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
-import { Navigate } from 'react-router-dom'
 import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
 function App() {
   const dispatch = useDispatch();
-  const { isLoading, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(setLoading(true));
     Auth.CheckAuth(dispatch)
       .then(result => {
-        console.log('Auth initialized:', result);
+        setStatus(result);
       });
     
   }, [dispatch]);
-
-  // if (isLoading) {
-  //   return (
-  //       <Loader2 className="h-8 w-8 mx-auto mt-4 animate-spin text-primary" />
-  //   );
-  // }
 
   return (
     <>
@@ -73,15 +63,7 @@ function App() {
                 </Route>
 
                 {/* redirect user to default page */}
-                {!isLoading &&
-                  <Route index 
-                    element={
-                      user?.role === 'admin' ? (<Navigate to="/users" replace />)
-                      : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
-                      : (<Navigate to="" replace />)
-                    }
-                  />
-                }
+                <Route index element={<RedirectByRole />} />
 
                   {/* partie employe */}
                     <Route element={<ProtectedRoute requiredRole="employe" />}>
