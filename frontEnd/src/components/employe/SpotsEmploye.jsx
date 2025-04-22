@@ -12,7 +12,7 @@ import isEqual from "lodash/isEqual";
 import { generateTicketPDF } from './ticketPdf';
 
 export default function SpotsEmploye() {
-    const employeeSpots = useSelector(state => state.spots.employeeSpots);
+    const { employeeSpots, status } = useSelector(state => state.spots);
     const { pricingRates } = useSelector(state => state.pricingRates);
     const [showScanner, setShowScanner] = useState(false);
     const dispatch = useDispatch();
@@ -50,7 +50,7 @@ export default function SpotsEmploye() {
         }
     }, [user, employes, dispatch]);
 
-
+    console.log(status)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevent =>({
@@ -134,7 +134,11 @@ export default function SpotsEmploye() {
                 </div>
                 
             }onClick={()=>setShowScanner(true)}/>
-            {employeeSpots && (
+            {status === 'idle' || status === 'loading'? (
+            <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        ) : (employeeSpots && (
                     <div className="grid grid-cols-2 m-1 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-10 gap-2 p-4 bg-white rounded">
                             {employeeSpots.map(spot => (
                                 <button
@@ -162,7 +166,7 @@ export default function SpotsEmploye() {
                                 </button>
                             ))}
                         </div>
-                        )}
+                        ))}
 
 
             {isModalOpen && (

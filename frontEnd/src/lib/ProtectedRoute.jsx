@@ -5,7 +5,7 @@ const ProtectedRoute = ({ requiredRole }) => {
   const {user, isLoading } = useSelector(state => state.auth);
   // If user has the required role, render the child routes
   if (isLoading || !user || user.role !== requiredRole) {
-    return <Navigate to="/parkease" replace />;
+    return <Navigate to="/" replace />;
   }
   return <Outlet />;
 };
@@ -14,7 +14,7 @@ const LoggedOut = () => {
   const {user, isLoading } = useSelector(state => state.auth);
   // If is logged out, render the child routes
   if (isLoading || user) {
-    return <Navigate to="/parkease" replace />;
+    return <Navigate to="/" replace />;
   }
   return <Outlet />;
 };
