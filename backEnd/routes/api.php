@@ -36,7 +36,6 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
 });
 
 Route::middleware(isEmployeMiddleWare::class)->group(function(){
-    Route::apiResource('pricing_rates', PricingRateController::class);
     Route::apiResource('employes', EmployeController::class);
     Route::get('/parks/search', [ParkController::class, 'search']);
     
@@ -63,3 +62,4 @@ Route::get('/parks/{id}/spots',[ParkController::class,'getParkSpots']);
 
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
 Route::apiResource('parking-tickets', ParkingTicketController::class);
+Route::apiResource('pricing_rates', PricingRateController::class);
