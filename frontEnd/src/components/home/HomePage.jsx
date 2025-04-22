@@ -245,7 +245,7 @@ const HomePage = () => {
                     <div className="h-48 bg-blue-200 relative flex items-center justify-center">
                       <FaCar className="text-4xl text-blue-600" />
                       <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold flex items-center">
-                        <FaStar className="text-yellow-400 mr-1" /> {park.rating}
+                        <FaStar className="text-yellow-400 mr-1" /> 4.5 {park.rating}
                       </div>
                     </div>
                     <div className="p-6">
