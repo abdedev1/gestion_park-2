@@ -103,12 +103,7 @@ export default function ParkingTickets() {
         </div>
       ),
     },
-    {
-      title: "clientName",
-      dataIndex: "clientName",
-      key: "clientName",
-      responsive: ["md"],
-    },
+    
     {
       title: "Entry Time",
       dataIndex: "entry_time",
@@ -161,9 +156,20 @@ export default function ParkingTickets() {
         ),
     },
     {
-        title: "Client Id",
-        dataIndex: "client_id",
-        key: "client_id",
+        title: "First Name",
+        dataIndex: "client_first_name",
+        key: "client_first_name",
+        render: (text) => (
+          <div className="flex items-center gap-2">
+            {text}
+          </div>
+        ),
+        responsive: ["lg"],
+    },
+    {
+        title: "last Name",
+        dataIndex: "client_last_name",
+        key: "client_last_name",
         render: (text) => (
           <div className="flex items-center gap-2">
             {text}
