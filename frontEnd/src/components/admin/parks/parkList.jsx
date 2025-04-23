@@ -43,6 +43,14 @@ export default function ParkList() {
     }
   };
 
+  const setParkSpots = (parkId, spots) => {
+    setParks((prevParks) =>
+      prevParks.map((park) =>
+        park.id === parkId ? { ...park, spots: [...spots] } : park
+      )
+    );
+  }
+
   const handleAddPark = async (values) => {
     try {
       const res = await addPark(values);
@@ -356,7 +364,7 @@ export default function ParkList() {
           {
             label: "Map",
             key: "map",
-            children: <EditableParkMap park={park} />,
+            children: <EditableParkMap park={park} setParkSpots={setParkSpots} />,
           },
         ]}
       />

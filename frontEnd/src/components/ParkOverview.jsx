@@ -1,4 +1,4 @@
-import { EditableParkMap } from "./ParkMap";
+import { EditableParkMap, ParkMap } from "./ParkMap";
 import { getPark } from "../assets/api/parks/park";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom'
@@ -37,7 +37,7 @@ export default function ParkOverview() {
 
   return (
     <div className="bg-base-100 mx-auto my-4 flex justify-center">
-        {park ? <EditableParkMap park={park}/> : <p className="text-center text-gray-500">No parks available</p>}
+        {park ? <ParkMap park={park}/> : <p className="text-center text-gray-500">No parks available</p>}
     </div>
   );
 }
