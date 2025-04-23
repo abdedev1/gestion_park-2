@@ -25,7 +25,7 @@ export function EditableParkMap({ park, setParkSpots }) {
   useEffect(() => {
     setHasChanges(JSON.stringify(spots) === JSON.stringify(park.spots));
     if (spots.length == 0) {
-      setSpots([{ x: 0, y: 0, name: "P 0", status: "available" }]);
+      setSpots([{ x: 0, y: 0, name: "P 0", status: "available", park_id: park.id, type: "maintenance" }]);
     }
   }, [spots, park.spots]);
 
@@ -351,7 +351,7 @@ export function EditableParkMap({ park, setParkSpots }) {
             </div>
             <TransformComponent wrapperStyle={{width: "100%"}} wrapperClass="w-full h-full bg-base-200" contentClass="!w-fit !h-fit">
               {/* Full Grid */}
-              <div className="p-12 inline-block relative overflow-hidden">
+              <div className="p-12 inline-block relative min-h-96 overflow-hidden">
                 {Array.from({ length: rows }, (_, y) => (
                   <div key={y} className="flex items-center w-fit relative">
                     <div className="absolute z-20 -left-8 -top-[11px] flex items-center arrow">
