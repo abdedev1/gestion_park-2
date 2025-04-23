@@ -74,6 +74,7 @@ export default function Header() {
                 <div data-path="/users" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/users">Users</NavLink></div>
                 <div data-path="/parks" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks">Parks</NavLink></div>
                 <div data-path="/roles" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/roles">Roles</NavLink></div>
+                <div data-path="/parkigtickets" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parkigtickets">Park&nbsp;Tickets</NavLink></div>
               </>
             )}
             {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}

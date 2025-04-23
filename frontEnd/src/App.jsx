@@ -17,6 +17,7 @@ import ParkList from './components/admin/parks/parkList'
 import Header from './components/Header'
 import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
+import ParkingTickets from './components/admin/ParkingTickts'
 function App() {
   const dispatch = useDispatch();
 
@@ -76,6 +77,7 @@ function App() {
                       <Route path="users" element={<UsersList/>} />
                       <Route path="roles" element={<RolesList/>} />
                       <Route path="parks" element={<ParkList/>} />
+                      <Route path="parkigtickets" element={<ParkingTickets/>} />
                     </Route>
                   
                   {/*partie client*/}

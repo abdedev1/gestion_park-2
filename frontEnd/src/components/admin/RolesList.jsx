@@ -177,14 +177,9 @@ export default function RolesList() {
               form.resetFields()
               setIsAddModalOpen(true)
             }}
-            icon={<Plus className="h-4 w-4 mr-2" />}
-            style={{
-              backgroundColor: "#0891b2",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="btn btn-primary btn-sm"
           >
-            Add New Role
+          <Plus size={16} /> Add New Role
           </Button>
         </div>
       </div>

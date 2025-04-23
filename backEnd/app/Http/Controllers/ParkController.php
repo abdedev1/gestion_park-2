@@ -67,7 +67,7 @@ class ParkController extends Controller
      */
     public function show(string $id)
     {
-        $park = Park::with('spots')->findOrFail($id);
+        $park = Park::with(relations: 'spots')->findOrFail($id);
         return response()->json($park);
     }
 
