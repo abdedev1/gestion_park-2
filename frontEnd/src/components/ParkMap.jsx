@@ -25,9 +25,9 @@ export function EditableParkMap({ park, setParkSpots }) {
   useEffect(() => {
     setHasChanges(JSON.stringify(spots) === JSON.stringify(park.spots));
     if (spots.length == 0) {
-      setSpots([{ x: 0, y: 0, name: "P 0", status: "available" }]);
+      setSpots([{ x: 0, y: 0, name: "P 0", status: "available", park_id: park.id, type: "maintenance" }]);
     }
-  }, [spots]);
+  }, [spots, park.spots]);
 
   const spotMap = new Map();
   spots.forEach(spot => {
@@ -97,6 +97,9 @@ export function EditableParkMap({ park, setParkSpots }) {
       setSelected(allSpots);
     } else if (value === "deselect-all") {
       setSelected([]);
+    } else if (value === "select-filled") {
+      const filledSpots = spots.map(spot => ({ x: spot.x, y: spot.y }));
+      setSelected(filledSpots);
     } else if (value === "inverse") {
       const allSpots = [];
       for (let y = 0; y < rows; y++) {
@@ -253,7 +256,8 @@ export function EditableParkMap({ park, setParkSpots }) {
       let updateRes = spotsToUpdate.length ? await updateMultipleSpots(spotsToUpdate) : { success: false };
       let deleteRes = spotsToDelete.length ? await deleteMultipleSpots(spotsToDelete) : { success: false };
 
-      if (addRes.success && updateRes.success && deleteRes.success ) {
+
+      if (addRes.success || updateRes.success || deleteRes.success ) {
         setParkSpots(park.id, spots)
         messageApi.success("All changes are saved successfully");
       }
@@ -282,6 +286,7 @@ export function EditableParkMap({ park, setParkSpots }) {
           >
             <Select.Option value="select-all">Select all</Select.Option>
             <Select.Option value="deselect-all">Deselect all</Select.Option>
+            <Select.Option value="select-filled">Select filled</Select.Option>
             <Select.Option value="inverse">Inverse</Select.Option>
           </Select>
 
@@ -319,7 +324,7 @@ export function EditableParkMap({ park, setParkSpots }) {
         panning={{
           allowRightClickPan: false,
           allowMiddleClickPan: false,
-          activationKeys: ['Control', 'Space'],
+          // activationKeys: ['Control', 'Space'],
           velocityDisabled: true,
           excluded: ['button'] 
         }}
@@ -346,7 +351,7 @@ export function EditableParkMap({ park, setParkSpots }) {
             </div>
             <TransformComponent wrapperStyle={{width: "100%"}} wrapperClass="w-full h-full bg-base-200" contentClass="!w-fit !h-fit">
               {/* Full Grid */}
-              <div className="p-12 inline-block relative overflow-hidden">
+              <div className="p-12 inline-block relative min-h-96 overflow-hidden">
                 {Array.from({ length: rows }, (_, y) => (
                   <div key={y} className="flex items-center w-fit relative">
                     <div className="absolute z-20 -left-8 -top-[11px] flex items-center arrow">
@@ -510,7 +515,7 @@ export function ParkMap({ park }) {
         panning={{
           allowRightClickPan: false,
           allowMiddleClickPan: false,
-          activationKeys: ['Control', 'Space'],
+          // activationKeys: ['Control', 'Space'],
           velocityDisabled: true,
           excluded: ['button'] 
         }}

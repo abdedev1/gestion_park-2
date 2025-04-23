@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Modal, Form, Input, Select, InputNumber, Button, Checkbox, Switch } from "antd"
+import { Modal, Form, Input, Select, Button, Switch } from "antd"
 
 export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
   const [form] = Form.useForm()
