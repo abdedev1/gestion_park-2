@@ -115,8 +115,8 @@ export default function Header() {
                 </div>
                 <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                   <li className='text-center font-semibold mb-2'>Welcome {user.first_name} ({user.role})</li>
-                  <li><a className="justify-between">Profile</a></li>
-                  <li><a>Settings</a></li>
+                  <li><NavLink to="/profile" className="justify-between">Profile</NavLink></li>
+                  <li><NavLink to='/settings'>Settings</NavLink></li>
                   <li><button onClick={logoutUser}>Logout</button></li>
                 </ul>
               </div>
@@ -167,7 +167,7 @@ export default function Header() {
             }
             {user?.role === "client" &&
               <>
-              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/dashboardd">Dashboard</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/dashboarddd">Dashboard</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parkss">Available Parks</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/history">Parking History</NavLink>
               </>

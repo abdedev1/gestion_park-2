@@ -21,6 +21,7 @@ import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
 import ParksList from './components/client/ParksList';
 import Profile from './components/Profile';
+import Settings from './components/Settings';
 function App() {
   const dispatch = useDispatch();
   const { isLoading, user } = useSelector((state) => state.auth);
@@ -65,8 +66,10 @@ function App() {
             }}
           >
             <Routes>
-              <Route  path='/s' element={<Profile/>} />
+             
               <Route  path='/' element={<Header/>}>
+              <Route  path='/settings' element={<Settings/>} />
+              <Route  path='/profile' element={<Profile/>} />
                 <Route index element={<HomePage/>}/>
                 <Route path="parks/:id" element={<ParkOverview />} />
               
