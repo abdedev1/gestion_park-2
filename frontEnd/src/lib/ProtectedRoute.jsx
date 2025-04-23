@@ -35,6 +35,10 @@ const RedirectByRole = () => {
     return <Navigate to="/overview" replace />;
   }
 
+  if (user?.role === 'client') {
+    return <Navigate to="/dashboardd" replace />;
+  }
+
   return <Navigate to="/" replace />;
 };
 
