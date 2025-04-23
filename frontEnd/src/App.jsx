@@ -15,11 +15,12 @@ import { Loader2 } from 'lucide-react'
 import { setLoading } from './components/Redux/slices/AuthSlice'
 import SpotsEmploye from './components/employe/SpotsEmploye'
 import ParkList from './components/admin/parks/parkList'
-import QRCodeScanner from './components/employe/QrCodeScanner'
 import Header from './components/Header'
 import { Navigate } from 'react-router-dom'
 import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
+import ParksList from './components/client/ParksList';
+import Profile from './components/Profile';
 function App() {
   const dispatch = useDispatch();
   const { isLoading, user } = useSelector((state) => state.auth);
@@ -64,8 +65,9 @@ function App() {
             }}
           >
             <Routes>
-              {/* <Route path='/parkease' element={<HomePage/>}/> */}
+              <Route  path='/s' element={<Profile/>} />
               <Route  path='/' element={<Header/>}>
+                <Route index element={<HomePage/>}/>
                 <Route path="parks/:id" element={<ParkOverview />} />
               
                 <Route element={<LoggedOut />}>
@@ -78,6 +80,7 @@ function App() {
                     element={
                       user?.role === 'admin' ? (<Navigate to="/users" replace />)
                       : user?.role === 'employe' ? (<Navigate to="/overview" replace />)
+                      : user?.role === 'client' ? (<Navigate to="/dashboardd" replace />)
                       : (<Navigate to="" replace />)
                     }
                   />
@@ -97,7 +100,12 @@ function App() {
                     </Route>
                   
                   {/*partie client*/}
-
+                    <Route element={<ProtectedRoute requiredRole="client" />}>
+                      <Route path="dashboardd" element={<h1>Dashboard Client</h1>} />
+                      <Route path="parkss" element={<ParksList/>} />
+                      <Route path="history" element={<h1>history Client</h1>} />
+                      
+                    </Route>
               </Route>
             </Routes>
           </ConfigProvider>

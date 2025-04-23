@@ -7,6 +7,7 @@ import { logout } from './Redux/slices/AuthSlice';
 import { Outlet } from 'react-router-dom';
 import { ScanLine } from 'lucide-react';
 import { motion, useAnimation } from "framer-motion";
+import { FaCar, FaMapMarkerAlt, FaSearch, FaUserCircle, FaSignInAlt, FaStar, FaArrowLeft,FaCalendarAlt,FaCheck } from 'react-icons/fa';
 
 
 export default function Header() {
@@ -58,16 +59,22 @@ export default function Header() {
         navigate("/");
       }
     };
-    const navLinkClass = ({ isActive }) =>`px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 ${isActive ? "text-primary": ""}`;
+    const navLinkClass = ({ isActive }) =>`px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 whitespace-nowrap ${isActive ? "text-primary": ""}`;
 
     return (
       <>
         <div className="navbar bg-base-100 shadow-sm">
           <div className="navbar-start">
-            <NavLink ><img className='h-12' src="/Logo/logo.png" alt="" /></NavLink>
+            <NavLink ><img className='h-12' src="/Logo/logo3.png" alt="" /></NavLink>
           </div>
-          
-          <div className="gap-5 hidden md:inline-flex relative">
+          <div className='navbar-center'>
+            {!token && (<><div className="hidden md:flex items-center space-x-6">
+                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><NavLink to='/'>Home</NavLink></button>
+                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#avp">Available Parks</a></button>
+                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#pracing">Pricing</a></button>
+                  </div></>)}
+          </div>
+          <div className="gap-5 hidden md:inline-flex relative items-center">
             {user?.role === "admin" && (
               <>
                 <div data-path="/dashboard" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashboard</NavLink></div>
@@ -77,8 +84,21 @@ export default function Header() {
               </>
             )}
             {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
-            <motion.div className="absolute top-7 left-0 h-0.5 bg-primary under" animate={controls} initial={{ x: 0, width: 0 }} />
-          </div>
+            {user?.role === "client" && (
+              <>
+                <div data-path="/dashboardd" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboardd">Dashboard</NavLink></div>
+                <div data-path="/parkss" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parkss">Available Parks</NavLink></div>
+                <div data-path="/history" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/history">Parking History</NavLink></div>
+                <button
+                  onClick={() => setShowSubscriptionModal(true)}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md bg-blue-800 text-white transition hover:bg-gray-100`}
+                >
+                  <span>Subscription</span>
+                </button>
+                
+              </>)}
+              {user && <motion.div className={`absolute ${user.role === "client" ? "top-9" : "top-7"} left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />}
+              </div>
             
           <div className="navbar-end">
           {!isLoading && <button className="btn btn-ghost btn-neutral btn-circle md:hidden hover:scale-105 transition-transform duration-100" onClick={() => setIsOpen(!isOpen)}><Menu/></button>}
@@ -101,12 +121,17 @@ export default function Header() {
                 </ul>
               </div>
             ) : (
-              <NavLink
-                className={({ isActive }) => `btn btn-sm btn-neutral mx-2 hover:bg-base-100 hover:text-neutral ${isActive ? "btn-active" : ""}`}
-                to="/sign"
-              >
-                Login
-              </NavLink>
+              
+                <>
+                  <NavLink to="/sign" className="flex items-center space-x-1 hover:text-blue-600 px-3 py-2 rounded-md font-medium">
+                      <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
+                  </NavLink>
+                  <NavLink to="/sign" className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                      <span className="hidden sm:inline">Sign Up</span>
+                      <span className="sm:hidden">Join</span>
+                  </NavLink>
+                </>
+              
             )
           }
           </div>
@@ -142,6 +167,8 @@ export default function Header() {
             }
             {user?.role === "client" &&
               <>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parcs">Parcs</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parcs">Parcs</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parcs">Parcs</NavLink>
               </>
             }

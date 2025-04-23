@@ -87,7 +87,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Persistent Header */}
-       <nav className="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-50">
+       {/* <nav className="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-50">
               <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                 <img className='h-12' src="/Logo/logo3.png" alt="" />
@@ -107,7 +107,7 @@ const HomePage = () => {
                   </Link>
                 </div>
               </div>
-            </nav>
+            </nav> */}
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
