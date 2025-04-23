@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { addPark, updatePark, updateSpot, getParks, deleteMultipleSpots, addMultipleSpots, deletePark} from "../../../assets/api/parks/park";
 import { Button, Tabs, Form, message, Modal, Input, Table, Space, Popconfirm, Select, Spin, InputNumber, } from "antd";
-import { Loader2, Plus, CircleHelp, Trash2 } from "lucide-react";
+import { Loader2, Plus, CircleHelp, Trash2, Info, Map } from "lucide-react";
 import { UpdateParkModal, UpdateSpotModal } from "./updateModals";
 import { EditableParkMap } from "../../ParkMap";
 
@@ -357,12 +357,12 @@ export default function ParkList() {
         centered
         items={[
           {
-            label: "Details",
+            label: <span className="text-base flex items-center gap-1"><Info strokeWidth={2} size={18} />Details</span>,
             key: "details",
             children: <ParkDetails park={park} />,
           },
           {
-            label: "Map",
+            label: <span className="text-base flex items-center gap-1"><Map strokeWidth={2} size={18} />Map</span>,
             key: "map",
             children: <EditableParkMap park={park} setParkSpots={setParkSpots} />,
           },

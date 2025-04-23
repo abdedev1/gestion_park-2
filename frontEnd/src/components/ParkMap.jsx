@@ -27,7 +27,7 @@ export function EditableParkMap({ park, setParkSpots }) {
     if (spots.length == 0) {
       setSpots([{ x: 0, y: 0, name: "P 0", status: "available" }]);
     }
-  }, [spots]);
+  }, [spots, park.spots]);
 
   const spotMap = new Map();
   spots.forEach(spot => {
@@ -253,7 +253,8 @@ export function EditableParkMap({ park, setParkSpots }) {
       let updateRes = spotsToUpdate.length ? await updateMultipleSpots(spotsToUpdate) : { success: false };
       let deleteRes = spotsToDelete.length ? await deleteMultipleSpots(spotsToDelete) : { success: false };
 
-      if (addRes.success && updateRes.success && deleteRes.success ) {
+
+      if (addRes.success || updateRes.success || deleteRes.success ) {
         setParkSpots(park.id, spots)
         messageApi.success("All changes are saved successfully");
       }
@@ -319,7 +320,7 @@ export function EditableParkMap({ park, setParkSpots }) {
         panning={{
           allowRightClickPan: false,
           allowMiddleClickPan: false,
-          activationKeys: ['Control', 'Space'],
+          // activationKeys: ['Control', 'Space'],
           velocityDisabled: true,
           excluded: ['button'] 
         }}
@@ -510,7 +511,7 @@ export function ParkMap({ park }) {
         panning={{
           allowRightClickPan: false,
           allowMiddleClickPan: false,
-          activationKeys: ['Control', 'Space'],
+          // activationKeys: ['Control', 'Space'],
           velocityDisabled: true,
           excluded: ['button'] 
         }}
