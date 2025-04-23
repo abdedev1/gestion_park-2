@@ -5,10 +5,10 @@ import { CircleHelp, Pencil, Trash2, Loader2 } from "lucide-react"
 import { getEmployes, getUsers, updateUser } from "../../assets/api/admin/users"
 import { getRoles } from "../../assets/api/roles/roles"
 import { getParks } from "../../assets/api/parks/park"
+import Fuse from "fuse.js"
 
 function UsersList() {
   const [users, setUsers] = useState([])
-  const [filteredUsers, setFilteredUsers] = useState([])
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,18 +16,30 @@ function UsersList() {
   const [selectedUser, setSelectedUser] = useState(null)
   const [form] = Form.useForm()
   const [messageApi, contextHolder] = message.useMessage()
-  const [activeFilter, setActiveFilter] = useState(null)
-  const [searchQuery, setSearchQuery] = useState("")
   const [parks, setParks] = useState([])
   const [selectedRole, setSelectedRole] = useState(null)
   const [employeeData, setEmployeeData] = useState({})
+
+  const [query, setQuery] = useState("");
+  const [types, setTypes] = useState([]);
+
+  const usersFuse = new Fuse(getRes(), {keys: ["first_name", "last_name", "email"], threshold: 0.3})
+  const items = query ? usersFuse.search(query).map(r => r.item) : getRes();
+
+  function getRes() {
+    let res = types.length ? users.filter(user => types.includes(user.role)) : users
+    return res
+  }
+
+  function toggleType(type) {
+    types.includes(type) ? setTypes(types.filter(t => t !== type)) : setTypes([...types, type])
+  }
 
   const fetchUsers = async () => {
     setLoading(true)
     try {
       const data = await getUsers()
       setUsers(data)
-      setFilteredUsers(data)
       const employeeIds = data.filter((user) => user.role === "employe").map((user) => user.id)
       if (employeeIds.length > 0) {
         await fetchEmployeeData(employeeIds)
@@ -84,23 +96,6 @@ function UsersList() {
     fetchParks()
   }, [])
 
-  useEffect(() => {
-    let result = [...users]
-    if (activeFilter) {
-      result = result.filter((user) => user.role && user.role.toLowerCase() === activeFilter.toLowerCase())
-    }
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter(
-        (user) =>
-          (user.first_name && user.first_name.toLowerCase().includes(query)) ||
-          (user.last_name && user.last_name.toLowerCase().includes(query)) ||
-          (user.email && user.email.toLowerCase().includes(query)),
-      )
-    }
-
-    setFilteredUsers(result)
-  }, [users, activeFilter, searchQuery])
 
   const handleDelete = async (id) => {
     try {
@@ -215,14 +210,6 @@ function UsersList() {
     setSelectedRole(roleName)
   }
 
-  const handleFilterClick = (role) => {
-    setActiveFilter(activeFilter === role ? null : role)
-  }
-
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value)
-  }
-
   // Function to get park name by ID
   const getParkName = (parkId) => {
     const park = parks.find((p) => p.id === parkId)
@@ -318,11 +305,29 @@ function UsersList() {
         <h1 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2">
         Users Management
         </h1>
-        <span className="badge badge-outline badge-lg m-3 count">{filteredUsers.length}</span>
+        <span className="badge badge-outline badge-lg m-3 count">{items.length}</span>
         </div>
       </div>
 
       <div className="flex justify-end p-3 gap-3">
+        <div className="flex gap-1.5">
+        {["admin", "client", "employe"].map((role) => (
+            <button
+              key={role}
+              className={`btn btn-outline px-4 btn-primary border-primary/50 btn-sm rounded-full capitalize ${types.includes(role) ? "btn-active" : ""}`}
+              onClick={() => toggleType(role)}
+            >
+              {role}
+            </button>
+          ))}
+        </div>
+        <label className="input input-primary input-sm w-1/4">
+          <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+          <input type="search" className="grow" onChange={(e) => setQuery(e.target.value)} placeholder="Search" />
+        </label>
+      </div>
+
+      {/* <div className="flex justify-end p-3 gap-3">
         <div className="flex gap-1.5">
           {["admin", "client", "employe"].map((role) => (
             <button
@@ -344,7 +349,7 @@ function UsersList() {
           </svg>
           <input type="search" className="grow" placeholder="Search" value={searchQuery} onChange={handleSearch} />
         </label>
-      </div>
+      </div> */}
 
       <div className=" after:bg-gray-700 before:bg-gray-700 my-0 mx-4" />
 
@@ -352,7 +357,7 @@ function UsersList() {
         <div className="bg-white rounded-lg shadow container mx-auto py-6">
           <Table
             columns={columns}
-            dataSource={filteredUsers}
+            dataSource={items}
             rowKey="id"
             loading={{
               indicator: <Spin indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />} />,
