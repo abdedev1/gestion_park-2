@@ -315,8 +315,10 @@ function UsersList() {
       {contextHolder}
       <div className="flex flex-wrap justify-between items-center gap-6 my-4 px-3">
         <div className="flex gap-4">
-          <h1 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2">Users List</h1>
-          <span className="badge badge-outline badge-lg m-3 count">{filteredUsers.length}</span>
+        <h1 className="text-2xl font-bold text-gray-800 border-b border-gray-200 pb-2">
+        Users Management
+        </h1>
+        <span className="badge badge-outline badge-lg m-3 count">{filteredUsers.length}</span>
         </div>
       </div>
 
