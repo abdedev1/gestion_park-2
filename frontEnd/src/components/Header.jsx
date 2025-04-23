@@ -1,3 +1,4 @@
+import ClientSubscription from './client/ClientSubscription';
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -15,7 +16,7 @@ export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
     const controls = useAnimation();
-    
+    const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
     const { user, token, isLoading } = useSelector((state) => state.auth);
     const [isOpen, setIsOpen] = useState(false);
     const [color, setColor] = useState("bg-neutral text-neutral-content");
@@ -97,6 +98,9 @@ export default function Header() {
                 </button>
                 
               </>)}
+              {showSubscriptionModal && (
+                <ClientSubscription onClose={() => setShowSubscriptionModal(false)} />
+            )}
               {user && <motion.div className={`absolute ${user.role === "client" ? "top-9" : "top-7"} left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />}
               </div>
             

@@ -191,14 +191,14 @@ export default function Profile() {
                         />
                       </Form.Item>
 
-                      {user?.role === "client" && (
+                      {/* {user?.role === "client" && (
                         <Form.Item name="address" label="Address">
                           <Input
                             prefix={<MapPin size={16} className="text-gray-400 mr-2" />}
                             placeholder="Your address"
                           />
                         </Form.Item>
-                      )}
+                      )} */}
 
                       <Form.Item className="mt-6">
                         <Button
