@@ -97,6 +97,9 @@ export function EditableParkMap({ park, setParkSpots }) {
       setSelected(allSpots);
     } else if (value === "deselect-all") {
       setSelected([]);
+    } else if (value === "select-filled") {
+      const filledSpots = spots.map(spot => ({ x: spot.x, y: spot.y }));
+      setSelected(filledSpots);
     } else if (value === "inverse") {
       const allSpots = [];
       for (let y = 0; y < rows; y++) {
@@ -283,6 +286,7 @@ export function EditableParkMap({ park, setParkSpots }) {
           >
             <Select.Option value="select-all">Select all</Select.Option>
             <Select.Option value="deselect-all">Deselect all</Select.Option>
+            <Select.Option value="select-filled">Select filled</Select.Option>
             <Select.Option value="inverse">Inverse</Select.Option>
           </Select>
 
