@@ -18,6 +18,9 @@ import Header from './components/Header'
 import HomePage from './components/home/HomePage';
 import ParkOverview from './components/ParkOverview';
 import ParkingTickets from './components/admin/ParkingTickts'
+import ParksList from './components/client/ParksList';
+import Profile from './components/Profile';
+import Settings from './components/Settings';
 function App() {
   const dispatch = useDispatch();
 
@@ -55,8 +58,11 @@ function App() {
             }}
           >
             <Routes>
-
+             
               <Route  path='/' element={<Header/>}>
+              <Route  path='/settings' element={<Settings/>} />
+              <Route  path='/profile' element={<Profile/>} />
+                <Route index element={<HomePage/>}/>
                 <Route path="parks/:id" element={<ParkOverview />} />
               
                 <Route element={<LoggedOut />}>
@@ -81,7 +87,12 @@ function App() {
                     </Route>
                   
                   {/*partie client*/}
-
+                    <Route element={<ProtectedRoute requiredRole="client" />}>
+                      <Route path="dashboardd" element={<h1>Dashboard Client</h1>} />
+                      <Route path="parkss" element={<ParksList/>} />
+                      <Route path="history" element={<h1>history Client</h1>} />
+                      
+                    </Route>
               </Route>
             </Routes>
           </ConfigProvider>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {Link} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, searchParcs, getParcSpots, clearParcSpots, setSearchQuery } from '../Redux/slices/parcsSlice';
-
+import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 
 const HomePage = () => {
   // States
@@ -16,6 +16,7 @@ const HomePage = () => {
   // Redux
   const dispatch = useDispatch();
   const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
+  const {pricingRates} = useSelector(state=>state.pricingRates)
 
   // Animation variants
   const parkVariants = {
@@ -40,8 +41,16 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(fetchParcs());
+    dispatch(fetchPricingRates())
   }, [dispatch]);
 
+  const numberSpots = (parks)=>{
+    if (parks && Array.isArray(parks.spots)) {
+      return parks.spots.filter(spot => spot.status === "available").length;
+    }
+    return 0
+  }
+  
   // Handlers Search
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -78,27 +87,27 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Persistent Header */}
-       <nav className="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-50">
+       {/* <nav className="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-50">
               <div className="container mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                 <img className='h-12' src="/Logo/logo3.png" alt="" />
                 </div>
                 <div className="hidden md:flex items-center space-x-6">
                   <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium">Home</button>
-                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium">Available Parks</button>
-                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium">Pricing</button>
+                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#avp">Available Parks</a></button>
+                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#pracing">Pricing</a></button>
                 </div>
                 <div className="flex space-x-4">
-                  <button className="flex items-center space-x-1 hover:text-blue-600 px-3 py-2 rounded-md font-medium">
+                  <Link to="/sign" className="flex items-center space-x-1 hover:text-blue-600 px-3 py-2 rounded-md font-medium">
                     <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
-                  </button>
-                  <button className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                  </Link>
+                  <Link to="/sign" className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
                     <span className="hidden sm:inline">Sign Up</span>
                     <span className="sm:hidden">Join</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
-            </nav>
+            </nav> */}
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
@@ -154,7 +163,7 @@ const HomePage = () => {
       </section>
 
       {/* Parks/Spots Section */}
-      <section className="py-16 bg-gray-100">
+      <section className="py-16 bg-gray-100" id='avp'>
         <div className="container mx-auto px-4">
           <motion.h2 
             initial={{ opacity: 0 }}
@@ -236,7 +245,7 @@ const HomePage = () => {
                     <div className="h-48 bg-blue-200 relative flex items-center justify-center">
                       <FaCar className="text-4xl text-blue-600" />
                       <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold flex items-center">
-                        <FaStar className="text-yellow-400 mr-1" /> {park.rating}
+                        <FaStar className="text-yellow-400 mr-1" /> 4.5 {park.rating}
                       </div>
                     </div>
                     <div className="p-6">
@@ -245,11 +254,11 @@ const HomePage = () => {
                       <div className="flex justify-between items-center mb-4">
                         <div>
                           <p className="text-gray-500 text-sm">Available spots</p>
-                          <p className="font-semibold">{park.availableSpots} spots</p>
+                          <p className="font-semibold">{numberSpots(park)} spots</p>
                         </div>
                         <div className="text-right">
                           <p className="text-gray-500 text-sm">Starting from</p>
-                          <p className="font-bold text-blue-600">${park.price}/Heure</p>
+                          <p className="font-bold text-blue-600">MAD {pricingRates.length > 0 ? pricingRates[0].price_per_hour : 'N/A'}/Hour</p>
                         </div>
                       </div>
                       <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">
@@ -330,7 +339,7 @@ const HomePage = () => {
             </div>
       
             {/* Pricing Section */}
-            <div className="py-16 bg-white">
+            <div className="py-16 bg-white" id='pracing'>
               <div className="container mx-auto px-4">
                 <motion.h2 
                   initial={{ opacity: 0 }}
@@ -492,9 +501,9 @@ const HomePage = () => {
                   viewport={{ once: true }}
                   className="flex flex-col sm:flex-row justify-center gap-4"
                 >
-                  <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium transition">
+                  <Link  to="/sign" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium transition">
                     Sign Up Now
-                  </button>
+                  </Link>
                   <button className="border border-white text-white hover:bg-blue-700 px-8 py-3 rounded-lg font-medium transition">
                     Contact Sales
                   </button>

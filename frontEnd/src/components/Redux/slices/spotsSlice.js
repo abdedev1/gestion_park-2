@@ -60,7 +60,11 @@ const spotsSlice = createSlice({
             .addCase(deleteSpot.fulfilled, (state, action) => {
                 state.spots = state.spots.filter(spot => spot.id !== action.payload); 
             })
+            .addCase(getEmployeSpots.pending, (state) => {
+                state.status = 'loading';
+            })
             .addCase(getEmployeSpots.fulfilled, (state, action) => {
+                state.status = 'succeeded';
                 state.employeeSpots = action.payload;  
             });
     }
