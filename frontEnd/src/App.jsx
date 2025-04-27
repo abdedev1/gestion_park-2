@@ -21,6 +21,7 @@ import ParkingTickets from './components/admin/ParkingTickts'
 import ParksList from './components/client/ParksList';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
+import Dashboard from './components/admin/Dashborad';
 function App() {
   const dispatch = useDispatch();
 
@@ -79,7 +80,7 @@ function App() {
                   {/* partie admin */}
 
                     <Route element={<ProtectedRoute requiredRole="admin" />}>
-                      <Route path="dashboard" element={<h1>Dashboard</h1>} />
+                      <Route path="dashboard" element={<Dashboard/>} />
                       <Route path="users" element={<UsersList/>} />
                       <Route path="roles" element={<RolesList/>} />
                       <Route path="parks" element={<ParkList/>} />

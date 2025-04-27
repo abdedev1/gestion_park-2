@@ -25,8 +25,8 @@ export const getSpots = async () => {
     } catch (error) {
       console.error('Error fetching spots:', error);
       throw error;
-    }
-    };
+  }
+};
 export const addPark = async (parkData) => {
   try {
     const response = await axios.post('/parks', parkData);
