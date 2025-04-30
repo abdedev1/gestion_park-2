@@ -1,12 +1,26 @@
-import { useState } from "react"
-import { X, Check, CreditCard, Calendar, Shield } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux" // Redux hooks
+import { fetchParcs } from "../Redux/slices/parcsSlice" // Fetch parks action
+import { X, Check } from "lucide-react"
 import { message } from "antd"
+import Auth from "../../assets/api/auth/Auth"
 
 export default function ClientSubscription({ onClose }) {
   const [selectedPlan, setSelectedPlan] = useState(null)
-  const [paymentStep, setPaymentStep] = useState(false)
+  const [selectedPark, setSelectedPark] = useState("") // Selected park
+  const [duration, setDuration] = useState(1) // Duration in months
   const [loading, setLoading] = useState(false)
   const [messageApi, contextHolder] = message.useMessage()
+
+  const dispatch = useDispatch()
+  const { parks, status } = useSelector((state) => state.parks) // Get parks from Redux
+  const { user, token, isLoading } = useSelector((state) => state.auth) // Get user and token from auth slice
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchParcs()) // Fetch parks when component loads
+    }
+  }, [dispatch, status])
 
   const subscriptionPlans = [
     {
@@ -27,29 +41,34 @@ export default function ClientSubscription({ onClose }) {
       id: 3,
       name: "Unlimited",
       price: 200,
-      features: ["Unlimited daily spots", "24/7 access", "All locations", "VIP support"],
+      features: ["Unlimited daily spots", "24/7 access", "All locations"],
       recommended: false,
     },
   ]
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan)
-    setPaymentStep(true)
   }
+  console.log(user)
+  const handleSubmitSubscription = () => {
+    if (!selectedPark) {
+      messageApi.error("Please select a park.")
+      return
+    }
 
-  const handleSubmitPayment = (e) => {
-    e.preventDefault()
     setLoading(true)
 
     // Simulate API call
     setTimeout(() => {
       setLoading(false)
-      messageApi.success("Subscription activated successfully!")
+      messageApi.success("Subscription created successfully!")
       setTimeout(() => {
         onClose()
       }, 1500)
     }, 2000)
   }
+
+  const totalPrice = selectedPlan ? selectedPlan.price * duration : 0
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
@@ -63,7 +82,7 @@ export default function ClientSubscription({ onClose }) {
         </div>
 
         <div className="p-6">
-          {!paymentStep ? (
+          {!selectedPlan ? (
             <>
               <p className="text-gray-600 mb-6">Choose a subscription plan that fits your parking needs</p>
 
@@ -110,96 +129,88 @@ export default function ClientSubscription({ onClose }) {
             </>
           ) : (
             <div className="max-w-md mx-auto">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <CreditCard className="text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-lg">
-                    {selectedPlan.name} Plan - {selectedPlan.price} MAD/month
-                  </h3>
-                  <p className="text-gray-500">Enter your payment details below</p>
-                </div>
+              <h3 className="font-medium text-lg mb-4">
+                {selectedPlan.name} Plan - {selectedPlan.price} MAD/month
+              </h3>
+
+              {/* Client First Name */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                <input
+                  type="text"
+                  value={user?.first_name || ""}
+                  readOnly
+                  className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none"
+                />
               </div>
 
-              <form onSubmit={handleSubmitPayment}>
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                    <input
-                      type="text"
-                      placeholder="1234 5678 9012 3456"
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+              {/* Client Last Name */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                <input
+                  type="text"
+                  value={user?.last_name || ""}
+                  readOnly
+                  className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none"
+                />
+              </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                      <input
-                        type="text"
-                        placeholder="MM/YY"
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CVC</label>
-                      <input
-                        type="text"
-                        placeholder="123"
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      />
-                    </div>
-                  </div>
+              {/* Park Selection */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select Park</label>
+                <select
+                  value={selectedPark}
+                  onChange={(e) => setSelectedPark(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">-- Select a Park --</option>
+                  {status === "loading" ? (
+                    <option>Loading parks...</option>
+                  ) : (
+                    parks.map((park) => (
+                      <option key={park.id} value={park.id}>
+                        {park.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
-                    <input
-                      type="text"
-                      placeholder="John Doe"
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                </div>
+              {/* Duration Selection */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Duration (Months)</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-                <div className="flex items-start gap-2 mb-6 bg-gray-50 p-3 rounded-md">
-                  <Shield size={18} className="text-gray-500 mt-0.5" />
-                  <p className="text-sm text-gray-600">
-                    Your payment information is secure. We use encryption to protect your data.
-                  </p>
-                </div>
+              {/* Total Price */}
+              <div className="mb-6">
+                <p className="text-lg font-medium">
+                  Total Price: <span className="text-blue-600">{totalPrice} MAD</span>
+                </p>
+              </div>
 
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setPaymentStep(false)}
-                    className="flex-1 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex items-center justify-center gap-2"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Calendar size={16} />
-                        Subscribe
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlan(null)}
+                  className="flex-1 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleSubmitSubscription}
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Confirm Subscription"}
+                </button>
+              </div>
             </div>
           )}
         </div>

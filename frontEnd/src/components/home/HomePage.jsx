@@ -3,8 +3,7 @@ import { FaCar, FaMapMarkerAlt, FaSearch, FaUserCircle, FaSignInAlt, FaStar, FaA
 import { motion } from 'framer-motion';
 import {Link} from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchParcs, searchParcs, getParcSpots, clearParcSpots, setSearchQuery } from '../Redux/slices/parcsSlice';
-import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
+import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
 
 const HomePage = () => {
   // States
@@ -12,11 +11,11 @@ const HomePage = () => {
   const [selectedParc, setSelectedParc] = useState(null);
   const [showAllParks, setShowAllParks] = useState(false);
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredParks, setFilteredParks] = useState([]);
   // Redux
   const dispatch = useDispatch();
-  const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
-  const {pricingRates} = useSelector(state=>state.pricingRates)
+  const { parks, currentParcSpots, status } = useSelector(state => state.parks);
 
   // Animation variants
   const parkVariants = {
@@ -41,23 +40,29 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(fetchParcs());
-    dispatch(fetchPricingRates())
   }, [dispatch]);
 
-  const numberSpots = (parks)=>{
-    if (parks && Array.isArray(parks.spots)) {
-      return parks.spots.filter(spot => spot.status === "available").length;
-    }
-    return 0
-  }
+    // Filtrer les parcs en fonction de la recherche
+    useEffect(() => {
+      if (searchQuery.trim()) {
+        const filtered = parks.filter((park) =>
+          park.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          park.address.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredParks(filtered);
+      } else {
+        setFilteredParks(parks);
+      }
+    }, [searchQuery, parks]);
   
+    const numberSpots = (parks) => {
+      if (parks && Array.isArray(parks.spots)) {
+        return parks.spots.filter(spot => spot.status === "available").length;
+      }
+      return 0;
+    };
   // Handlers Search
   const handleSearch = () => {
-    if (searchQuery.trim()) {
-      dispatch(searchParcs(searchQuery));
-    } else {
-      dispatch(fetchParcs());
-    }
     setSelectedParc(null);
     setShowAllParks(false);
     dispatch(clearParcSpots());
@@ -77,12 +82,11 @@ const HomePage = () => {
   const handleViewAllParks = () => {
     setShowAllParks(true);
     setSelectedParc(null);
-    dispatch(fetchParcs());
     dispatch(clearParcSpots());
   };
 
   // Display logic
-  const displayedParks = showAllParks ? parks : parks.slice(0, 3);
+  const displayedParks = showAllParks ? filteredParks : filteredParks.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -258,7 +262,7 @@ const HomePage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-gray-500 text-sm">Starting from</p>
-                          <p className="font-bold text-blue-600">MAD {pricingRates.length > 0 ? pricingRates[0].price_per_hour : 'N/A'}/Hour</p>
+                          <p className="font-bold text-blue-600">MAD {park.price}/Hour</p>
                         </div>
                       </div>
                       <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">

@@ -18,6 +18,7 @@ class ParkFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
+            'price'=> $this->faker->randomFloat(2, 10, 100),
             'address' => $this->faker->address(),
         ];
     }

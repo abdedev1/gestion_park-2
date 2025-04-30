@@ -13,6 +13,7 @@ class Park extends Model
   
     protected $fillable = [
         'name',
+        'price',
         'address',
     ];
     
