@@ -5,7 +5,7 @@ import pricingRatesReducer from './slices/pricingRatesSlice'
 import parkingTicketsReducer from './slices/parkingTicketsSlice'
 import employesReducer  from './slices/employesSlice'
 import parcsReducer from './slices/parcsSlice'
-
+import demandCardsReducer from "./slices/demandCardsSlice"
 export const store = configureStore({
     reducer:{
         auth: AuthReducer,
@@ -13,6 +13,7 @@ export const store = configureStore({
         spots:spotsReducer,
         parks: parcsReducer,
         pricingRates:pricingRatesReducer,
-        parkingTickets:parkingTicketsReducer
+        parkingTickets:parkingTicketsReducer,
+        demandCards: demandCardsReducer,
     }
 })

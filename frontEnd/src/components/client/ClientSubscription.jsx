@@ -4,7 +4,7 @@ import { fetchParcs } from "../Redux/slices/parcsSlice" // Fetch parks action
 import { X, Check } from "lucide-react"
 import { message } from "antd"
 import Auth from "../../assets/api/auth/Auth"
-
+import { createSubscription } from "../Redux/slices/demandCardsSlice"; // Import the action
 export default function ClientSubscription({ onClose }) {
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [selectedPark, setSelectedPark] = useState("") // Selected park
@@ -52,21 +52,35 @@ export default function ClientSubscription({ onClose }) {
   console.log(user)
   const handleSubmitSubscription = () => {
     if (!selectedPark) {
-      messageApi.error("Please select a park.")
-      return
+      messageApi.error("Please select a park.");
+      return;
     }
-
-    setLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      messageApi.success("Subscription created successfully!")
-      setTimeout(() => {
-        onClose()
-      }, 1500)
-    }, 2000)
-  }
+  
+    setLoading(true);
+  
+    dispatch(
+      createSubscription({
+        userId: user?.id,
+        parkId: selectedPark,
+        duration,
+        totalPrice,
+        token,
+      })
+    )
+      .unwrap()
+      .then(() => {
+        messageApi.success("Subscription created successfully!");
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      })
+      .catch((error) => {
+        messageApi.error(error.message || "Failed to create subscription.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const totalPrice = selectedPlan ? selectedPlan.price * duration : 0
 
