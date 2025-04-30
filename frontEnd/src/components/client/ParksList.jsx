@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchParcs, searchParcs, setSearchQuery } from "../Redux/slices/parcsSlice"
+import { fetchParcs } from "../Redux/slices/parcsSlice"
 import { Link } from "react-router-dom"
 import { MapPin, Search, Car, Star, Filter } from "lucide-react"
 
 export default function ParksList() {
   const dispatch = useDispatch()
-  const { parks, status, searchQuery } = useSelector((state) => state.parks)
+  const { parks, status } = useSelector((state) => state.parks)
   const [filteredParks, setFilteredParks] = useState([])
   const [filterOpen, setFilterOpen] = useState(false)
   const [filters, setFilters] = useState({
@@ -14,15 +14,16 @@ export default function ParksList() {
     maxPrice: "",
     minSpots: "",
   })
+  const [searchQuery, setSearchQuery] = useState("") 
 
   useEffect(() => {
     dispatch(fetchParcs())
   }, [dispatch])
-
+  console.log(parks)
   useEffect(() => {
     let result = [...parks]
 
-    // Apply filters
+    // Appliquer les filtres
     if (filters.minPrice) {
       result = result.filter((park) => (park.price || 0) >= Number(filters.minPrice))
     }
@@ -33,16 +34,16 @@ export default function ParksList() {
       result = result.filter((park) => (park.availableSpots || 0) >= Number(filters.minSpots))
     }
 
-    setFilteredParks(result)
-  }, [parks, filters])
-
-  const handleSearch = () => {
+    // Appliquer la recherche
     if (searchQuery.trim()) {
-      dispatch(searchParcs(searchQuery))
-    } else {
-      dispatch(fetchParcs())
+      result = result.filter((park) =>
+        park.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        park.address.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     }
-  }
+
+    setFilteredParks(result)
+  }, [parks, filters, searchQuery])
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target
@@ -72,14 +73,14 @@ export default function ParksList() {
               placeholder="Search parks..."
               className="w-full px-4 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={searchQuery}
-              onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              onChange={(e) => setSearchQuery(e.target.value)} // Mettre à jour l'état local
+              onKeyPress={(e) => e.key === "Enter" && setSearchQuery(e.target.value)}
             />
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           </div>
 
           <button
-            onClick={handleSearch}
+            onClick={() => setSearchQuery(searchQuery)} // Appliquer la recherche
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
           >
             Search
