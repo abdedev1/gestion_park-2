@@ -1,4 +1,4 @@
-import { Accessibility, Car, GripHorizontal, GripVertical, Minus, Pencil, Plus, PlusCircle, Save, SmartphoneCharging, Trash } from "lucide-react";
+import { Accessibility, Car, GripHorizontal, GripVertical, Minus, Pencil, Plus, PlusCircle, Save, SmartphoneCharging, Square, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { addMultipleSpotsExact, updateMultipleSpots, deleteMultipleSpots } from "../assets/api/parks/park";
@@ -273,7 +273,7 @@ export function EditableParkMap({ park, setParkSpots }) {
 
   return (
     <div className="flex flex-col justify-center border w-full container mx-auto rounded border-gray-200">{contextHolder}
-      <div className="flex flex-col sm:flex-row justify-between gap-10 sm:gap-2 m-2">
+      <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-10 m-2">
         <div className="flex justify-between sm:justify-center gap-2">
           <Select
             value={selectValue}
@@ -314,12 +314,62 @@ export function EditableParkMap({ park, setParkSpots }) {
           </Button>
         </Popconfirm>
       </div>
+
+      <div className="flex justify-between gap-1 m-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex text-center gap-2">
+            <Car className="w-1/6" />
+            <span className="w-4/6">Standard</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "standard").length}
+            </span>
+          </div>
+          <div className="flex text-center gap-2">
+            <SmartphoneCharging className="w-1/6" />
+            <span className="w-4/6">Electric</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "electric").length}
+            </span>
+          </div>
+          <div className="flex text-center gap-2">
+            <Accessibility className="w-1/6" />
+            <span className="w-4/6">Accessible</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "accessible").length}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm" /></div>
+            <span className="w-4/6">Available</span>
+            <span className="badge badge-sm badge-neutral badge-outline w-1/6">
+              {spots.filter(spot => spot.status === "available").length}
+            </span>
+          </div>
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm bg-secondary/50" /></div>
+            <span className="w-4/6">Reserved</span>
+            <span className="badge badge-sm badge-secondary w-1/6">
+              {spots.filter(spot => spot.status === "reserved").length}
+            </span>
+          </div>
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm bg-warning/75" /></div>
+            <span className="w-4/6">Maintenance</span>
+            <span className="badge badge-sm badge-warning w-1/6">
+              {spots.filter(spot => spot.status === "maintenance").length}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <TransformWrapper
         initialScale={1}
         limitToBounds={false}
         minScale={0.2}
         maxScale={5}
-        wheel={{ step: 0.1 }}
+        wheel={{ step: 0.15 }}
         doubleClick={{ disabled: true }}
         panning={{
           allowRightClickPan: false,
@@ -445,16 +495,18 @@ export function EditableParkMap({ park, setParkSpots }) {
                               "w-16 h-16 m-0.5 arrow select-none transition-[scale] hover:scale-105 hover:cursor-pointer rounded flex flex-col justify-center items-center text-xs",
                               spot ? "border border-neutral bg-white" : "border border-primary bg-white/50 opacity-0 hover:opacity-100",
                               isSelected && "ring-4 ring-primary border-0 ring-offset-0 bg-blue-200 opacity-100",
-                              (hoveredRow === y || hoveredColumn === x) && `${deleteSpot ? "bg-red-100 border-error" : "bg-blue-100 border-primary"} opacity-100`,
-                              spot?.status == 'maintenance' && "bg-yellow-400",
+                              (hoveredRow === y || hoveredColumn === x) && `${deleteSpot ? "bg-red-100 text-error border-error" : "bg-blue-100 text-primary border-primary"} opacity-100`,
+                              spot?.status == 'reserved' && "bg-secondary/50",
+                              spot?.status == 'maintenance' && "bg-warning/75",
                             )}
                               >
                             {spot ? (
                               <>
                                 <div className="font-semibold">{spot.name}</div>
-                                <div className="text-[10px] text-gray-600">
-                                  x:{x}, y:{y}
-                                </div>
+                                {spot?.type == 'accessible' ? <Accessibility size={22} />
+                                 : spot?.type == 'electric' ? <SmartphoneCharging size={22} />
+                                 : spot?.type == 'standard' && <Car size={22} />
+                                }
                               </>
                             ) : (
                               <span className="flex justify-center items-center opacity-0">
@@ -492,7 +544,7 @@ export function EditableParkMap({ park, setParkSpots }) {
 
 
 
-export function ParkMap({ park }) {
+export function ParkMap({ park, action = null }) {
   const spots = [...park.spots];
 
   const spotMap = new Map();
@@ -504,13 +556,63 @@ export function ParkMap({ park }) {
   const rows = Math.max(...spots.map(s => s.y)) + 1;
 
   return (
-    <div className="inline-block border relative p-2 bg-gray-100 container h-[500px] overflow-hidden">
+    <div className="flex flex-col justify-center border w-full container mx-auto rounded border-gray-200">
+
+      <div className="flex justify-between gap-1 m-2">
+        <div className="flex flex-col gap-1">
+          <div className="flex text-center gap-2">
+            <Car className="w-1/6" />
+            <span className="w-4/6">Standard</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "standard").length}
+            </span>
+          </div>
+          <div className="flex text-center gap-2">
+            <SmartphoneCharging className="w-1/6" />
+            <span className="w-4/6">Electric</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "electric").length}
+            </span>
+          </div>
+          <div className="flex text-center gap-2">
+            <Accessibility className="w-1/6" />
+            <span className="w-4/6">Accessible</span>
+            <span className="badge badge-sm badge-primary w-1/6">
+              {spots.filter(spot => spot.type === "accessible").length}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm" /></div>
+            <span className="w-4/6">Available</span>
+            <span className="badge badge-sm badge-neutral badge-outline w-1/6">
+              {spots.filter(spot => spot.status === "available").length}
+            </span>
+          </div>
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm bg-secondary/50" /></div>
+            <span className="w-4/6">Reserved</span>
+            <span className="badge badge-sm badge-secondary w-1/6">
+              {spots.filter(spot => spot.status === "reserved").length}
+            </span>
+          </div>
+          <div className="flex flex-row-reverse text-center gap-2">
+            <div className="w-1/6 flex justify-center items-center" ><span className="w-5 h-5 border rounded-sm bg-warning/75" /></div>
+            <span className="w-4/6">Maintenance</span>
+            <span className="badge badge-sm badge-warning w-1/6">
+              {spots.filter(spot => spot.status === "maintenance").length}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <TransformWrapper
         initialScale={1}
         limitToBounds={false}
         minScale={0.2}
         maxScale={5}
-        wheel={{ step: 0.1 }}
+        wheel={{ step: 0.15 }}
         doubleClick={{ disabled: true }}
         panning={{
           allowRightClickPan: false,
@@ -522,56 +624,53 @@ export function ParkMap({ park }) {
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
-            <div className="absolute top-4 left-4 z-10 flex gap-2">
+            <div className="z-10 flex bg-base-200 gap-2 p-2">
               <button 
                 onClick={() => zoomIn()} 
-                className="btn btn-sm btn-square"
-              >
-                +
+                className="btn btn-secondary btn-sm btn-square"
+              ><Plus strokeWidth={3} size={16} />
               </button>
               <button 
                 onClick={() => zoomOut()} 
-                className="btn btn-sm btn-square"
-              >
-                -
+                className="btn btn-secondary btn-sm btn-square"
+              ><Minus strokeWidth={3} size={16} />
               </button>
               <button 
                 onClick={() => resetTransform()} 
-                className="btn btn-sm"
+                className="btn btn-secondary btn-sm text-base"
               >
                 Reset
               </button>
             </div>
-            <TransformComponent wrapperStyle={{width: "100%"}} wrapperClass="w-full h-full" contentClass="!w-fit !h-fit">
+            <TransformComponent wrapperStyle={{width: "100%"}} wrapperClass="w-full h-full bg-base-200" contentClass="!w-fit !h-fit">
               {/* Full Grid */}
-              <div className="flex flex-col">
-                {Array.from({ length: rows + 1 }, (_, y) => (
+              <div className="p-16 inline-block relative min-h-96 overflow-hidden">
+                {Array.from({ length: rows }, (_, y) => (
                   <div key={y} className="flex items-center">
                     {Array.from({ length: columns }, (_, x) => {
                       const spot = spotMap.get(`${x},${y}`);
                       return (
                         <div
                           key={`${x}-${y}`}
-                          onClick={() => console.log(`Clicked on spot at x:${x}, y:${y}`)}
-                          className={`w-16 h-16 border m-0.5 rounded flex flex-col justify-center items-center text-xs ${
-                            spot
-                              ? spot.status === 'available'
-                                ? 'bg-green-400'
-                                : spot.status === 'reserved'
-                                ? 'bg-yellow-400'
-                                : 'bg-red-400'
-                              : 'bg-white'
-                          }`}
-                        >
+                          onClick={spot && action ? () => action(spot) : null}
+                          className={cn(
+                            "w-16 h-16 m-0.5 arrow select-none transition-[scale] hover:scale-105 rounded flex flex-col justify-center items-center text-xs",
+                            spot && "border border-neutral bg-white hover:cursor-pointer",
+                            spot?.status == 'reserved' && "bg-secondary/50",
+                            spot?.status == 'maintenance' && "bg-warning/75",
+                          )}
+                            >
                           {spot ? (
                             <>
                               <div className="font-semibold">{spot.name}</div>
-                              <div className="text-[10px] text-gray-600">
-                                x:{x}, y:{y}
-                              </div>
+                              {spot?.type == 'accessible' ? <Accessibility size={22} />
+                                : spot?.type == 'electric' ? <SmartphoneCharging size={22} />
+                                : spot?.type == 'standard' && <Car size={22} />
+                              }
                             </>
                           ) : (
-                            <div className="text-[10px] text-gray-600">Empty</div>
+                            <span className="flex justify-center items-center opacity-0">
+                            </span>
                           )}
                         </div>
                       );
