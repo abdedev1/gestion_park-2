@@ -164,14 +164,14 @@ export function UpdateMultipleSpotModal({ isOpen, onClose, park_id, selected, se
       )
     } else {
       // Update existing spots and add new ones
-      selected.forEach(sel => {
+      selected.forEach((sel, i) => {
         const existingSpotIndex = updatedSpots.findIndex(
           spot => spot.x === sel.x && spot.y === sel.y
         )
   
         const newOrUpdatedSpot = {
           ...updatedSpots[existingSpotIndex],
-          name: `${values.name} ${sel.x}`,
+          name: `${values.name} ${i + 1}`,
           type: values.type,
           status: values.status,
           x: sel.x,

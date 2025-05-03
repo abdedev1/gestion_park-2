@@ -22,7 +22,6 @@ function UsersList() {
 
   const [query, setQuery] = useState("");
   const [types, setTypes] = useState([]);
-
   const usersFuse = new Fuse(getRes(), {keys: ["first_name", "last_name", "email"], threshold: 0.3})
   const items = query ? usersFuse.search(query).map(r => r.item) : getRes();
 
