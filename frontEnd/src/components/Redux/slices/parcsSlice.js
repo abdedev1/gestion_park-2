@@ -16,11 +16,17 @@ export const getParcSpots = createAsyncThunk("parks/getParcSpots", async (parcId
     return response.data;
 });
 
+export const getParkById = createAsyncThunk('parks/getParkById', async (parkId) => {
+    const response = await axios.get(`parks/${parkId}`);
+    return response.data;
+});
+
 const parcsSlice = createSlice({
     name: 'parks',
     initialState: {
         parks: [],
         currentParcSpots: [],
+        currentPark: null,
         status: 'idle',
         error: null,
         searchQuery: ''
@@ -31,6 +37,9 @@ const parcsSlice = createSlice({
         },
         clearParcSpots: (state) => {
             state.currentParcSpots = [];
+        },
+        clearCurrentPark: (state) => {
+            state.currentPark = null;
         }
     },
     extraReducers: (builder) => {
@@ -55,9 +64,20 @@ const parcsSlice = createSlice({
             })
             .addCase(getParcSpots.fulfilled, (state, action) => {
                 state.currentParcSpots = action.payload;
+            })
+            .addCase(getParkById.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(getParkById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.currentPark = action.payload;
+            })
+            .addCase(getParkById.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
             });
     }
 });
 
-export const { setSearchQuery, clearParcSpots } = parcsSlice.actions;
+export const { setSearchQuery, clearParcSpots, clearCurrentPark } = parcsSlice.actions;
 export default parcsSlice.reducer;

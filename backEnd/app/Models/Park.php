@@ -17,6 +17,8 @@ class Park extends Model
         'address',
     ];
     
+    protected $hidden = ['created_at', 'updated_at'];
+    
     public function employees(){
         return $this->hasMany(Employe::class);
     }

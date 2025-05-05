@@ -31,6 +31,8 @@ class User extends Authenticatable
         'role_id',
     ];
 
+    protected $appends = ['role_data'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -60,6 +62,34 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function client()
+    {
+        return $this->hasOne(Client::class, 'user_id');
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'user_id');
+    }
+
+    public function employe()
+    {
+        return $this->hasOne(Employe::class, 'user_id');
+    }
+    public function getRoleDataAttribute()
+    {
+        switch ($this->role->name) {
+            case 'client':
+                return $this->client;
+            case 'admin':
+                return $this->admin;
+            case 'employe':
+                return $this->employe;
+            default:
+                return null;
+        }
     }
 
 }

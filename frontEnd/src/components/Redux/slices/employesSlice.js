@@ -8,6 +8,11 @@ export const fetchEmployes = createAsyncThunk('employes/fetchEmployes', async ()
     return response.data;
 });
 
+export const getEmployeById = createAsyncThunk("employes/getEmployeById", async (id) => {
+  const response = await axios.get(`employes/${id}`);
+  return response.data;
+});
+
 export const addEmploye = createAsyncThunk("employes/addEmploye", async (newEmploye) => {
     const response = await axios.post("employes", newEmploye);
     return response.data;
@@ -24,8 +29,13 @@ export const addEmploye = createAsyncThunk("employes/addEmploye", async (newEmpl
   });
 
 const employesSlice = createSlice({
-    name: 'employes',
-    initialState:{employes: [],status: 'idle',error: null},
+  name: 'employes',
+  initialState: {
+      employes: [],
+      currentEmploye: null,
+      status: 'idle',
+      error: null
+  },
     extraReducers: (builder) => {
         builder
             .addCase(fetchEmployes.pending, (state) => {state.status = 'loading';})
@@ -33,9 +43,15 @@ const employesSlice = createSlice({
             .addCase(fetchEmployes.rejected, (state, action) => {state.status = 'failed';state.error = action.error.message;})
             .addCase(addEmploye.fulfilled,(state,action)=>{state.employes.push(action.payload)})
             .addCase(updateEmploye.fulfilled,(state,action)=>{state.employes.findIndex(employe=>employe.id === action.payload.id);if (index !== -1) state.employes[index] = action.payload;})
-            .addCase(deleteEmploye.fulfilled, (state, action) => {
-                    state.employes = state.employes.filter(employe => employe.id !== action.payload);
-                  });
+            .addCase(deleteEmploye.fulfilled, (state, action) => { state.employes = state.employes.filter(employe => employe.id !== action.payload)})
+            .addCase(getEmployeById.pending, (state) => { state.status = 'loading';})
+            .addCase(getEmployeById.fulfilled, (state, action) => {
+              state.status = 'succeeded';
+              state.currentEmploye = action.payload;})
+            .addCase(getEmployeById.rejected, (state, action) => {
+              state.status = 'failed';
+              state.error = action.error.message;
+            });
     }
 });
 

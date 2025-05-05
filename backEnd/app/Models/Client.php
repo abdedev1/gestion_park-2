@@ -10,4 +10,9 @@ class Client extends Model
     /** @use HasFactory<\Database\Factories\ClientFactory> */
     protected $fillable = ['user_id','cart_id'];
     use HasFactory;
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
 }

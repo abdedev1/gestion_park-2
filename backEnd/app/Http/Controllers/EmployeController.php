@@ -12,7 +12,7 @@ class EmployeController extends Controller
      */
     public function index()
     {
-        $employes = Employe::with('user')->get();
+        $employes = Employe::with('user', 'park.spots')->get();
         return response()->json($employes);
     }
 
@@ -39,7 +39,7 @@ class EmployeController extends Controller
      */
     public function show(Employe $employe)
     {
-        $employe->load('user'); 
+        $employe->load(['user', 'park.spots']);
         return response()->json($employe);
     }
 

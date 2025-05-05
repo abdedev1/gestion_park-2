@@ -16,14 +16,7 @@ class isClientMiddleWare
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('sanctum')->user();
-    
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthenticated',
-            ], 401);
-        }
+        $user = $request->user();
 
         if ($user->role->name !== 'client') {
             return response()->json([

@@ -26,7 +26,7 @@ Route::middleware("auth:sanctum")->controller(AuthController::class)->group(func
     Route::post("logout", "logout");
 });
 
-Route::middleware(isAdminMiddleWare::class)->group(function(){
+Route::middleware(["auth:sanctum", isAdminMiddleWare::class])->group(function(){
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
@@ -37,21 +37,20 @@ Route::middleware(isAdminMiddleWare::class)->group(function(){
     Route::put('spots/multiple', [SpotController::class, 'updateMultiple'])->name('spots.updateMultiple');
 });
 
-Route::middleware(isEmployeMiddleWare::class)->group(function(){
+Route::middleware(["auth:sanctum", isEmployeMiddleWare::class])->group(function(){
     Route::apiResource('employes', EmployeController::class);
     Route::get('/parks/search', [ParkController::class, 'search']);
     
 });
 
-Route::middleware(isClientMiddleWare::class)->group(function(){
+Route::middleware(["auth:sanctum", isClientMiddleWare::class])->group(function(){
     
 });
-Route::middleware(IsAdminEmployeeMiddleware::class)->group(function(){
+
+Route::middleware(["auth:sanctum", IsAdminEmployeeMiddleware::class])->group(function(){
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
     Route::apiResource('employes', EmployeController::class);
-
-
 });
 
 // internaute routes

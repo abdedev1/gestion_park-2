@@ -16,14 +16,7 @@ class isAdminMiddleWare
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::guard('sanctum')->user();
-    
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthenticated',
-            ], 401);
-        }
+        $user = $request->user();
 
         if ($user->role->name !== 'admin') {
             return response()->json([

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchEmployes } from '../Redux/slices/employesSlice';
+import { fetchEmployes, getEmployeById } from '../Redux/slices/employesSlice';
 import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 import { addParkingTicket,fetchParkingTickets  } from '../Redux/slices/parkingTicketsSlice';
@@ -17,7 +17,7 @@ export default function SpotsEmploye() {
     const [showScanner, setShowScanner] = useState(false);
     const dispatch = useDispatch();
     const { user, token} = useSelector((state) => state.auth);
-    const {employes} = useSelector(state=>state.employes) 
+    const { employes } = useSelector(state=>state.employes)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
     const [employeIdStock,setEmployeIdStock] =useState(null)
@@ -33,6 +33,7 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
+        dispatch(getEmployeById(user.id));
         dispatch(fetchPricingRates());
         dispatch(fetchParkingTickets());
         dispatch(fetchEmployes())
@@ -50,7 +51,6 @@ export default function SpotsEmploye() {
         }
     }, [user, employes, dispatch]);
 
-    console.log(status)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevent =>({

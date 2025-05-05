@@ -10,6 +10,8 @@ class Employe extends Model
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
     protected $fillable = ['user_id', 'park_id'];
+    protected $with = ['park.spots'];
+    protected $hidden = ['created_at', 'updated_at'];
     
     public function user()
     {
