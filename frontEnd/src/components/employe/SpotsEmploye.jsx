@@ -10,14 +10,14 @@ import QRCodeScanner from './QrCodeScanner';
 import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
 import isEqual from "lodash/isEqual";
 import { generateTicketPDF } from './ticketPdf';
+import { ParkMap } from '../ParkMap';
 
 export default function SpotsEmploye() {
-    const { employeeSpots, status } = useSelector(state => state.spots);
+    const { user } = useSelector((state) => state.auth);
+    const { park } = user.role_data
     const { pricingRates } = useSelector(state => state.pricingRates);
     const [showScanner, setShowScanner] = useState(false);
     const dispatch = useDispatch();
-    const { user, token} = useSelector((state) => state.auth);
-    const { employes } = useSelector(state=>state.employes)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
     const [employeIdStock,setEmployeIdStock] =useState(null)
@@ -33,23 +33,10 @@ export default function SpotsEmploye() {
     });
 
     useEffect(() => {
-        dispatch(getEmployeById(user.id));
         dispatch(fetchPricingRates());
         dispatch(fetchParkingTickets());
-        dispatch(fetchEmployes())
     }, [dispatch]);
 
-    useEffect(() => {
-        if (user && employes.length > 0) {
-            const employe_id = employes.find(employe => Number(employe.user_id) === Number(user.id))?.id;
-            if (employe_id) {
-                dispatch(getEmployeSpots(employe_id));
-                if (!isEqual(employe_id, employeIdStock)) {
-                      setEmployeIdStock(employe_id);
-                    }
-            }
-        }
-    }, [user, employes, dispatch]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -134,40 +121,10 @@ export default function SpotsEmploye() {
                 </div>
                 
             }onClick={()=>setShowScanner(true)}/>
-            {status === 'idle' || status === 'loading'? (
-            <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+
+            <div className="bg-base-100 mx-auto my-4 flex justify-center">
+                {park ? <ParkMap park={park} action={handleSpotClick} /> : <p className="text-center text-gray-500">No parks available</p>}
             </div>
-        ) : (employeeSpots && (
-                    <div className="grid grid-cols-2 m-1 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-10 gap-2 p-4 bg-white rounded">
-                            {employeeSpots.map(spot => (
-                                <button
-                                    key={spot.id}
-                                    onClick={() => handleSpotClick(spot)}
-                                    className={`text-center py-2 px-3 rounded border  font-medium text-sm w-full flex items-center justify-center
-                                    ${spot.status === "reserved"
-                                        ? 'bg-gray-800 text-white'
-                                        : spot.status === "available"
-                                        ? 'bg-white text-black border-gray-300 hover:bg-gray-500'
-                                        : 'bg-gray-300 text-gray-600'
-                                    }`}
-                                >
-                                    {spot.type === 'accessible' && (
-                                    <FaWheelchair className="w-6 h-6 text-blue-600 mb-1 mr-4" />
-                                    )}
-                                    {spot.type === 'electric' && (
-                                    <FaChargingStation className="w-6 h-6 text-green-600 mb-1 mr-4" />
-                                    )}
-                                    {spot.type === 'standard' && (
-                                    <FaCar className="w-6 h-6 text-gray-600 mb-1 mr-4" />
-                                    )}
-
-                                    {spot.name}
-                                </button>
-                            ))}
-                        </div>
-                        ))}
-
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex justify-center items-center" onClick={() => setIsModalOpen(false)} >
@@ -277,7 +234,7 @@ export default function SpotsEmploye() {
                     </div>
                 </div>
             )}
-                    {showScanner && <QRCodeScanner openModel={showScanner} onClose={() => setShowScanner(false)}/>}
+            {showScanner && <QRCodeScanner openModel={showScanner} onClose={() => setShowScanner(false)}/>}
 
         </div>
     );

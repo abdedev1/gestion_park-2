@@ -1,5 +1,6 @@
 @layer theme, base, antd, components, utilities;
 
+
 @import "tailwindcss";
 @plugin "daisyui" {
   themes: corporate --default;
@@ -29,4 +30,12 @@ input[type=number] {
 
 .arrow:hover span:first-of-type{
   opacity: 100%;
+}
+
+.anticon .anticon-check-circle {
+  color: #01a43b !important;
+}
+
+.ant-message-error .anticon {
+  color: #fe6266 !important;
 }

@@ -100,9 +100,9 @@ function UsersList() {
     try {
       await axios.delete(`http://localhost:8000/api/users/${id}`)
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id))
-      message.success("User deleted successfully")
+      messageApi.success("User deleted successfully")
     } catch (error) {
-      message.error("Error deleting user")
+      messageApi.error("Error deleting user")
     }
   }
 
@@ -196,7 +196,7 @@ function UsersList() {
         ),
       )
 
-      message.success("User updated successfully")
+      messageApi.success("User updated successfully")
       handleModalCancel()
     } catch (error) {
       console.error("Update error:", error)
@@ -212,7 +212,7 @@ function UsersList() {
   // Function to get park name by ID
   const getParkName = (parkId) => {
     const park = parks.find((p) => p.id === parkId)
-    return park ? park.name : `Park ${parkId}`
+    return park ? park.name : "Not assigned"
   }
 
   const columns = [
@@ -411,9 +411,9 @@ function UsersList() {
             <Form.Item
               name="park_id"
               label="Assigned Park"
-              rules={[{ required: true, message: "Please select a park for this employee" }]}
             >
               <Select placeholder="Select a park">
+              <Select.Option >Not assigned</Select.Option>
                 {parks.map((park) => (
                   <Select.Option key={park.id} value={park.id}>
                     {park.name || `Park ID: ${park.id}`}

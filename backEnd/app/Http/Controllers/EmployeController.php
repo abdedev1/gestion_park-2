@@ -23,7 +23,7 @@ class EmployeController extends Controller
     {
         $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id', 
-            'park_id' => 'required|exists:parks,id', 
+            'park_id' => 'nullable|exists:parks,id', 
         ]);
     
         $employe = Employe::create($validatedData);
@@ -50,7 +50,7 @@ class EmployeController extends Controller
     {
         $validatedData = $request->validate([
             'user_id' => 'sometimes|required|exists:users,id',
-            'park_id' => 'sometimes|required|exists:parks,id',
+            'park_id' => 'nullable|exists:parks,id',
         ]);
     
         $employe->update($validatedData);
@@ -75,6 +75,13 @@ class EmployeController extends Controller
     public function getEmployeSpots($id){
         $employe = Employe::findOrFail($id);
         $park = $employe->park;
+
+        if (!$park) {
+            return response()->json([
+                'message' => 'This employe is not assigned to any park.',
+            ], 404);
+        }
+
         $spots = $park->spots;
         return response()->json($spots, 200);
     }
