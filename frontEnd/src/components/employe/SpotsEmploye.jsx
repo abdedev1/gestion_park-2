@@ -4,7 +4,7 @@ import { fetchEmployes, getEmployeById } from '../Redux/slices/employesSlice';
 import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 import { addParkingTicket,fetchParkingTickets  } from '../Redux/slices/parkingTicketsSlice';
-import { FloatButton } from 'antd';
+import { Button, FloatButton, Modal } from 'antd';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
 import { FaCar,FaChargingStation,FaWheelchair  } from 'react-icons/fa';
@@ -98,6 +98,97 @@ export default function SpotsEmploye() {
     }
         
     };
+
+    const SpotModel = () => {
+        return (
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label htmlFor="clientName" className="block text-sm font-medium">
+                        Client Name
+                    </label>
+                    <input
+                        type="text"
+                        id="clientName"
+                        name="clientName"
+                        value={formData.clientName}
+                        onChange={handleInputChange}
+                        required={selectedSpot?.status === "available"}
+                        disabled={selectedSpot?.status === "reserved"}
+                        className={`w-full px-3 py-2 border rounded ${
+                            selectedSpot?.status === "reserved" 
+                                ? "bg-gray-200" 
+                                : "border-gray-300"
+                        }`}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="type" className="block text-sm font-medium">
+                            Type
+                        </label>
+                        <input
+                            type="text"
+                            id="type"
+                            name="type"
+                            value={selectedSpot?.type || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="price" className="block text-sm font-medium">
+                            Prix Par Heure
+                        </label>
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            value={
+                                pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0
+                            }
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="spotName" className="block text-sm font-medium">
+                            Spot Name
+                        </label>
+                        <input
+                            type="text"
+                            id="spotName"
+                            name="spotName"
+                            value={selectedSpot?.name || ''}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="entry_time" className="block text-sm font-medium">
+                            Entry Date and Time
+                        </label>
+                        <input
+                            type="datetime-local"
+                            id="entry_time"
+                            name="entry_time"
+                            value={formData.entry_time}
+                            readOnly
+                            className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
+                        />
+                    </div>
+                </div>
+                <div className="flex justify-between gap-2 mt-4">
+                    <Button onClick={() => setIsModalOpen(false)} className="rounded" >Cancel</Button>
+                    <button type="submit" className="btn btn-primary btn-sm">Confirm</button>
+                </div>
+            </form>
+        )
+    }
     
 
     return (
@@ -125,117 +216,24 @@ export default function SpotsEmploye() {
             <div className="bg-base-100 mx-auto my-4 flex justify-center">
                 {park ? <ParkMap park={park} action={handleSpotClick} /> : <p className="text-center text-gray-500">No parks available</p>}
             </div>
-
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex justify-center items-center" onClick={() => setIsModalOpen(false)} >
-                    <div className="bg-white p-6 rounded-2xl shadow-xl w-[90%] max-w-md" onClick={(e) => e.stopPropagation()}>
-                        <h2 className="text-xl font-bold mb-4">
-                            {selectedSpot?.status === "available" 
-                                ? "Réservation du Spot" 
-                                : "Libération du Spot"}
-                        </h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label htmlFor="clientName" className="block text-sm font-medium">
-                                    Client Name
-                                </label>
-                                <input
-                                    type="text"
-                                    id="clientName"
-                                    name="clientName"
-                                    value={formData.clientName}
-                                    onChange={handleInputChange}
-                                    required={selectedSpot?.status === "available"}
-                                    disabled={selectedSpot?.status === "reserved"}
-                                    className={`w-full px-3 py-2 border rounded ${
-                                        selectedSpot?.status === "reserved" 
-                                            ? "bg-gray-200" 
-                                            : "border-gray-300"
-                                    }`}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="type" className="block text-sm font-medium">
-                                        Type
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="type"
-                                        name="type"
-                                        value={selectedSpot?.type || ''}
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="price" className="block text-sm font-medium">
-                                        Prix Par Heure
-                                    </label>
-                                    <input
-                                        type="number"
-                                        id="price"
-                                        name="price"
-                                        value={
-                                            pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0
-                                        }
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="spotName" className="block text-sm font-medium">
-                                        Spot Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="spotName"
-                                        name="spotName"
-                                        value={selectedSpot?.name || ''}
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="entry_time" className="block text-sm font-medium">
-                                        Entry Date and Time
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        id="entry_time"
-                                        name="entry_time"
-                                        value={formData.entry_time}
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"
-                                    />
-                                </div>
-                            </div>
-                            <div className="mt-6 flex justify-between">
-                                <button
-                                    type="submit"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                                >
-                                    Confirm
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)} 
-                                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-            {showScanner && <QRCodeScanner openModel={showScanner} onClose={() => setShowScanner(false)}/>}
+            
+            <ShowModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
+            <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner />} />
 
         </div>
     );
 }
+
+function ShowModal({ isOpen, onClose, content, title}) {
+  
+    return (
+      <Modal
+        title={<h1 className="text-xl font-bold text-center">{title}</h1>}
+        open={isOpen}
+        onCancel={onClose}
+        footer={null}
+      >
+        {content}
+      </Modal>
+    )
+  }

@@ -8,7 +8,7 @@ import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { useEffect, useState,useRef } from "react";
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import Cookies from "js-cookie";
-export default function QRCodeScanner({onClose, openModel}) {
+export default function QRCodeScanner() {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
   const defaultDeviceId = Cookies.get('deviceId');
@@ -47,7 +47,7 @@ export default function QRCodeScanner({onClose, openModel}) {
     if (!result?.[0]?.rawValue) return;
     setScanResult(result[0].rawValue);
     setIsScanning(false);
-    Cookies.set('deviceId', selectedDeviceId, { expires: 7 });
+    Cookies.set('deviceId', selectedDeviceId, { expires: 30 });
   };
 
   const handleError = (error) => {
@@ -150,12 +150,10 @@ export default function QRCodeScanner({onClose, openModel}) {
   
 
   return (
-    <div className="fixed inset-0 p-2 bg-black/50 flex justify-center items-center">
-    <div className="max-w-md mx-auto p-2 bg-base-100 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold text-center mb-6">QR Code Scanner</h1>
+    <div className="max-w-md bg-base-100">
 
       {isScanning ? (
-        <div className="overflow-hidden rounded-lg shadow-lg">
+        <div className="overflow-hidden p-2 rounded-lg">
           
           <Scanner
             constraints={{deviceId: selectedDeviceId}}
@@ -178,10 +176,9 @@ export default function QRCodeScanner({onClose, openModel}) {
             
             </div>
           )}
-        <button onClick={onClose} className="btn btn-error w-full mt-2"><X size={18} />Close</button>
         </div>
       ) : (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white p-6 rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Scan Result:</h2>
             {updateTicketG && (
               <div className="bg-gray-100 p-4 rounded-md mb-4 break-all">
@@ -196,7 +193,6 @@ export default function QRCodeScanner({onClose, openModel}) {
             
             <div className="flex flex-col sm:flex-row gap-3 mt-4 justify-between">
               <button onClick={resetScanner} className="btn btn-primary min-w-36"><RotateCcw size={18} />Scan Again</button>
-              <button onClick={onClose} className="btn btn-error min-w-36"><X size={18} />Close</button>
             </div>
         </div>
       )}
@@ -206,7 +202,6 @@ export default function QRCodeScanner({onClose, openModel}) {
           Position a QR code in front of your camera to scan it
         </p>
       )}
-    </div>
     </div>
   );
   
