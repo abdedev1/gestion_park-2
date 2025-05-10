@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @method \Laravel\Sanctum\NewAccessToken createToken(string $name, array $abilities = ['*'])
+ */
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -19,11 +23,15 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
+        'birth_date',
         'email',
         'password',
         'role_id',
     ];
+
+    protected $appends = ['role_data'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,4 +55,41 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function getRoleNameAttribute()
+    {
+        return $this->role->name ?? null;
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function client()
+    {
+        return $this->hasOne(Client::class, 'user_id');
+    }
+
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'user_id');
+    }
+
+    public function employe()
+    {
+        return $this->hasOne(Employe::class, 'user_id');
+    }
+    public function getRoleDataAttribute()
+    {
+        switch ($this->role->name) {
+            case 'client':
+                return $this->client;
+            case 'admin':
+                return $this->admin;
+            case 'employe':
+                return $this->employe;
+            default:
+                return null;
+        }
+    }
+
 }

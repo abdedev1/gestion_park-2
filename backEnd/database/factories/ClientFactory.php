@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,12 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::where('role_id', function ($query) {
+                return $query->select('id')
+                             ->from('roles')
+                             ->where('name', 'client')
+                             ->limit(1); 
+            })->inRandomOrder()->value('id'),
         ];
     }
 }

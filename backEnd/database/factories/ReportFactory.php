@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Parc>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Report>
  */
-class ParcFactory extends Factory
+class ReportFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +18,9 @@ class ParcFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom' => $this->faker->word(),
-            'capacite' => $this->faker->numberBetween(1, 30),
-            'adresse' => $this->faker->address(),
+            'subject' => $this->faker->sentence(),
+            'date' => $this->faker->date(),
+            'client_id' => Client::factory(),
         ];
     }
 }

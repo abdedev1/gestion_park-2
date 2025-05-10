@@ -2,17 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Parc;
-use Illuminate\Database\Seeder;
+use App\Models\ParkingTicket;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
-class ParcSeeder extends Seeder
+class ParkingTicketSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-       Parc::factory(4)->create();
+        ParkingTicket::factory(1)->create();
+
     }
 }

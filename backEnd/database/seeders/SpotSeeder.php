@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Spot;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,8 +13,6 @@ class SpotSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Spot::factory(10)->create([
-            'parc_id' => \App\Models\Parc::factory()->create()->id,
-        ]);
+        Spot::factory()->create();
     }
 }

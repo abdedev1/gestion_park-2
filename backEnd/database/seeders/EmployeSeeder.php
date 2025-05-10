@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Park;
+use App\Models\User;
+use App\Models\Employe;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class EmployeSeeder extends Seeder
 {
@@ -12,6 +15,19 @@ class EmployeSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $userIds = User::where('role_id', function ($query) {
+            $query->select('id')
+                  ->from('roles')
+                  ->where('name', 'employe');
+        })
+        ->pluck('id')
+        ->toArray();
+
+        foreach ($userIds as $userId) {
+            Employe::create([
+                'user_id' => $userId,
+                'park_id' => Park::inRandomOrder()->value('id'),
+            ]);
+        }
     }
 }

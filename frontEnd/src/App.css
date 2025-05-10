@@ -1,5 +1,43 @@
+@layer theme, base, antd, components, utilities;
+
+
 @import "tailwindcss";
-@plugin "daisyui";
 @plugin "daisyui" {
-  themes: corporate;
+  themes: corporate --default;
 }
+
+@plugin "daisyui/theme" {
+  name: "corporate";
+  --depth: 1;
+  --noise: 1;
+}
+
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+input[type=number] {
+  appearance: textfield;
+}
+.input:focus-within, .select:focus-within{
+  outline: none;
+}
+
+.arrow:hover span:first-of-type{
+  opacity: 100%;
+}
+
+.anticon .anticon-check-circle {
+  color: #01a43b !important;
+}
+
+.ant-message-error .anticon {
+  color: #fe6266 !important;
+}
+
+
