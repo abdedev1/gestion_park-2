@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { FaCar, FaMapMarkerAlt, FaSearch, FaUserCircle, FaSignInAlt, FaStar, FaArrowLeft,FaCalendarAlt,FaCheck } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import {Link} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
+
 
 const HomePage = () => {
   // States
@@ -13,6 +15,7 @@ const HomePage = () => {
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredParks, setFilteredParks] = useState([]);
+  const navigate = useNavigate();
   // Redux
   const dispatch = useDispatch();
   const { parks, currentParcSpots, status } = useSelector(state => state.parks);
@@ -90,30 +93,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Persistent Header */}
-       {/* <nav className="bg-white text-gray-800 p-4 shadow-md sticky top-0 z-50">
-              <div className="container mx-auto flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                <img className='h-12' src="/Logo/logo3.png" alt="" />
-                </div>
-                <div className="hidden md:flex items-center space-x-6">
-                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium">Home</button>
-                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#avp">Available Parks</a></button>
-                  <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#pracing">Pricing</a></button>
-                </div>
-                <div className="flex space-x-4">
-                  <Link to="/sign" className="flex items-center space-x-1 hover:text-blue-600 px-3 py-2 rounded-md font-medium">
-                    <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
-                  </Link>
-                  <Link to="/sign" className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
-                    <span className="hidden sm:inline">Sign Up</span>
-                    <span className="sm:hidden">Join</span>
-                  </Link>
-                </div>
-              </div>
-            </nav> */}
-
-      {/* Hero Section */}
+     
       <section className="relative bg-gradient-to-r from-blue-500 to-blue-700 text-white py-20">
         <div className="absolute inset-0 bg-black opacity-20">
           <img 
@@ -265,7 +245,7 @@ const HomePage = () => {
                           <p className="font-bold text-blue-600">MAD {park.price}/Hour</p>
                         </div>
                       </div>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">
+                      <button onClick={()=>navigate(`parks/${park.id}`)} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">
                         View Details
                       </button>
                     </div>
