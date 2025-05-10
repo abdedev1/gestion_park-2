@@ -19,7 +19,7 @@ export default function QRCodeScanner() {
   const dispatch = useDispatch();
   const devices = useDevices();
 
-
+  
   const { parkingTickets } = useSelector(state => state.parkingTickets);
   const { pricingRates } = useSelector(state => state.pricingRates);
   const employeeSpots = useSelector(state => state.spots.employeeSpots);
@@ -86,7 +86,6 @@ export default function QRCodeScanner() {
 
   const processScannedResult = async () => {
     if (hasProcessed.current || !scanResult) return;
-
     const parsedObject = parseQRTextToObject(scanResult);
     if (!parsedObject) return;
 
@@ -105,7 +104,6 @@ export default function QRCodeScanner() {
 
     const rate = pricingRates.find(r => r.id === ticket.base_rate_id);
     const pricePerHour = rate ? rate.price_per_hour : 0;
-
     const updatedTicket = {
       ...ticket,
       exit_time: exitTimeStr,
@@ -117,7 +115,8 @@ export default function QRCodeScanner() {
       setUpdateTicketG(updatedTicket);
     }
 
-    const spot = employeeSpots.find(s => Number(s.id) === Number(ticket.spot_id));
+    const spot = user.role_data.park.spots.find(s => Number(s.id) === Number(ticket.spot_id));
+    
     if (!spot) return;
 
     await dispatch(updateParkingTicket({

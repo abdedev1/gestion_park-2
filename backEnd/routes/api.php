@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpotController;
@@ -27,7 +28,6 @@ Route::middleware("auth:sanctum")->controller(AuthController::class)->group(func
 });
 
 Route::middleware(["auth:sanctum", isAdminMiddleWare::class])->group(function(){
-    Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('employes', EmployeController::class);
     Route::apiResource("parks",ParkController::class)->except(['index', 'show']);
@@ -40,17 +40,19 @@ Route::middleware(["auth:sanctum", isAdminMiddleWare::class])->group(function(){
 Route::middleware(["auth:sanctum", isEmployeMiddleWare::class])->group(function(){
     Route::apiResource('employes', EmployeController::class);
     Route::get('/parks/search', [ParkController::class, 'search']);
+    Route::get('/demand-cards', [DemandCardController::class, 'index']);
     
 });
 
 Route::middleware(["auth:sanctum", isClientMiddleWare::class])->group(function(){
-    
 });
 
 Route::middleware(["auth:sanctum", IsAdminEmployeeMiddleware::class])->group(function(){
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
     Route::apiResource('employes', EmployeController::class);
+        Route::apiResource('users', UserController::class);
+
 });
 
 // internaute routes
@@ -64,4 +66,6 @@ Route::get('/parks/{id}/spots',[ParkController::class,'getParkSpots']);
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
 Route::apiResource('parking-tickets', ParkingTicketController::class);
 Route::apiResource('pricing_rates', PricingRateController::class);
-Route::post('/demand-cards', [DemandCardController::class, 'store'])->name('demand.cards.store');
+Route::post('/carts', [CartController::class, 'store']);
+Route::apiResource('demand-cards', DemandCardController::class);
+

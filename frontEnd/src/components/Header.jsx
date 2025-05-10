@@ -85,7 +85,12 @@ export default function Header() {
                 <div data-path="/parkigtickets" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parkigtickets">Park&nbsp;Tickets</NavLink></div>
               </>
             )}
-            {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
+            {user?.role === "employe" && (
+              <>
+                <div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>
+                <div data-path="/demand-cards" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/demand-cards">Demand Cards</NavLink></div>
+              </>
+              )}
             {user?.role === "client" && (
               <>
                 <div data-path="/dashboardd" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboardd">Dashboard</NavLink></div>
@@ -167,6 +172,7 @@ export default function Header() {
             {user?.role === "employe" &&
               <>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/overview">Overview</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/demand-cards">Demand Cards</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
             }

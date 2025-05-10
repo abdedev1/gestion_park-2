@@ -22,6 +22,7 @@ import ParksList from './components/client/ParksList';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import Dashboard from './components/admin/Dashborad';
+import DemandCardsList from './components/employe/DemandCardsList';
 function App() {
   const dispatch = useDispatch();
 
@@ -76,6 +77,8 @@ function App() {
                   {/* partie employe */}
                     <Route element={<ProtectedRoute requiredRole="employe" />}>
                       <Route index path="overview" element={<SpotsEmploye/>} />
+                      <Route path="demand-cards" element={<DemandCardsList />} />
+
                     </Route>
                   {/* partie admin */}
 

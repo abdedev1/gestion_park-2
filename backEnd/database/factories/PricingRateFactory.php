@@ -17,7 +17,7 @@ class PricingRateFactory extends Factory
     public function definition(): array
     {
         return [
-            'rate_name' => $this->faker->word(),
+            'rate_name' => $this->faker->randomElement(['Standard','Electric','Accessible']),
             'price_per_hour' => $this->faker->randomFloat(2, 5, 50),
         ];
     }

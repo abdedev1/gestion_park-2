@@ -24,7 +24,7 @@ class CartFactory extends Factory
             'base_rate_id' => PricingRate::factory(),
             'duration' => $this->faker->date(),
             'park_id' => Park::inRandomOrder()->value('id'),
-            'status' => $this->faker->boolean(),
+            'status' => $this->faker->randomElement(['active', 'expired']),
         ];
     }
 }

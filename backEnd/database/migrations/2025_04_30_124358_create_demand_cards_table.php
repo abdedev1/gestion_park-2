@@ -14,6 +14,8 @@ class CreateDemandCardsTable extends Migration
             $table->unsignedInteger('duration');
             $table->decimal('total_price', 10, 2);
             $table->foreignId('park_id')->constrained()->onDelete('cascade');
+            $table->foreignId('base_rate_id')->constrained('pricing_rates')->onDelete('cascade');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

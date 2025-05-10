@@ -1,37 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployes, getEmployeById } from '../Redux/slices/employesSlice';
-import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
+import { getEmployeSpots, updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
-import { addParkingTicket,fetchParkingTickets  } from '../Redux/slices/parkingTicketsSlice';
+import { addParkingTicket, fetchParkingTickets } from '../Redux/slices/parkingTicketsSlice';
 import { Button, FloatButton, Modal } from 'antd';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
-import { FaQrcode } from 'react-icons/fa';
+import { FaCar, FaChargingStation, FaWheelchair, FaQrcode } from 'react-icons/fa';
 import isEqual from "lodash/isEqual";
 import { generateTicketPDF } from './ticketPdf';
 import { ParkMap } from '../ParkMap';
-import QrCodeScannerCart from './QrCodeScannerCart'; 
-import { fetchUserById } from "../Redux/slices/userByIdSlice";
 
 export default function SpotsEmploye() {
     const { user } = useSelector((state) => state.auth);
-    const { park } = user.role_data
+    const { park } = user.role_data;
     const { pricingRates } = useSelector(state => state.pricingRates);
     const [showScanner, setShowScanner] = useState(false);
-    const [showCartScanner, setShowCartScanner] = useState(false);
     const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
-    const [employeIdStock,setEmployeIdStock] =useState(null);
+    const [employeIdStock, setEmployeIdStock] = useState(null);
     const [scanLoading, setScanLoading] = useState(false);
-    const { userid, loading, error } = useSelector(state => state.userById);
-    const [pendingSpot, setPendingSpot] = useState(null);
-
-
     const [formData, setFormData] = useState({
-        clientName: 'Not registered',
-        spot_id: '',  
+        clientName: '',
+        spot_id: '',
         client_id: null,
         base_rate_id: null,
         entry_time: '',
@@ -45,107 +38,92 @@ export default function SpotsEmploye() {
         dispatch(fetchParkingTickets());
     }, [dispatch]);
 
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prevent =>({
-            ...prevent,[name]:value
-        }))
+        setFormData(prev => ({
+            ...prev, [name]: value
+        }));
     };
 
+    // Simulate fetching client name by client_id (replace with real API if needed)
+    const fetchClientNameById = async (clientId) => {
+        // TODO: Replace with real API call if available
+        if (!clientId) return "Not registered";
+        // Example: fetch from Redux or API
+        // const client = clients.find(c => c.id === clientId);
+        // return client ? client.name : "Not registered";
+        return "Client Name"; // Replace with real name
+    };
+
+    // Handle scan result (simulate for now)
     const handleScanClient = async () => {
         setScanLoading(true);
-        setShowCartScanner(true)
-    }
-
-    const handleClientScanResult = (result) => {
-        if (result?.client_id) {
+        // Simulate scanning and getting client_id
+        setTimeout(async () => {
+            // Example: scanned client_id (replace with real scan logic)
+            const scannedClientId = 123; // null if not found
+            let clientName = "Not registered";
+            if (scannedClientId) {
+                clientName = await fetchClientNameById(scannedClientId);
+            }
             setFormData(prev => ({
                 ...prev,
-                client_id: result.client_id
+                client_id: scannedClientId || null,
+                clientName: clientName,
             }));
-            dispatch(fetchUserById(result.client_id));
-        }
-        setShowCartScanner(false);
-        setScanLoading(false);
+            setScanLoading(false);
+        }, 1000);
     };
 
-        
     const handleSpotClick = (spot) => {
-    setSelectedSpot(spot);
-    if (userid && spot.status === "available") {
-        setFormData({
-        clientName: userid.first_name + " " + userid.last_name,
-        spot_id: spot.id,
-        client_id: userid.id,
-        base_rate_id: pricingRates[0]?.id,
-        entry_time: new Date().toISOString().slice(0, 16),
-        exit_time: null,
-        total_price: 0,
-        status: "active"
-        });
-        setIsModalOpen(true);
-        setPendingSpot(null); 
-    } else if (spot.status === "available") {
-        setFormData({
-        clientName: 'Not registered',
-        spot_id: spot.id,
-        client_id: null,
-        base_rate_id: pricingRates[0]?.id,
-        entry_time: new Date().toISOString().slice(0, 16),
-        exit_time: null,
-        total_price: 0,
-        status: "active"
-        });
-        setIsModalOpen(true);
-        setPendingSpot(spot); 
-    }
+        setSelectedSpot(spot);
+        if (spot.status === "available") {
+            setFormData({
+                clientName: 'Not registered',
+                spot_id: spot.id,
+                client_id: null,
+                base_rate_id: pricingRates[0]?.id,
+                entry_time: new Date().toISOString().slice(0, 16),
+                exit_time: null,
+                total_price: 0,
+                status: "active"
+            });
+            setIsModalOpen(true);
+        }
     };
-    useEffect(() => {
-    if (userid && pendingSpot) {
-        setFormData(prev => ({
-        ...prev,
-        clientName: userid.first_name + " " + userid.last_name,
-        client_id: userid.id,
-        }));
-        setPendingSpot(null);
-    }
-    }, [userid, pendingSpot]);
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (selectedSpot) {
             const pricePerHour = pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0;
-    
+
             if (selectedSpot.status === "available") {
                 const resultAction = await dispatch(addParkingTicket(formData));
-    
+
                 if (addParkingTicket.fulfilled.match(resultAction)) {
                     const newTicket = resultAction.payload;
                     const ticketId = newTicket.id;
-    
+
                     setFormData(prev => ({
                         ...prev,
                         id: ticketId
                     }));
-    
+
                     await dispatch(updateSpot({
                         id: formData.spot_id,
                         updatedSpot: { ...selectedSpot, status: "reserved" }
                     }));
-    
+
                     if (employeIdStock) {
                         dispatch(getEmployeSpots(employeIdStock));
                     }
-    
+
                     await generateTicketPDF({ ...formData, id: ticketId }, selectedSpot, pricePerHour);
-    
-                    setIsModalOpen(false);}
+
+                    setIsModalOpen(false);
+                }
+            }
         }
-        
-    }
-        
     };
 
     const SpotModel = () => {
@@ -156,12 +134,11 @@ export default function SpotsEmploye() {
                         Client Name
                     </label>
                     <div className="flex items-center gap-2">
-                    <input
+                        <input
                             type="text"
                             id="clientName"
                             name="clientName"
                             value={formData.clientName}
-                            readOnly
                             onChange={handleInputChange}
                             required={selectedSpot?.status === "available"}
                             disabled={selectedSpot?.status === "reserved"}
@@ -175,11 +152,11 @@ export default function SpotsEmploye() {
                             onClick={handleScanClient}
                             disabled={scanLoading}
                             className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                            title="Scan Client"
                         >
                             <FaQrcode className={`text-xl ${scanLoading ? "animate-spin" : ""}`} />
                         </button>
                     </div>
-                    
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -199,7 +176,7 @@ export default function SpotsEmploye() {
 
                     <div>
                         <label htmlFor="price" className="block text-sm font-medium">
-                            Prix Par Heure
+                            Price Per Hour
                         </label>
                         <input
                             type="number"
@@ -249,76 +226,47 @@ export default function SpotsEmploye() {
             </form>
         )
     }
-    
 
     return (
         <div>
-           
-           <FloatButton
-            shape="circle"
-            type="primary"
-            style={{
-                insetInlineEnd: 74,
-            }}
-            icon={
-                <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                height: '100%',
-                }}>
-                <ScanLine size={50} /> 
-                </div>
-                
-            }onClick={()=>setShowScanner(true)}/>
+            <FloatButton
+                shape="circle"
+                type="primary"
+                style={{
+                    insetInlineEnd: 74,
+                }}
+                icon={
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                    }}>
+                        <ScanLine size={50} />
+                    </div>
+                } onClick={() => setShowScanner(true)} />
 
             <div className="bg-base-100 mx-auto my-4 flex justify-center">
                 {park ? <ParkMap park={park} action={handleSpotClick} /> : <p className="text-center text-gray-500">No parks available</p>}
             </div>
-            
+
             <ShowModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
             <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner />} />
-            {showCartScanner && (
-                <div
-                    style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    background: "rgba(0,0,0,0.5)",
-                    zIndex: 9999,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                    }}
-                >
-                    <div style={{ background: "#fff", padding: 24, borderRadius: 12, maxWidth: 400, width: "90%" }}>
-                    <QrCodeScannerCart
-                        onScanResult={handleClientScanResult}
-                        onClose={() => {
-                        setShowCartScanner(false);
-                        setScanLoading(false);
-                        }}
-                    />
-                    </div>
-                </div>
-                )}
+
         </div>
     );
 }
 
-function ShowModal({ isOpen, onClose, content, title}) {
-  
+function ShowModal({ isOpen, onClose, content, title }) {
     return (
-      <Modal
-        title={<h1 className="text-xl font-bold text-center">{title}</h1>}
-        open={isOpen}
-        onCancel={onClose}
-        footer={null}
-      >
-        {content}
-      </Modal>
+        <Modal
+            title={<h1 className="text-xl font-bold text-center">{title}</h1>}
+            open={isOpen}
+            onCancel={onClose}
+            footer={null}
+        >
+            {content}
+        </Modal>
     )
-  }
+}

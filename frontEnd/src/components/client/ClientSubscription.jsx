@@ -1,86 +1,92 @@
 import { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux" // Redux hooks
-import { fetchParcs } from "../Redux/slices/parcsSlice" // Fetch parks action
+import { useSelector, useDispatch } from "react-redux"
+import { fetchParcs } from "../Redux/slices/parcsSlice"
+import { fetchPricingRates } from "../Redux/slices/pricingRatesSlice"
 import { X, Check } from "lucide-react"
 import { message } from "antd"
-import Auth from "../../assets/api/auth/Auth"
-import { createSubscription } from "../Redux/slices/demandCardsSlice"; // Import the action
+import { createSubscription } from "../Redux/slices/demandCardsSlice"
+
 export default function ClientSubscription({ onClose }) {
   const [selectedPlan, setSelectedPlan] = useState(null)
-  const [selectedPark, setSelectedPark] = useState("") // Selected park
-  const [duration, setDuration] = useState(1) // Duration in months
+  const [selectedPark, setSelectedPark] = useState("")
+  const [duration, setDuration] = useState(1)
   const [loading, setLoading] = useState(false)
   const [messageApi, contextHolder] = message.useMessage()
 
   const dispatch = useDispatch()
-  const { parks, status } = useSelector((state) => state.parks) // Get parks from Redux
-  const { user, token, isLoading } = useSelector((state) => state.auth) // Get user and token from auth slice
+  const { parks, status } = useSelector((state) => state.parks)
+  const { pricingRates } = useSelector((state) => state.pricingRates)
+  const { user, token } = useSelector((state) => state.auth)
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(fetchParcs()) // Fetch parks when component loads
+      dispatch(fetchParcs())
     }
+    dispatch(fetchPricingRates())
   }, [dispatch, status])
 
-  const subscriptionPlans = [
-    {
-      id: 1,
-      name: "Basic",
-      price: 50,
-      features: ["3 spots/day", "Access from 8am to 6pm", "Email support"],
-      recommended: false,
-    },
-    {
-      id: 2,
-      name: "Standard",
-      price: 100,
-      features: ["6 spots/day", "Extended access hours", "Standard support"],
-      recommended: true,
-    },
-    {
-      id: 3,
-      name: "Unlimited",
-      price: 200,
-      features: ["Unlimited daily spots", "24/7 access", "All locations"],
-      recommended: false,
-    },
-  ]
+  // Prix statiques pour chaque type
+  const PRICES = {
+    Standard: 100,
+    Electric: 150,
+    Accessible: 120,
+  }
+
+  // Plans dynamiques avec prix du front
+  const subscriptionPlans = pricingRates.map((rate, idx) => ({
+    id: rate.id,
+    name: rate.rate_name,
+    price: PRICES[rate.rate_name] || 0,
+    features: [
+      rate.rate_name === "Standard"
+        ? "6 spots/day"
+        : rate.rate_name === "Electric"
+        ? "Charging included"
+        : rate.rate_name === "Accessible"
+        ? "Accessible spots"
+        : "Flexible plan",
+      "24/7 access",
+      "Support included",
+    ],
+    recommended: idx === 0,
+  }))
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan)
   }
-  console.log(user)
+
   const handleSubmitSubscription = () => {
     if (!selectedPark) {
-      messageApi.error("Please select a park.");
-      return;
+      messageApi.error("Please select a park.")
+      return
     }
-  
-    setLoading(true);
-  
+
+    setLoading(true)
     dispatch(
       createSubscription({
         userId: user?.id,
         parkId: selectedPark,
+        base_rate_id: selectedPlan.id,
         duration,
+        status: "pending",
         totalPrice,
         token,
       })
     )
       .unwrap()
       .then(() => {
-        messageApi.success("Subscription created successfully!");
+        messageApi.success("Subscription created successfully!")
         setTimeout(() => {
-          onClose();
-        }, 1500);
+          onClose()
+        }, 1500)
       })
       .catch((error) => {
-        messageApi.error(error.message || "Failed to create subscription.");
+        messageApi.error(error.message || "Failed to create subscription.")
       })
       .finally(() => {
-        setLoading(false);
-      });
-  };
+        setLoading(false)
+      })
+  }
 
   const totalPrice = selectedPlan ? selectedPlan.price * duration : 0
 
@@ -99,7 +105,6 @@ export default function ClientSubscription({ onClose }) {
           {!selectedPlan ? (
             <>
               <p className="text-gray-600 mb-6">Choose a subscription plan that fits your parking needs</p>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {subscriptionPlans.map((plan) => (
                   <div
@@ -117,7 +122,6 @@ export default function ClientSubscription({ onClose }) {
                     <p className="text-3xl font-bold mb-4">
                       {plan.price} MAD<span className="text-sm text-gray-500">/month</span>
                     </p>
-
                     <ul className="space-y-2 mb-6">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-2">
@@ -126,7 +130,6 @@ export default function ClientSubscription({ onClose }) {
                         </li>
                       ))}
                     </ul>
-
                     <button
                       onClick={() => handleSelectPlan(plan)}
                       className={`w-full py-2 rounded-md font-medium transition ${
@@ -146,8 +149,6 @@ export default function ClientSubscription({ onClose }) {
               <h3 className="font-medium text-lg mb-4">
                 {selectedPlan.name} Plan - {selectedPlan.price} MAD/month
               </h3>
-
-              {/* Client First Name */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                 <input
@@ -157,8 +158,6 @@ export default function ClientSubscription({ onClose }) {
                   className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none"
                 />
               </div>
-
-              {/* Client Last Name */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                 <input
@@ -168,8 +167,6 @@ export default function ClientSubscription({ onClose }) {
                   className="w-full px-3 py-2 border rounded-md bg-gray-100 focus:outline-none"
                 />
               </div>
-
-              {/* Park Selection */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Select Park</label>
                 <select
@@ -189,8 +186,6 @@ export default function ClientSubscription({ onClose }) {
                   )}
                 </select>
               </div>
-
-              {/* Duration Selection */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Duration (Months)</label>
                 <input
@@ -201,14 +196,11 @@ export default function ClientSubscription({ onClose }) {
                   className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-
-              {/* Total Price */}
               <div className="mb-6">
                 <p className="text-lg font-medium">
                   Total Price: <span className="text-blue-600">{totalPrice} MAD</span>
                 </p>
               </div>
-
               <div className="flex gap-4">
                 <button
                   type="button"
