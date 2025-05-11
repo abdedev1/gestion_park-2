@@ -27,12 +27,7 @@ export default function Profile() {
       })
     }
   }, [user, form])
-// hadi mzl fiha mochkil hit khas ntfahmo f discord kifach gha ykon blan carte
-//   useEffect(() => {
-//     if (user && activeTab === "2") {
-//       fetchParkingHistory()
-//     }
-//   }, [user, activeTab])
+
 
 
 
@@ -46,14 +41,18 @@ export default function Profile() {
         birth_date: values.birth_date ? values.birth_date.format("YYYY-MM-DD") : user.birth_date,
       }
 
-      const response = await axios.put(`/users/${user.id}`, formattedValues)
+      const response = await axios.put(`/profile/${user.id}`, formattedValues)
 
       if (response.data) {
-        // Update the user in Redux store
+        console.log(response.data)
         dispatch(
           updateUser({
             ...user,
-            ...response.data,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            email: response.data.email,
+            birth_date: response.data.birth_date,
+            role_data: response.data.role_data,
           }),
         )
 

@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
-
+import { setSearchQuery } from '../Redux/slices/parcsSlice';
 
 const HomePage = () => {
   // States
@@ -13,12 +13,11 @@ const HomePage = () => {
   const [selectedParc, setSelectedParc] = useState(null);
   const [showAllParks, setShowAllParks] = useState(false);
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
-  const [searchQuery, setSearchQuery] = useState('');
   const [filteredParks, setFilteredParks] = useState([]);
   const navigate = useNavigate();
   // Redux
   const dispatch = useDispatch();
-  const { parks, currentParcSpots, status } = useSelector(state => state.parks);
+  const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
 
   // Animation variants
   const parkVariants = {

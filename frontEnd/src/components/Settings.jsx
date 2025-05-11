@@ -59,7 +59,7 @@ export default function Settings() {
     try {
       setLoading({ ...loading, deleteAccount: true })
 
-      const response = await axios.delete(`/users/${user.id}`)
+      const response = await axios.delete(`/profile/${user.id}`)
 
       if (response.data.success) {
         messageApi.success("Account deleted successfully")
@@ -70,7 +70,7 @@ export default function Settings() {
 
         // Redirect to home page
         setTimeout(() => {
-          navigate("/")
+          navigate("/home")
         }, 1500)
       } else {
         messageApi.error("Failed to delete account")

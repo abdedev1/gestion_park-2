@@ -11,6 +11,7 @@ use App\Http\Middleware\isAdminMiddleWare;
 use App\Http\Controllers\EmployeController;
 use App\Http\Middleware\isClientMiddleWare;
 use App\Http\Middleware\isEmployeMiddleWare;
+use App\Http\Middleware\isTheSameMiddleWare;
 use App\Http\Controllers\DemandCardController;
 use App\Http\Controllers\PricingRateController;
 use App\Http\Controllers\ParkingTicketController;
@@ -35,6 +36,8 @@ Route::middleware(["auth:sanctum", isAdminMiddleWare::class])->group(function(){
     Route::post('spots/multiple', [SpotController::class, 'storeMultiple'])->name('spots.storeMultiple');
     Route::post('spots/exact', [SpotController::class, 'storeMultipleExact'])->name('spots.storeMultipleExact');
     Route::put('spots/multiple', [SpotController::class, 'updateMultiple'])->name('spots.updateMultiple');
+    Route::apiResource('users', UserController::class);
+
 });
 
 Route::middleware(["auth:sanctum", isEmployeMiddleWare::class])->group(function(){
@@ -45,13 +48,17 @@ Route::middleware(["auth:sanctum", isEmployeMiddleWare::class])->group(function(
 });
 
 Route::middleware(["auth:sanctum", isClientMiddleWare::class])->group(function(){
+
+});
+Route::middleware(["auth:sanctum", isTheSameMiddleWare::class])->group(function(){
+    Route::put('/profile/{id}', [UserController::class, 'update']);
+    Route::delete('/profile/{id}', [UserController::class, 'destroy']);
 });
 
 Route::middleware(["auth:sanctum", IsAdminEmployeeMiddleware::class])->group(function(){
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
     Route::apiResource('employes', EmployeController::class);
-        Route::apiResource('users', UserController::class);
 
 });
 

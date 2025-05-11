@@ -156,7 +156,7 @@ export default function ParksList() {
           {filteredParks.map((park) => (
             <Link
               key={park.id}
-              to={`/parks/${park.id}`}
+              to={`/parks-list/${park.id}`}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
               <div className="h-48 bg-blue-100 relative flex items-center justify-center">

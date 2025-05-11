@@ -22,10 +22,10 @@ class isTheSameMiddleWare
                 'message' => 'Unauthorized - User not found',
             ], 401);
         }
-        if ($user->id !== $request->route('id')) {
+        if ((string)$user->id !== (string)$request->route('id')) {
             return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized',
+            'success' => false,
+            'message' => 'Unauthorized',
             ], 403);
         }
         return $next($request);

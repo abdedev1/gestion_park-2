@@ -62,10 +62,14 @@ function App() {
             <Routes>
              
               <Route  path='/' element={<Header/>}>
-              <Route  path='/settings' element={<Settings/>} />
-              <Route  path='/profile' element={<Profile/>} />
-                <Route index element={<HomePage/>}/>
-                <Route path="parks/:id" element={<ParkOverview />} />
+              <Route element={<ProtectedRoute requiredRoles={['employe','client','admin']} />}>
+                <Route  path='/settings' element={<Settings/>} />
+                <Route  path='/profile' element={<Profile/>} />
+              </Route>
+          
+                <Route index path='home' element={<HomePage/>}/>
+                <Route path="home/parks/:id" element={<ParkOverview />} />
+                <Route path="parks-list/:id" element={<ParkOverview />} />
               
                 <Route element={<LoggedOut />}>
                   <Route index path="sign" element={<SignTabs />} />
@@ -75,14 +79,14 @@ function App() {
                 <Route index element={<RedirectByRole />} />
 
                   {/* partie employe */}
-                    <Route element={<ProtectedRoute requiredRole="employe" />}>
+                    <Route element={<ProtectedRoute requiredRoles={['employe']} />}>
                       <Route index path="overview" element={<SpotsEmploye/>} />
                       <Route path="demand-cards" element={<DemandCardsList />} />
 
                     </Route>
                   {/* partie admin */}
 
-                    <Route element={<ProtectedRoute requiredRole="admin" />}>
+                    <Route element={<ProtectedRoute requiredRoles={["admin"]} />}>
                       <Route path="dashboard" element={<Dashboard/>} />
                       <Route path="users" element={<UsersList/>} />
                       <Route path="roles" element={<RolesList/>} />
@@ -91,9 +95,9 @@ function App() {
                     </Route>
                   
                   {/*partie client*/}
-                    <Route element={<ProtectedRoute requiredRole="client" />}>
+                    <Route element={<ProtectedRoute requiredRoles={["client" ]}/>}>
                       <Route path="dashboardd" element={<h1>Dashboard Client</h1>} />
-                      <Route path="parkss" element={<ParksList/>} />
+                      <Route path="parks-list" element={<ParksList/>} />
                       <Route path="history" element={<h1>history Client</h1>} />
                       
                     </Route>
