@@ -70,7 +70,7 @@ export default function Header() {
           </div>
           <div className='navbar-center'>
             {!token && (<><div className="hidden md:flex items-center space-x-6">
-                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><NavLink to='/'>Home</NavLink></button>
+                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><NavLink to='/home'>Home</NavLink></button>
                     <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#avp">Available Parks</a></button>
                     <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#pracing">Pricing</a></button>
                   </div></>)}
@@ -85,11 +85,16 @@ export default function Header() {
                 <div data-path="/parkigtickets" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parkigtickets">Park&nbsp;Tickets</NavLink></div>
               </>
             )}
-            {user?.role === "employe" && (<div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>)}
+            {user?.role === "employe" && (
+              <>
+                <div data-path="/overview" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/overview">Overview</NavLink></div>
+                <div data-path="/demand-cards" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/demand-cards">Demand Cards</NavLink></div>
+              </>
+              )}
             {user?.role === "client" && (
               <>
                 <div data-path="/dashboardd" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboardd">Dashboard</NavLink></div>
-                <div data-path="/parkss" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parkss">Available Parks</NavLink></div>
+                <div data-path="/parks-list" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks-list">Available Parks</NavLink></div>
                 <div data-path="/history" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/history">Parking History</NavLink></div>
                 <button
                   onClick={() => setShowSubscriptionModal(true)}
@@ -167,18 +172,24 @@ export default function Header() {
             {user?.role === "employe" &&
               <>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/overview">Overview</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/demand-cards">Demand Cards</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/SettingsAdmin">Settings</NavLink>
               </>
             }
             {user?.role === "client" &&
               <>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/dashboarddd">Dashboard</NavLink>
-              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parkss">Available Parks</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parks-list">Available Parks</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/history">Parking History</NavLink>
               </>
             }
             { token ? <button className="btn btn-outline btn-neutral mx-2 w-full mt-2" onClick={logoutUser} >Logout</button>
-            : <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>}
+            : (
+            <>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/home">Home</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-outline btn-neutral mx-2 w-full mt-2 ${isActive ? "btn-active" : ""}`} to="/sign">Login</NavLink>
+            </>
+                          )}
           </div>
         </aside>
       

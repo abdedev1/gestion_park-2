@@ -28,9 +28,23 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'base_rate_id' => 'required|exists:pricing_rates,id',
+            'duration' => 'required|date',
+            'park_id' => 'required|exists:parks,id',
+            'status' => 'nullable|string|in:active,expired',
+        ]);
 
+        // status par défaut "pending" si non fourni
+        if (!isset($validated['status'])) {
+            $validated['status'] = 'pending';
+        }
+
+        $cart = Cart::create($validated);
+
+        return response()->json($cart, 201);
+    }
     /**
      * Display the specified resource.
      */

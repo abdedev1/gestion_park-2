@@ -27,6 +27,7 @@ class ParkController extends Controller
         $park = Park::create([
             'name' => $request->name,
             'address' => $request->address,
+            'price' => $request->price,
         ]);
 
         // Number of spots to create

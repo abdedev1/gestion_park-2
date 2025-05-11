@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = ({ requiredRole }) => {
+const ProtectedRoute = ({ requiredRoles }) => {
   const {user, isLoading } = useSelector(state => state.auth);
   // Wait until loading finishes
   if (isLoading) {
@@ -9,8 +9,8 @@ const ProtectedRoute = ({ requiredRole }) => {
   }
 
   // Now decide what to do based on role
-  if (!user || user.role !== requiredRole) {
-    return <Navigate to="/" replace />;
+  if (!user || !requiredRoles.includes(user.role)) {
+    return <Navigate to="/home" replace />;
   }
   return <Outlet />;
 };
@@ -36,7 +36,7 @@ const RedirectByRole = () => {
   }
 
   if (user?.role === 'client') {
-    return <Navigate to="/dashboardd" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return <Navigate to="/" replace />;

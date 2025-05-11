@@ -16,6 +16,8 @@ class DemandCard extends Model
         'duration',
         'total_price',
         'park_id',
+        'base_rate_id',
+        'status'
     ];
 
     public function user()
