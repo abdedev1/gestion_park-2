@@ -444,6 +444,13 @@ export default function ParkList() {
             <Input className="rounded" placeholder="Enter park address" />
           </Form.Item>
           <Form.Item
+            name="price"
+            label={<span className="font-medium">Price</span>}
+            rules={[{ required: true, message: "Please enter park Price" }]}
+          >
+            <Input className="rounded" placeholder="Enter park price" />
+          </Form.Item>
+          <Form.Item
             name="numberSpots"
             label={<span className="font-medium">Number of Spots</span>}
             rules={[

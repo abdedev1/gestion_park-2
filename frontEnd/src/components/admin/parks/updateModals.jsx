@@ -29,6 +29,7 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
         initialValues={{
           name: park?.name || "",
           address: park?.address || "",
+          price: park?.price || "",
           
         }}
         className="py-4"
@@ -47,6 +48,13 @@ export function UpdateParkModal({ isOpen, onClose, park, onUpdate }) {
           rules={[{ required: true, message: 'Please input the address!' }]}
         >
           <Input placeholder="Enter address" />
+        </Form.Item>
+         <Form.Item
+          name="price"
+          label={<span className="font-medium">Price</span>}
+          rules={[{ required: true, message: 'Please input the Price!' }]}
+        >
+          <Input placeholder="Enter Price" />
         </Form.Item>
 
         <div className="flex justify-between gap-2 mt-4">
