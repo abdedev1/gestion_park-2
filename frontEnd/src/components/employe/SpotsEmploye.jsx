@@ -220,7 +220,7 @@ export default function SpotsEmploye() {
 
                     <div>
                         <label htmlFor="price" className="block text-sm font-medium">
-                            Prix Par Heure
+                            Price Per Hour
                         </label>
                         <input
                             type="number"
