@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
-
+import { setSearchQuery } from '../Redux/slices/parcsSlice';
 
 const HomePage = () => {
   // States
@@ -13,12 +13,11 @@ const HomePage = () => {
   const [selectedParc, setSelectedParc] = useState(null);
   const [showAllParks, setShowAllParks] = useState(false);
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
-  const [searchQuery, setSearchQuery] = useState('');
   const [filteredParks, setFilteredParks] = useState([]);
   const navigate = useNavigate();
   // Redux
   const dispatch = useDispatch();
-  const { parks, currentParcSpots, status } = useSelector(state => state.parks);
+  const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
 
   // Animation variants
   const parkVariants = {
@@ -348,21 +347,21 @@ const HomePage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
                   {[
                    {
-                    name: "Basic",
-                    price: 50,
-                    features: ["3 spots/day", "Access from 8am to 6pm", "Email support"],
-                    recommended: false
-                  },
-                  {
                     name: "Standard",
                     price: 100,
-                    features: ["6 spots/day", "Extended access hours", "Standard support"],
+                    features: ["6 spots/day", "24/7 access", "Support included"],
                     recommended: false
                   },
                   {
-                    name: "Unlimited",
-                    price: 200,
-                    features: ["Unlimited daily spots", "24/7 access", "All locations", "VIP support"],
+                    name: "Accessible",
+                    price: 120,
+                    features: ["Accessible spots", "24/7 access", "Support included"],
+                    recommended: false
+                  },
+                  {
+                    name: "Electric",
+                    price: 150,
+                    features: ["Charging included", "24/7 access", "Support included"],
                     recommended: true
                   }
                   ].map((plan, index) => (

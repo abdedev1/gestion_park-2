@@ -8,13 +8,13 @@ class DemandCardController extends Controller
 {
     public function index()
     {
-        $demandCards = DemandCard::with(['user', 'park'])->get();
+        $demandCards = DemandCard::with(['client.user', 'park'])->get();
         return response()->json($demandCards);
     }
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'client_id' => 'required|exists:clients,id',
             'park_id' => 'required|exists:parks,id',
             'duration' => 'required|integer|min:1',
             'total_price' => 'required|numeric|min:0',

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('status');
             $table->foreignId('base_rate_id')->constrained('pricing_rates');
             $table->bigInteger('total_price')->nullable();
-            $table->foreignId('client_id')->nullable()->constrained('clients');
+            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
             $table->timestamps();
         });
     }

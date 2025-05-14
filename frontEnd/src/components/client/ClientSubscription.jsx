@@ -27,9 +27,9 @@ export default function ClientSubscription({ onClose }) {
 
   // Prix statiques pour chaque type
   const PRICES = {
-    Standard: 100,
-    Electric: 150,
-    Accessible: 120,
+    standard: 100,
+    electric: 150,
+    accessible: 120,
   }
 
   // Plans dynamiques avec prix du front
@@ -64,7 +64,7 @@ export default function ClientSubscription({ onClose }) {
     setLoading(true)
     dispatch(
       createSubscription({
-        userId: user?.id,
+        clientId: user.role_data.id,
         parkId: selectedPark,
         base_rate_id: selectedPlan.id,
         duration,

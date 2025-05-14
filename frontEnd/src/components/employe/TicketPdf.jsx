@@ -238,7 +238,7 @@ export const generateCartPDF = async (cart, clientName, rateName) => {
 
 
   // QR code with only client_id
-  const qrData = `client_id:${cart.user_id}`;
+  const qrData = `client_id:${cart.client_id}`;
   const qrBase64 = await generateQRBase64(qrData);
   const qrImageBytes = await fetch(qrBase64).then(res => res.arrayBuffer());
   const qrImage = await pdfDoc.embedPng(qrImageBytes);
