@@ -6,12 +6,15 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
 import { setSearchQuery } from '../Redux/slices/parcsSlice';
+import ClientSubscription from "../client/ClientSubscription"
 
 const HomePage = () => {
+    const { user } = useSelector((state) => state.auth);
   // States
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [selectedParc, setSelectedParc] = useState(null);
   const [showAllParks, setShowAllParks] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
   const [filteredParks, setFilteredParks] = useState([]);
   const navigate = useNavigate();
@@ -87,6 +90,16 @@ const HomePage = () => {
     dispatch(clearParcSpots());
   };
 
+  const getStarted = () => {
+    if (user) {
+      setShowSubscriptionModal(true)
+      console.log(user)
+    }
+    else {
+      navigate("/sign")
+    }
+  };
+
   // Display logic
   const displayedParks = showAllParks ? filteredParks : filteredParks.slice(0, 3);
 
@@ -129,14 +142,14 @@ const HomePage = () => {
               <input 
                 type="text" 
                 placeholder="Search for parks near..." 
-                className="py-3 w-full focus:outline-none text-gray-700"
+                className=" w-full focus:outline-none text-gray-700"
                 value={searchQuery}
                 onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
             <button 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center transition"
+              className="btn btn-primary"
               onClick={handleSearch}
             >
               <FaSearch className="mr-2" /> Search
@@ -161,7 +174,7 @@ const HomePage = () => {
           {selectedParc && (
             <button 
               onClick={handleBackToParks}
-              className="mb-6 flex items-center text-blue-600 hover:text-blue-800"
+              className="mb-6 btn btn-primary"
             >
               <FaArrowLeft className="mr-2" /> Back to parks
             </button>
@@ -201,10 +214,10 @@ const HomePage = () => {
                       </div>
                       <div className="text-right">
                         <p className="text-gray-500 text-sm">Price</p>
-                        <p className="font-bold text-blue-600">${spot.price}/hour</p>
+                        <p className="font-bold text-primary">${spot.price}/hour</p>
                       </div>
                     </div>
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">
+                    <button className="w-full btn btn-primary">
                       {spot.available ? 'Reserve Now' : 'Notify Me'}
                     </button>
                   </div>
@@ -226,7 +239,7 @@ const HomePage = () => {
                     onClick={() => handleParcClick(park.id)}
                   >
                     <div className="h-48 bg-blue-200 relative flex items-center justify-center">
-                      <FaCar className="text-4xl text-blue-600" />
+                      <FaCar className="text-4xl text-primary" />
                       <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold flex items-center">
                         <FaStar className="text-yellow-400 mr-1" /> 4.5 {park.rating}
                       </div>
@@ -241,10 +254,10 @@ const HomePage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-gray-500 text-sm">Starting from</p>
-                          <p className="font-bold text-blue-600">MAD {park.price}/Hour</p>
+                          <p className="font-bold text-primary">MAD {park.price}/Hour</p>
                         </div>
                       </div>
-                      <button onClick={()=>navigate(`parks/${park.id}`)} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition">
+                      <button onClick={()=>navigate(`parks/${park.id}`)} className="w-full btn btn-primary">
                         View Details
                       </button>
                     </div>
@@ -261,7 +274,7 @@ const HomePage = () => {
                   className="text-center mt-12"
                 >
                   <button 
-                    className="bg-white hover:bg-gray-100 text-blue-600 border border-blue-600 px-8 py-3 rounded-lg font-medium transition"
+                    className="btn btn-primary btn-outline"
                     onClick={handleViewAllParks}
                   >
                     View All Parking Locations
@@ -311,7 +324,7 @@ const HomePage = () => {
                     viewport={{ once: true }}
                     className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-center"
                   >
-                    <div className="text-blue-600 mb-4 mx-auto w-16 h-16 flex items-center justify-center bg-blue-50 rounded-full">
+                    <div className="text-primary mb-4 mx-auto w-16 h-16 flex items-center justify-center bg-blue-50 rounded-full">
                       {feature.icon}
                     </div>
                     <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -321,8 +334,9 @@ const HomePage = () => {
               </div>
             </div>
       
-            {/* Pricing Section */}
-            <div className="py-16 bg-white" id='pracing'>
+            {
+              !user?.role_data?.cart && (
+              <div className="py-16 bg-white" id='pracing'>
               <div className="container mx-auto px-4">
                 <motion.h2 
                   initial={{ opacity: 0 }}
@@ -340,7 +354,7 @@ const HomePage = () => {
                   transition={{ duration: 0.5, delay: 0.1 }}
                   viewport={{ once: true }}
                   className="text-xl text-center mb-12 text-gray-600 max-w-2xl mx-auto"
-                >
+                  >
                   Choose the plan that fits your parking needs
                 </motion.p>
                 
@@ -371,10 +385,10 @@ const HomePage = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       viewport={{ once: true }}
-                      className={`border rounded-xl p-8 hover:shadow-lg transition duration-300 ${plan.recommended ? "border-2 border-blue-600 shadow-lg transform lg:scale-105" : "border-gray-200"}`}
-                    >
+                      className={`border rounded-xl p-8 hover:shadow-lg transition duration-300 ${plan.recommended ? "border-2 border-primary shadow-lg transform lg:scale-105" : "border-gray-200"}`}
+                      >
                       {plan.recommended && (
-                        <div className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium inline-block mb-4">
+                        <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium inline-block mb-4">
                           MOST POPULAR
                         </div>
                       )}
@@ -390,7 +404,7 @@ const HomePage = () => {
                           </li>
                         ))}
                       </ul>
-                      <button className={`w-full py-3 rounded-lg font-medium transition ${plan.recommended ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-800"}`}>
+                      <button onClick={getStarted} className={`w-full py-3 rounded-lg font-medium transition ${plan.recommended ? "btn btn-primary" : "btn btn-soft"}`}>
                         Get Started
                       </button>
                     </motion.div>
@@ -398,6 +412,7 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
+            )}
       
             {/* Testimonials */}
             <div className="bg-gray-100 py-16">
@@ -455,7 +470,7 @@ const HomePage = () => {
             </div>
       
             {/* CTA Section */}
-            <div className="bg-blue-600 text-white py-16">
+            <div className="bg-primary text-white py-16">
               <div className="container mx-auto px-4 text-center">
                 <motion.h2 
                   initial={{ opacity: 0 }}
@@ -552,7 +567,7 @@ const HomePage = () => {
                 </div>
               </div>
             </footer>
-          
+            {showSubscriptionModal && <ClientSubscription onClose={() => setShowSubscriptionModal(false)} />}
     </div>
   );
 };

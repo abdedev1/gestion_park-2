@@ -12,7 +12,8 @@ class Client extends Model
     use HasFactory;
     
     protected $fillable = ['user_id','cart_id'];
-
+    
+    protected $with = ['cart'];
 
     public function cart()
     {

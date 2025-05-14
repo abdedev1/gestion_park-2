@@ -68,14 +68,17 @@ export default function Header() {
           <div className="navbar-start">
             <NavLink ><img className='h-12' src="/Logo/logo3.png" alt="" /></NavLink>
           </div>
-          <div className='navbar-center'>
-            {!token && (<><div className="hidden md:flex items-center space-x-6">
-                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><NavLink to='/home'>Home</NavLink></button>
-                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#avp">Available Parks</a></button>
-                    <button className="hover:text-blue-600 px-3 py-2 rounded-md font-medium"><a href="#pracing">Pricing</a></button>
-                  </div></>)}
-          </div>
           <div className="gap-5 hidden md:inline-flex relative items-center">
+            {!token && (
+              <>
+                <div data-path="/home" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/home">Home</NavLink></div>
+                { location.pathname !== "/sign" && <>
+                  <div data-path="#avp" onClick={e => switchTab(e.target)}><a className="px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 whitespace-nowrap" href="#avp">Available&nbsp;Parks</a></div>
+                  <div data-path="#pracing" onClick={e => switchTab(e.target)}><a className="px-3 py-2 text-neutral hover:text-primary font-semibold transition-colors duration-200 whitespace-nowrap" href="#pracing">Pricing</a></div>
+                </>
+                }
+              </>
+            )}
             {user?.role === "admin" && (
               <>
                 <div data-path="/dashboard" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboard">Dashboard</NavLink></div>
@@ -96,18 +99,21 @@ export default function Header() {
                 <div data-path="/home" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/home">Home</NavLink></div>
                 <div data-path="/parks-list" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks-list">Available Parks</NavLink></div>
                 <div data-path="/history" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/history">Parking History</NavLink></div>
-                <button
+                {!user?.role_data?.cart && (
+                  
+                  <button
                   onClick={() => setShowSubscriptionModal(true)}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md bg-blue-800 text-white transition hover:bg-gray-100`}
-                >
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-md bg-primary text-white transition hover:bg-gray-100`}
+                  >
                   <span>Subscription</span>
                 </button>
+                )}
                 
               </>)}
               {showSubscriptionModal && (
                 <ClientSubscription onClose={() => setShowSubscriptionModal(false)} />
             )}
-              {user && <motion.div className={`absolute ${user.role === "client" ? "top-9" : "top-7"} left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />}
+              <motion.div className={`absolute top-7 left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />
               </div>
             
           <div className="navbar-end">
