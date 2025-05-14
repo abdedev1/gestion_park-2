@@ -80,7 +80,7 @@ function App() {
 
                   {/* partie employe */}
                     <Route element={<ProtectedRoute requiredRoles={['employe']} />}>
-                      <Route index path="overview" element={<SpotsEmploye/>} />
+                      <Route  path="overview" element={<SpotsEmploye/>} />
                       <Route path="demand-cards" element={<DemandCardsList />} />
 
                     </Route>
@@ -96,7 +96,6 @@ function App() {
                   
                   {/*partie client*/}
                     <Route element={<ProtectedRoute requiredRoles={["client" ]}/>}>
-                      <Route path="dashboardd" element={<h1>Dashboard Client</h1>} />
                       <Route path="parks-list" element={<ParksList/>} />
                       <Route path="history" element={<h1>history Client</h1>} />
                       

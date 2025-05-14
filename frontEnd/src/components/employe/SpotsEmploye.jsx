@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchEmployes, getEmployeById } from '../Redux/slices/employesSlice';
-import { getEmployeSpots,updateSpot } from '../Redux/slices/spotsSlice';
+import { updateSpot } from '../Redux/slices/spotsSlice';
 import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 import { addParkingTicket,fetchParkingTickets  } from '../Redux/slices/parkingTicketsSlice';
 import { Button, FloatButton, Modal } from 'antd';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
 import { FaQrcode } from 'react-icons/fa';
-import isEqual from "lodash/isEqual";
 import { generateTicketPDF } from './ticketPdf';
 import { ParkMap } from '../ParkMap';
-import QrCodeScannerCart from './QrCodeScannerCart'; 
-import { fetchUserById } from "../Redux/slices/userByIdSlice";
+import QrCodeScannerCart from './QrCodeScannerCart';
+import { getClientById } from '../../assets/api/admin/users'
+import {getPark} from '../../assets/api/parks/park';
 
 export default function SpotsEmploye() {
     const { user } = useSelector((state) => state.auth);
-    const { park } = user.role_data
+    const [park, setPark] = useState(user.role_data.park);
     const { pricingRates } = useSelector(state => state.pricingRates);
     const [showScanner, setShowScanner] = useState(false);
     const [showCartScanner, setShowCartScanner] = useState(false);
     const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSpot, setSelectedSpot] = useState(null);
-    const [employeIdStock,setEmployeIdStock] =useState(null);
     const [scanLoading, setScanLoading] = useState(false);
-    const { userid, loading, error } = useSelector(state => state.userById);
+    const [loading, setLoading] = useState(false);
     const [pendingSpot, setPendingSpot] = useState(null);
+    const [client, setClient] = useState(null);
+
 
 
     const [formData, setFormData] = useState({
@@ -39,6 +39,12 @@ export default function SpotsEmploye() {
         total_price: 0,
         status: null
     });
+
+ const getBaseRateIdForType = (type) => {
+  if (!type || !pricingRates) return null;
+  const found = pricingRates.find(r => r.rate_name.toLowerCase() === type.toLowerCase());
+  return found ? found.id : null;
+};
 
     useEffect(() => {
         dispatch(fetchPricingRates());
@@ -58,13 +64,20 @@ export default function SpotsEmploye() {
         setShowCartScanner(true)
     }
 
-    const handleClientScanResult = (result) => {
+    const handleClientScanResult = async (result) => {
         if (result?.client_id) {
             setFormData(prev => ({
                 ...prev,
                 client_id: result.client_id
             }));
-            dispatch(fetchUserById(result.client_id));
+            
+            try {
+                const res = await getClientById(result.client_id);
+                setClient(res);
+            } catch (error) {
+                console.error('Error fetching client:', error);
+            }
+
         }
         setShowCartScanner(false);
         setScanLoading(false);
@@ -73,12 +86,12 @@ export default function SpotsEmploye() {
         
     const handleSpotClick = (spot) => {
     setSelectedSpot(spot);
-    if (userid && spot.status === "available") {
+    if (client && spot.status === "available") {
         setFormData({
-        clientName: userid.first_name + " " + userid.last_name,
+        clientName: client.user.first_name + " " + client.user.last_name,
         spot_id: spot.id,
-        client_id: userid.id,
-        base_rate_id: pricingRates[0]?.id,
+        client_id: client.id,
+        base_rate_id: getBaseRateIdForType(spot.type),
         entry_time: new Date().toISOString().slice(0, 16),
         exit_time: null,
         total_price: 0,
@@ -91,7 +104,7 @@ export default function SpotsEmploye() {
         clientName: 'Not registered',
         spot_id: spot.id,
         client_id: null,
-        base_rate_id: pricingRates[0]?.id,
+        base_rate_id: getBaseRateIdForType(spot.type),
         entry_time: new Date().toISOString().slice(0, 16),
         exit_time: null,
         total_price: 0,
@@ -102,22 +115,23 @@ export default function SpotsEmploye() {
     }
     };
     useEffect(() => {
-    if (userid && pendingSpot) {
+    if (client && pendingSpot) {
         setFormData(prev => ({
         ...prev,
-        clientName: userid.first_name + " " + userid.last_name,
-        client_id: userid.id,
+        clientName: client.user.first_name + " " + client.user.last_name,
+        client_id: client.id,
         }));
         setPendingSpot(null);
     }
-    }, [userid, pendingSpot]);
+    }, [client, pendingSpot]);
     
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         if (selectedSpot) {
-            const pricePerHour = pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0;
-    
+            const pricePerHour = pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour;
+            
             if (selectedSpot.status === "available") {
                 const resultAction = await dispatch(addParkingTicket(formData));
     
@@ -130,27 +144,34 @@ export default function SpotsEmploye() {
                         id: ticketId
                     }));
     
+                    const updatedSpot = { ...selectedSpot, status: "reserved" }
                     await dispatch(updateSpot({
                         id: formData.spot_id,
-                        updatedSpot: { ...selectedSpot, status: "reserved" }
+                        updatedSpot: updatedSpot
                     }));
+                    setPark({...park, spots: park.spots.map(spot => spot.id === formData.spot_id ? updatedSpot : spot)});
+
     
-                    if (employeIdStock) {
-                        dispatch(getEmployeSpots(employeIdStock));
-                    }
-    
+                  
                     await generateTicketPDF({ ...formData, id: ticketId }, selectedSpot, pricePerHour);
-    
+        
                     setIsModalOpen(false);}
+                    
+                   
         }
         
     }
+        
+       setClient(null);
+       setLoading(false);
         
     };
 
     const SpotModel = () => {
         return (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <>
+            {pricingRates  ? (
+                <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label htmlFor="clientName" className="block text-sm font-medium">
                         Client Name
@@ -243,10 +264,13 @@ export default function SpotsEmploye() {
                     </div>
                 </div>
                 <div className="flex justify-between gap-2 mt-4">
-                    <Button onClick={() => setIsModalOpen(false)} className="rounded" >Cancel</Button>
-                    <button type="submit" className="btn btn-primary btn-sm">Confirm</button>
+                    <Button onClick={() => { setIsModalOpen(false); setClient(null); }} className="rounded" >Cancel</Button>
+                    <button type="submit"  className="btn btn-primary btn-sm w-16" disabled={loading}>{loading ? <span className="loading loading-spinner loading-md" />: "Confirm"} </button>
                 </div>
             </form>
+            ): <span className="loading loading-spinner loading-md" />}
+            </>
+            
         )
     }
     

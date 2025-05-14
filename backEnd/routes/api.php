@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ParkController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SpotController;
@@ -59,6 +60,8 @@ Route::middleware(["auth:sanctum", IsAdminEmployeeMiddleware::class])->group(fun
     // admin and employe routes
     Route::apiResource('spots',controller: SpotController::class);
     Route::apiResource('employes', EmployeController::class);
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::get('/clients/{id}', [ClientController::class, 'show']);
 
 });
 

@@ -13,6 +13,8 @@ export default function DemandCardsList() {
   const parkId = user?.role_data?.park?.id;
   const { demandCards, status, error } = useSelector((state) => state.demandCards);
   const { pricingRates } = useSelector((state) => state.pricingRates);
+  const [messageApi, contextHolder] = message.useMessage();
+
 
   // Track status changes per row
   const [statusMap, setStatusMap] = useState({});
@@ -23,7 +25,6 @@ export default function DemandCardsList() {
       dispatch(fetchPricingRates());
     }
   }, [dispatch, status]);
-
  
 
   const filtered = demandCards.filter((d) => d.park_id === parkId);
@@ -51,7 +52,7 @@ export default function DemandCardsList() {
     if (newStatus === "accepted") {
       await dispatch(
         createCart({
-          client_id: record.user_id,
+          client_id: record.client_id,
           base_rate_id: record.base_rate_id,
           duration: durationDate,
           park_id: record.park_id,
@@ -60,13 +61,13 @@ export default function DemandCardsList() {
         })
       ).unwrap();
 
-      const clientName = record.user ? `${record.user.first_name} ${record.user.last_name}` : "Client";
+      const clientName = record.client.user ? `${record.client.user.first_name} ${record.client.user.last_name}` : "Client";
       const rateName = getRateName(record.base_rate_id);
       generateCartPDF(record, clientName, rateName);
 
-      message.success("Cart created!");
+      messageApi.success("Cart created!");
     } else if (newStatus === "rejected") {
-      message.success("Demand rejected!");
+      messageApi.success("Demand rejected!");
     }
 
     // Refresh demand cards data
@@ -78,7 +79,7 @@ export default function DemandCardsList() {
       return copy;
     });
   } catch (e) {
-    message.error("Error processing demand");
+    messageApi.error("Error processing demand");
   }
 };
 
@@ -97,11 +98,11 @@ export default function DemandCardsList() {
   const columns = [
     { title: "#", dataIndex: "id", key: "id" },
     {
-      title: "User",
-      dataIndex: ["user", "first_name"],
-      key: "user",
+      title: "client",
+      dataIndex: ["client", "first_name"],
+      key: "client",
       render: (_, record) =>
-        record.user ? `${record.user.first_name} ${record.user.last_name}` : "N/A",
+        record?.client?.user ? `${record.client.user.first_name} ${record.client.user.last_name}` : "N/A",
     },
     {
       title: "Duration",
@@ -120,7 +121,7 @@ export default function DemandCardsList() {
         const color = getStatusColor(value);
         const isChanged = statusMap[record.id] !== undefined && statusMap[record.id] !== record.status;
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">{contextHolder}
             <div
               style={{
                 background: color,

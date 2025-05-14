@@ -19,7 +19,6 @@ export default function ParksList() {
   useEffect(() => {
     dispatch(fetchParcs())
   }, [dispatch])
-  console.log(parks)
   useEffect(() => {
     let result = [...parks]
 

@@ -347,21 +347,21 @@ const HomePage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
                   {[
                    {
-                    name: "Basic",
-                    price: 50,
-                    features: ["3 spots/day", "Access from 8am to 6pm", "Email support"],
-                    recommended: false
-                  },
-                  {
                     name: "Standard",
                     price: 100,
-                    features: ["6 spots/day", "Extended access hours", "Standard support"],
+                    features: ["6 spots/day", "24/7 access", "Support included"],
                     recommended: false
                   },
                   {
-                    name: "Unlimited",
-                    price: 200,
-                    features: ["Unlimited daily spots", "24/7 access", "All locations", "VIP support"],
+                    name: "Accessible",
+                    price: 120,
+                    features: ["Accessible spots", "24/7 access", "Support included"],
+                    recommended: false
+                  },
+                  {
+                    name: "Electric",
+                    price: 150,
+                    features: ["Charging included", "24/7 access", "Support included"],
                     recommended: true
                   }
                   ].map((plan, index) => (

@@ -47,3 +47,13 @@ export const getEmployes = async () => {
     throw error;
   }
 }
+export const getClientById = async (id) => {
+  try {
+    const response = await axios.get(`clients/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching Client:', error);
+    throw error;
+  }
+}
+

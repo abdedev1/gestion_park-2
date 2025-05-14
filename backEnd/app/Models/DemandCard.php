@@ -12,7 +12,7 @@ class DemandCard extends Model
     protected $table = 'demand_cards';
 
     protected $fillable = [
-        'user_id',
+        'client_id',
         'duration',
         'total_price',
         'park_id',
@@ -20,13 +20,14 @@ class DemandCard extends Model
         'status'
     ];
 
-    public function user()
+    public function client()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Client::class);
     }
 
     public function park()
     {
         return $this->belongsTo(Park::class);
     }
+    
 }

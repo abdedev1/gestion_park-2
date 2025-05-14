@@ -54,7 +54,7 @@ export default function Header() {
       const res = await Auth.Logout();
       if (res.success) {
         dispatch(logout());
-        navigate("/");
+        navigate("/home");
       }
     };
     const navLinkClass = ({ isActive }) => {
@@ -93,7 +93,7 @@ export default function Header() {
               )}
             {user?.role === "client" && (
               <>
-                <div data-path="/dashboardd" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/dashboardd">Dashboard</NavLink></div>
+                <div data-path="/home" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/home">Home</NavLink></div>
                 <div data-path="/parks-list" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/parks-list">Available Parks</NavLink></div>
                 <div data-path="/history" onClick={e => switchTab(e.target)}><NavLink className={navLinkClass} to="/history">Parking History</NavLink></div>
                 <button
@@ -178,7 +178,7 @@ export default function Header() {
             }
             {user?.role === "client" &&
               <>
-              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/dashboarddd">Dashboard</NavLink>
+              <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/home">Home</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/parks-list">Available Parks</NavLink>
               <NavLink className={({ isActive }) => `btn btn-ghost btn-neutral mx-2 w-full ${isActive ? "btn-active" : ""}`} to="/history">Parking History</NavLink>
               </>

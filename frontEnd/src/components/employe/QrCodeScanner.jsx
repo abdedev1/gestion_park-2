@@ -146,7 +146,7 @@ export default function QRCodeScanner() {
     processScannedResult();
   }, [scanResult]);
   
-  
+  console.log(updateTicketG)
 
   return (
     <div className="max-w-md bg-base-100">
@@ -186,7 +186,7 @@ export default function QRCodeScanner() {
                 <p className="font-mono">Spot: {updateTicketG.spotName}</p>
                 <p className="font-mono">Entrée: {updateTicketG.entry_time}</p>
                 <p className="font-mono">Sortie: {updateTicketG.exit_time}</p>
-                <p className="font-mono">Total Price: {updateTicketG.total_price} MAD</p>
+                <p className="font-mono">Total Price: {!updateTicketG.client_id ? updateTicketG.total_price : 0} MAD</p>
               </div>
             )}
             
