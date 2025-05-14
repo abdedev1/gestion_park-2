@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaCar, FaMapMarkerAlt, FaSearch, FaUserCircle, FaSignInAlt, FaStar, FaArrowLeft,FaCalendarAlt,FaCheck } from 'react-icons/fa';
+import { FaCar, FaMapMarkerAlt, FaSearch, FaStar, FaArrowLeft,FaCalendarAlt,FaCheck } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import {Link} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
 import { setSearchQuery } from '../Redux/slices/parcsSlice';
 import ClientSubscription from "../client/ClientSubscription"
-
+import {Spin} from "antd"
+import { Loader2 } from "lucide-react"
 const HomePage = () => {
     const { user } = useSelector((state) => state.auth);
   // States
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [selectedParc, setSelectedParc] = useState(null);
   const [showAllParks, setShowAllParks] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const texts = ["Find Your Perfect Parking Spot", "Monthly Subscriptions Available", "Real-Time Availability"];
@@ -68,32 +68,24 @@ const HomePage = () => {
     };
   // Handlers Search
   const handleSearch = () => {
-    setSelectedParc(null);
     setShowAllParks(false);
     dispatch(clearParcSpots());
   };
 
-  const handleParcClick = (parcId) => {
-    setSelectedParc(parcId);
-    setShowAllParks(false);
-    dispatch(getParcSpots(parcId));
-  };
+ 
 
   const handleBackToParks = () => {
-    setSelectedParc(null);
     dispatch(clearParcSpots());
   };
 
   const handleViewAllParks = () => {
     setShowAllParks(true);
-    setSelectedParc(null);
     dispatch(clearParcSpots());
   };
 
   const getStarted = () => {
     if (user) {
       setShowSubscriptionModal(true)
-      console.log(user)
     }
     else {
       navigate("/sign")
@@ -168,61 +160,13 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="text-3xl font-bold text-center mb-12 text-gray-800"
           >
-            {selectedParc ? 'Available Spots' : 'Available Parks'}
+            Available Parks
           </motion.h2>
-          
-          {selectedParc && (
-            <button 
-              onClick={handleBackToParks}
-              className="mb-6 btn btn-primary"
-            >
-              <FaArrowLeft className="mr-2" /> Back to parks
-            </button>
-          )}
-          
           {status === 'loading' ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : selectedParc ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentParcSpots.map((spot, i) => (
-                <motion.div
-                  key={spot.id}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={parkVariants}
-                  viewport={{ once: true }}
-                  className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300"
-                >
-                  <div className="h-48 bg-gray-200 relative flex items-center justify-center">
-                    <FaCar className="text-4xl text-gray-600" />
-                    <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold">
-                      #{spot.number}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-xl mb-1">Spot {spot.number}</h3>
-                    <p className="text-gray-600 mb-4 capitalize">{spot.type}</p>
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <p className="text-gray-500 text-sm">Status</p>
-                        <p className={`font-semibold ${spot.available ? 'text-green-600' : 'text-red-600'}`}>
-                          {spot.available ? 'Available' : 'Occupied'}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-gray-500 text-sm">Price</p>
-                        <p className="font-bold text-primary">${spot.price}/hour</p>
-                      </div>
-                    </div>
-                    <button className="w-full btn btn-primary">
-                      {spot.available ? 'Reserve Now' : 'Notify Me'}
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex justify-center my-8">
+              <Spin 
+              indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />}
+              />
             </div>
           ) : (
             <>
@@ -236,7 +180,6 @@ const HomePage = () => {
                     variants={parkVariants}
                     viewport={{ once: true }}
                     className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 cursor-pointer"
-                    onClick={() => handleParcClick(park.id)}
                   >
                     <div className="h-48 bg-blue-200 relative flex items-center justify-center">
                       <FaCar className="text-4xl text-primary" />
@@ -246,7 +189,9 @@ const HomePage = () => {
                     </div>
                     <div className="p-6">
                       <h3 className="font-bold text-xl mb-1">{park.name}</h3>
-                      <p className="text-gray-600 mb-4">{park.address}</p>
+                      <p className="text-gray-600 mb-4">
+                        {park.address.length > (57) ? park.address.slice(0, 57) + "..." : park.address}
+                      </p>
                       <div className="flex justify-between items-center mb-4">
                         <div>
                           <p className="text-gray-500 text-sm">Available spots</p>
@@ -257,14 +202,13 @@ const HomePage = () => {
                           <p className="font-bold text-primary">MAD {park.price}/Hour</p>
                         </div>
                       </div>
-                      <button onClick={()=>navigate(`parks/${park.id}`)} className="w-full btn btn-primary">
+                      <button onClick={() => navigate(`parks/${park.id}`)} className="w-full btn btn-primary">
                         View Details
                       </button>
                     </div>
                   </motion.div>
                 ))}
               </div>
-              
               {!showAllParks && parks.length > 3 && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -499,12 +443,9 @@ const HomePage = () => {
                   viewport={{ once: true }}
                   className="flex flex-col sm:flex-row justify-center gap-4"
                 >
-                  <Link  to="/sign" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium transition">
+                  <Link  to="/sign" className="btn btn-primary btn-soft px-8 py-3 rounded-lg font-medium transition">
                     Sign Up Now
                   </Link>
-                  <button className="border border-white text-white hover:bg-blue-700 px-8 py-3 rounded-lg font-medium transition">
-                    Contact Sales
-                  </button>
                 </motion.div>
               </div>
             </div>

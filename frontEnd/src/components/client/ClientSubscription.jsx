@@ -48,7 +48,7 @@ export default function ClientSubscription({ onClose }) {
       "24/7 access",
       "Support included",
     ],
-    recommended: idx === 0,
+    recommended: rate.rate_name === "standard"
   }))
 
   const handleSelectPlan = (plan) => {
@@ -88,6 +88,7 @@ export default function ClientSubscription({ onClose }) {
       })
   }
 
+ 
   const totalPrice = selectedPlan ? selectedPlan.price * duration : 0
 
   return (
@@ -110,11 +111,11 @@ export default function ClientSubscription({ onClose }) {
                   <div
                     key={plan.id}
                     className={`border rounded-lg p-6 hover:shadow-md transition relative ${
-                      plan.recommended ? "border-2 border-blue-600" : ""
+                      plan.recommended ? "border-2 border-primary" : ""
                     }`}
                   >
                     {plan.recommended && (
-                      <div className="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 text-xs font-medium rounded-bl-lg">
+                      <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-medium rounded-bl-lg">
                         RECOMMENDED
                       </div>
                     )}
@@ -134,7 +135,7 @@ export default function ClientSubscription({ onClose }) {
                       onClick={() => handleSelectPlan(plan)}
                       className={`w-full py-2 rounded-md font-medium transition ${
                         plan.recommended
-                          ? "bg-blue-600 hover:bg-blue-700 text-white"
+                          ? "bg-primary hover:bg-blue-700 text-white"
                           : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                       }`}
                     >
@@ -211,7 +212,7 @@ export default function ClientSubscription({ onClose }) {
                 </button>
                 <button
                   onClick={handleSubmitSubscription}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                  className="flex-1px-4 py-2 rounded-md btn btn-primary"
                   disabled={loading}
                 >
                   {loading ? "Processing..." : "Confirm Subscription"}

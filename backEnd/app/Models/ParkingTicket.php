@@ -32,4 +32,14 @@ class ParkingTicket extends Model
     {
         return $this->client?->last_name ?? null;
     }
-}
+
+    public function spot()
+    {
+        return $this->belongsTo(Spot::class, 'spot_id');
+    }
+
+    public function park()
+    {
+        return $this->spot ? $this->spot->park() : null;
+    }
+    }

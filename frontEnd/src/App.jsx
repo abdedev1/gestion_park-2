@@ -23,6 +23,7 @@ import Profile from './components/Profile';
 import Settings from './components/Settings';
 import Dashboard from './components/admin/Dashborad';
 import DemandCardsList from './components/employe/DemandCardsList';
+import ParkingHistory from './components/client/ParkingHistory';
 function App() {
   const dispatch = useDispatch();
 
@@ -97,7 +98,7 @@ function App() {
                   {/*partie client*/}
                     <Route element={<ProtectedRoute requiredRoles={["client" ]}/>}>
                       <Route path="parks-list" element={<ParksList/>} />
-                      <Route path="history" element={<h1>history Client</h1>} />
+                      <Route path="history" element={<ParkingHistory/>} />
                       
                     </Route>
               </Route>

@@ -13,7 +13,7 @@ class Client extends Model
     
     protected $fillable = ['user_id','cart_id'];
     
-    protected $with = ['cart'];
+    protected $with = ['cart','tickets.spot.park'];
 
     public function cart()
     {
@@ -22,5 +22,9 @@ class Client extends Model
     
     public function user(){
         return $this->belongsTo(User::class);
+    }
+    public function tickets()
+    {
+        return $this->hasMany(ParkingTicket::class);
     }
 }

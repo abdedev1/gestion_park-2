@@ -66,7 +66,7 @@ export default function Header() {
       <>
         <div className="navbar bg-base-100 shadow-sm">
           <div className="navbar-start">
-            <NavLink ><img className='h-12' src="/Logo/logo3.png" alt="" /></NavLink>
+            <NavLink ><img className='h-12' src="/Logo/logo.png" alt="" /></NavLink>
           </div>
           <div className="gap-5 hidden md:inline-flex relative items-center">
             {!token && (
@@ -113,7 +113,8 @@ export default function Header() {
               {showSubscriptionModal && (
                 <ClientSubscription onClose={() => setShowSubscriptionModal(false)} />
             )}
-              <motion.div className={`absolute top-7 left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />
+              {user && <motion.div className={`absolute ${user.role === "client" ? "top-9" : "top-7"} left-0 h-0.5 bg-primary under`} animate={controls} initial={{ x: 0, width: 0 }} />}
+
               </div>
             
           <div className="navbar-end">
@@ -139,10 +140,10 @@ export default function Header() {
             ) : (
               
                 <>
-                  <NavLink to="/sign" className="flex items-center space-x-1 hover:text-blue-600 px-3 py-2 rounded-md font-medium">
+                  <NavLink to="/sign" className="flex items-center space-x-1 hover:text-primary px-3 py-2 rounded-md font-medium">
                       <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
                   </NavLink>
-                  <NavLink to="/sign" className="bg-blue-600 text-white font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition">
+                  <NavLink to="/sign" className="btn btn-primary font-medium px-4 py-2 rounded-md">
                       <span className="hidden sm:inline">Sign Up</span>
                       <span className="sm:hidden">Join</span>
                   </NavLink>

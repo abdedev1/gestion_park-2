@@ -89,7 +89,7 @@ export default function Profile() {
     <div className="container mx-auto px-4 py-8">
       {contextHolder}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <div className="bg-blue-600 h-32 relative">
+        <div className="bg-primary h-32 relative">
           <div className="absolute -bottom-16 left-8 flex items-end">
             <div className="w-32 h-32 rounded-full bg-white p-1 shadow-lg">
               {avatar ? (
@@ -99,21 +99,10 @@ export default function Profile() {
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
+                <div className="w-full h-full rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-primary">
                   {getInitials()}
                 </div>
               )}
-              <Upload
-                name="avatar"
-                action="/api/upload-avatar"
-                showUploadList={false}
-                onChange={handleAvatarChange}
-                className="absolute bottom-0 right-0"
-              >
-                <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition">
-                  <Camera size={16} />
-                </button>
-              </Upload>
             </div>
             <div className="ml-4 mb-4 text-white">
               <h1 className="text-2xl font-bold">
@@ -190,15 +179,6 @@ export default function Profile() {
                         />
                       </Form.Item>
 
-                      {/* {user?.role === "client" && (
-                        <Form.Item name="address" label="Address">
-                          <Input
-                            prefix={<MapPin size={16} className="text-gray-400 mr-2" />}
-                            placeholder="Your address"
-                          />
-                        </Form.Item>
-                      )} */}
-
                       <Form.Item className="mt-6">
                         <Button
                           type="primary"
@@ -213,77 +193,7 @@ export default function Profile() {
                     </Form>
                   </div>
                 ),
-              },
-              {
-                key: "2",
-                label: "Parking History",
-                children: (
-                  <div className="mt-6">
-                    {historyLoading ? (
-                      <div className="flex justify-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                      </div>
-                    ) : parkingHistory.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Spot
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Entry Time
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Exit Time
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Total Price
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {parkingHistory.map((ticket) => (
-                              <tr key={ticket.id}>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  {ticket.spotName || `#${ticket.spot_id}`}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  {new Date(ticket.entry_time).toLocaleString()}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  {ticket.exit_time ? new Date(ticket.exit_time).toLocaleString() : "N/A"}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      ticket.status === "active"
-                                        ? "bg-green-100 text-green-800"
-                                        : ticket.status === "completed"
-                                          ? "bg-blue-100 text-blue-800"
-                                          : "bg-gray-100 text-gray-800"
-                                    }`}
-                                  >
-                                    {ticket.status}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap font-medium">
-                                  {ticket.total_price ? `${ticket.total_price.toFixed(2)} MAD` : "N/A"}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">No parking history available</div>
-                    )}
-                  </div>
-                ),
-              },
+              },  
             ]}
           />
         </div>

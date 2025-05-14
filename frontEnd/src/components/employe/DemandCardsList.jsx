@@ -6,7 +6,7 @@ import { createCart } from "../Redux/slices/cartsSlice";
 import { fetchPricingRates } from "../Redux/slices/pricingRatesSlice";
 import dayjs from "dayjs";
 import { generateCartPDF } from "./ticketPdf"; 
-
+import {Loader2} from "lucide-react";
 export default function DemandCardsList() {
   const dispatch = useDispatch();
   const { user, token } = useSelector((state) => state.auth);
@@ -27,7 +27,7 @@ export default function DemandCardsList() {
   }, [dispatch, status]);
  
 
-  const filtered = demandCards.filter((d) => d.park_id === parkId);
+  const filtered = demandCards.filter((d) => d.park_id === parkId && d.status === "pending");
   const getRateName = (base_rate_id) => {
     const rate = pricingRates.find((r) => r.id === base_rate_id);
     return rate ? rate.rate_name : "N/A";
@@ -96,9 +96,13 @@ export default function DemandCardsList() {
   };
 
   const columns = [
-    { title: "#", dataIndex: "id", key: "id" },
     {
-      title: "client",
+    title: "#",
+    key: "index",
+    render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Client",
       dataIndex: ["client", "first_name"],
       key: "client",
       render: (_, record) =>
@@ -171,7 +175,9 @@ export default function DemandCardsList() {
   if (status === "loading")
     return (
       <div className="flex justify-center my-8">
-        <Spin />
+        <Spin 
+        indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />}
+        />
       </div>
     );
   if (status === "failed") return <Alert type="error" message={error} />;

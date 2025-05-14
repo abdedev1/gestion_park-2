@@ -50,7 +50,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::with('role')->findOrFail($id);    
+        $user = User::with('role','client.tickets')->findOrFail($id);    
         return response()->json([
             'id' => $user->id,
             'first_name' => $user->first_name,
@@ -58,6 +58,8 @@ class UserController extends Controller
             'birth_date' => $user->birth_date,
             'email' => $user->email,
             'role' => $user->role->name,
+            'tickets' => $user->client ? $user->client->tickets : [],
+
         ]);
     }
 

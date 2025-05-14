@@ -31,7 +31,7 @@ export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) =>
   });
 
   // Logo
-  const logoUrl = "/Logo/logo2.png";
+  const logoUrl = "/Logo/logo.png";
   const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
   const logoImage = await pdfDoc.embedPng(logoBytes);
   const scaledLogoDims = logoImage.scale(0.10);
@@ -148,7 +148,7 @@ export const generateCartPDF = async (cart, clientName, rateName) => {
   });
 
   // Logo above title background (centered)
-  const logoUrl = "/Logo/logo2.png";
+  const logoUrl = "/Logo/logo.png";
   const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
   const logoImage = await pdfDoc.embedPng(logoBytes);
   const logoHeight = 28;

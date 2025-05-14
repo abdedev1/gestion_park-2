@@ -2,8 +2,10 @@ import { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchParcs } from "../Redux/slices/parcsSlice"
 import { Link } from "react-router-dom"
-import { MapPin, Search, Car, Star, Filter } from "lucide-react"
-
+import { MapPin, Search, Filter } from "lucide-react"
+import {FaStar,FaCar} from "react-icons/fa"
+import {Spin} from "antd"
+import { Loader2 } from "lucide-react"
 export default function ParksList() {
   const dispatch = useDispatch()
   const { parks, status } = useSelector((state) => state.parks)
@@ -70,7 +72,7 @@ export default function ParksList() {
             <input
               type="text"
               placeholder="Search parks..."
-              className="w-full px-4 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)} // Mettre à jour l'état local
               onKeyPress={(e) => e.key === "Enter" && setSearchQuery(e.target.value)}
@@ -80,7 +82,7 @@ export default function ParksList() {
 
           <button
             onClick={() => setSearchQuery(searchQuery)} // Appliquer la recherche
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            className="btn btn-primary px-4 py-2 rounded-md "
           >
             Search
           </button>
@@ -105,7 +107,7 @@ export default function ParksList() {
                 name="minPrice"
                 value={filters.minPrice}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Min price"
               />
             </div>
@@ -116,7 +118,7 @@ export default function ParksList() {
                 name="maxPrice"
                 value={filters.maxPrice}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Max price"
               />
             </div>
@@ -127,7 +129,7 @@ export default function ParksList() {
                 name="minSpots"
                 value={filters.minSpots}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Min spots"
               />
             </div>
@@ -138,7 +140,7 @@ export default function ParksList() {
             </button>
             <button
               onClick={() => setFilterOpen(false)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+              className="btn btn-primary rounded-md"
             >
               Apply Filters
             </button>
@@ -147,8 +149,10 @@ export default function ParksList() {
       )}
 
       {status === "loading" ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex justify-center my-8">
+                <Spin 
+                indicator={<Loader2 className="h-8 w-8 animate-spin text-primary" />}
+                />
         </div>
       ) : filteredParks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -159,9 +163,9 @@ export default function ParksList() {
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
               <div className="h-48 bg-blue-100 relative flex items-center justify-center">
-                <Car size={48} className="text-blue-600" />
+                <FaCar size={48} className="text-primary" />
                 <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                  <Star className="text-yellow-400 mr-1" size={16} />
+                  <FaStar className="text-yellow-400 mr-1" size={16} />
                   <span>{park.rating || "4.5"}</span>
                 </div>
               </div>
@@ -182,11 +186,11 @@ export default function ParksList() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Starting from</p>
-                    <p className="font-bold text-blue-600">{park.price} MAD/hour</p>
+                    <p className="font-bold text-primary">{park.price} MAD/hour</p>
                   </div>
                 </div>
 
-                <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+                <button className="w-full mt-4 btn btn-primary  rounded-md ">
                   View Details
                 </button>
               </div>
@@ -195,7 +199,7 @@ export default function ParksList() {
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <Car size={48} className="text-gray-400 mx-auto mb-4" />
+          <FaCar size={48} className="text-gray-400 mx-auto mb-4" />
           <h3 className="text-xl font-medium text-gray-800 mb-2">No parking locations found</h3>
           <p className="text-gray-600">Try adjusting your search or filters to find available parking spots.</p>
         </div>

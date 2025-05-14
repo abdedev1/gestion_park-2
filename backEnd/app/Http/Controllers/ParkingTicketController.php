@@ -42,8 +42,12 @@ class ParkingTicketController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ParkingTicket $parkingTicket)
+    public function show(ParkingTicket $parkingTicket,$id)
     {
+        $parkingTicket = ParkingTicket::find($id);
+        if (!$parkingTicket) {
+            return response()->json(['message' => 'Parking ticket not found'], 404);
+        }
         return response()->json($parkingTicket);
     }
 
