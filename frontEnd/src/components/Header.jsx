@@ -140,9 +140,9 @@ export default function Header() {
             ) : (
               
                 <>
-                  <NavLink to="/sign" className="flex items-center space-x-1 hover:text-primary px-3 py-2 rounded-md font-medium">
+                  {/* <NavLink to="/sign" className="flex items-center space-x-1 hover:text-primary px-3 py-2 rounded-md font-medium">
                       <FaSignInAlt className="mr-1" /> <span className="hidden sm:inline">Login</span>
-                  </NavLink>
+                  </NavLink> */}
                   <NavLink to="/sign" className="btn btn-primary font-medium px-4 py-2 rounded-md">
                       <span className="hidden sm:inline">Sign Up</span>
                       <span className="sm:hidden">Join</span>

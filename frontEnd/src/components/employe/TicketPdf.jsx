@@ -86,8 +86,8 @@ export const generateTicketPDF = async (formData, selectedSpot, price) => {
 
   // Another separator
   page.drawLine({
-    start: { x: 40, y: height - 270 },
-    end: { x: width - 40, y: height - 270 },
+    start: { x: 40, y: height - 260 },
+    end: { x: width - 40, y: height - 260 },
     thickness: 1,
     color: rgb(0.8, 0.8, 0.8),
   });
@@ -101,7 +101,7 @@ export const generateTicketPDF = async (formData, selectedSpot, price) => {
 
   page.drawImage(qrImage, {
     x: width / 2 - qrDims.width / 2,
-    y: 60,
+    y: 40,
     width: qrDims.width,
     height: qrDims.height,
   });
