@@ -245,7 +245,7 @@ export const generateCartPDF = async (cart, clientName, rateName) => {
   const qrDims = qrImage.scale(0.5);
   page.drawImage(qrImage, {
     x: width - qrDims.width - 5,
-    y: 25,
+    y: 30,
     width: qrDims.width,
     height: qrDims.height,
   });

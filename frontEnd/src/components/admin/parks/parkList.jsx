@@ -502,9 +502,9 @@ export default function ParkList() {
             label={<span className="font-medium">Type</span>}
           >
             <Select placeholder="Select a type" className="rounded">
-              <Select.Option value="standard">Standard</Select.Option>
-              <Select.Option value="accessible">Accessible</Select.Option>
-              <Select.Option value="electric">Electric</Select.Option>
+              <Select.Option value="Standard">Standard</Select.Option>
+              <Select.Option value="Accessible">Accessible</Select.Option>
+              <Select.Option value="Electric">Electric</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item

@@ -167,10 +167,11 @@ export default function SpotsEmploye() {
         
     };
 
-    updateSpotStatus = (spotId, updatedSpot) => {
+    const updateSpotStatus = (spotId, updatedSpot) => {
         setPark({...park, spots: park.spots.map(spot => spot.id === spotId ? updatedSpot : spot)});
     }
 
+    console.log(selectedSpot)
     const SpotModel = () => {
         return (
             <>
@@ -231,7 +232,7 @@ export default function SpotsEmploye() {
                             id="price"
                             name="price"
                             value={
-                                pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour || 0
+                                park.price
                             }
                             readOnly
                             className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-200"

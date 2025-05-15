@@ -20,7 +20,7 @@ class SpotFactory extends Factory
         return [
             'name' => 'P ' . $this->faker->numberBetween(1, 50),
             'status' => $this->faker->randomElement(['available', 'reserved']),
-            'type' => $this->faker->randomElement(['standard', 'accessible', 'electric']),
+            'type' => $this->faker->randomElement(['Standard', 'Accessible', 'Electric']),
             'park_id' => Park::inRandomOrder()->value('id'),
             'x' => $this->faker->numberBetween(0, 15),
             'y' => $this->faker->numberBetween(0, 20),

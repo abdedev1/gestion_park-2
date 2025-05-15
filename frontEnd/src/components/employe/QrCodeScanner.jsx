@@ -22,7 +22,6 @@ export default function QRCodeScanner({updateSpotStatus}) {
   
   const { parkingTickets } = useSelector(state => state.parkingTickets);
   const { pricingRates } = useSelector(state => state.pricingRates);
-  const employeeSpots = useSelector(state => state.spots.employeeSpots);
   const {employes} = useSelector(state=>state.employes) 
   const { user } = useSelector((state) => state.auth);
 

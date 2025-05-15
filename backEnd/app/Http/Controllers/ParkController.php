@@ -40,7 +40,7 @@ class ParkController extends Controller
         for ($i = 0; $i < $max_spots; $i++) {
             Spot::create([
                 'name' => 'P ' . ($i + 1),
-                'type' => 'standard',
+                'type' => 'Standard',
                 'status' => 'available',
                 'park_id' => $park->id,
                 'x' => $x,

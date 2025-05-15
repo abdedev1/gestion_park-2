@@ -120,9 +120,9 @@ export function UpdateSpotModal({ isOpen, onClose, spot, onUpdate }) {
         >
           <Select placeholder="Select a type" className="rounded">
             <Select.Option value="">Select a type</Select.Option>
-            <Select.Option value="standard">Standard</Select.Option>
-            <Select.Option value="accessible">Accessible</Select.Option>
-            <Select.Option value="electric">Electric</Select.Option>
+            <Select.Option value="Standard">Standard</Select.Option>
+            <Select.Option value="Accessible">Accessible</Select.Option>
+            <Select.Option value="Electric">Electric</Select.Option>
           </Select>
         </Form.Item>
 
@@ -248,9 +248,9 @@ export function UpdateMultipleSpotModal({ isOpen, onClose, park_id, selected, se
         >
           <Select disabled={empty} placeholder="Select a type" className="rounded">
             <Select.Option value="">Select a type</Select.Option>
-            <Select.Option value="standard">Standard</Select.Option>
-            <Select.Option value="accessible">Accessible</Select.Option>
-            <Select.Option value="electric">Electric</Select.Option>
+            <Select.Option value="Standard">Standard</Select.Option>
+            <Select.Option value="Accessible">Accessible</Select.Option>
+            <Select.Option value="Electric">Electric</Select.Option>
           </Select>
         </Form.Item>
 

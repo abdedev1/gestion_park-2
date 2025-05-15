@@ -27,9 +27,9 @@ export default function ClientSubscription({ onClose }) {
 
   // Prix statiques pour chaque type
   const PRICES = {
-    standard: 100,
-    electric: 150,
-    accessible: 120,
+    Standard: 100,
+    Electric: 150,
+    Accessible: 120,
   }
 
   // Plans dynamiques avec prix du front
@@ -48,7 +48,7 @@ export default function ClientSubscription({ onClose }) {
       "24/7 access",
       "Support included",
     ],
-    recommended: rate.rate_name === "standard"
+    recommended: rate.rate_name === "Standard"
   }))
 
   const handleSelectPlan = (plan) => {
@@ -135,7 +135,7 @@ export default function ClientSubscription({ onClose }) {
                       onClick={() => handleSelectPlan(plan)}
                       className={`w-full py-2 rounded-md font-medium transition ${
                         plan.recommended
-                          ? "bg-primary hover:bg-blue-700 text-white"
+                          ? "btn btn-primary"
                           : "bg-gray-100 hover:bg-gray-200 text-gray-800"
                       }`}
                     >

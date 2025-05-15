@@ -36,7 +36,7 @@ class SpotController extends Controller
             'status' => $request->status ?? 'available',
             'park_id' => $park->id,
             'name' => $nextNumber,
-            'type' => $request->type ?? 'standard',
+            'type' => $request->type ?? 'Standard',
             'x' => $xy['x'],
             'y' => $xy['y'],
         ]);
@@ -73,7 +73,7 @@ class SpotController extends Controller
                 'status' => $validated['status'] ?? 'available',
                 'park_id' => $park->id,
                 'name' => $nextNumber,
-                'type' => $validated['type'] ?? 'standard',
+                'type' => $validated['type'] ?? 'Standard',
                 'x' => $coords[$i]['x'],
                 'y' => $coords[$i]['y'],
             ]);

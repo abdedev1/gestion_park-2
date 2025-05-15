@@ -321,21 +321,21 @@ export function EditableParkMap({ park, setParkSpots }) {
             <Car className="w-1/6" />
             <span className="w-4/6">Standard</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "standard").length}
+              {spots.filter(spot => spot.type === "Standard").length}
             </span>
           </div>
           <div className="flex text-center gap-2">
             <SmartphoneCharging className="w-1/6" />
             <span className="w-4/6">Electric</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "electric").length}
+              {spots.filter(spot => spot.type === "Electric").length}
             </span>
           </div>
           <div className="flex text-center gap-2">
             <Accessibility className="w-1/6" />
             <span className="w-4/6">Accessible</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "accessible").length}
+              {spots.filter(spot => spot.type === "Accessible").length}
             </span>
           </div>
         </div>
@@ -503,9 +503,9 @@ export function EditableParkMap({ park, setParkSpots }) {
                             {spot ? (
                               <>
                                 <div className="font-semibold">{spot.name}</div>
-                                {spot?.type == 'accessible' ? <Accessibility size={22} />
-                                 : spot?.type == 'electric' ? <SmartphoneCharging size={22} />
-                                 : spot?.type == 'standard' && <Car size={22} />
+                                {spot?.type == 'Accessible' ? <Accessibility size={22} />
+                                 : spot?.type == 'Electric' ? <SmartphoneCharging size={22} />
+                                 : spot?.type == 'Standard' && <Car size={22} />
                                 }
                               </>
                             ) : (
@@ -564,21 +564,21 @@ export function ParkMap({ park, action = null }) {
             <Car className="w-1/6" />
             <span className="w-4/6">Standard</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "standard").length}
+              {spots.filter(spot => spot.type === "Standard").length}
             </span>
           </div>
           <div className="flex text-center gap-2">
             <SmartphoneCharging className="w-1/6" />
             <span className="w-4/6">Electric</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "electric").length}
+              {spots.filter(spot => spot.type === "Electric").length}
             </span>
           </div>
           <div className="flex text-center gap-2">
             <Accessibility className="w-1/6" />
             <span className="w-4/6">Accessible</span>
             <span className="badge badge-sm badge-primary w-1/6">
-              {spots.filter(spot => spot.type === "accessible").length}
+              {spots.filter(spot => spot.type === "Accessible").length}
             </span>
           </div>
         </div>
@@ -663,9 +663,9 @@ export function ParkMap({ park, action = null }) {
                           {spot ? (
                             <>
                               <div className="font-semibold">{spot.name}</div>
-                              {spot?.type == 'accessible' ? <Accessibility size={22} />
-                                : spot?.type == 'electric' ? <SmartphoneCharging size={22} />
-                                : spot?.type == 'standard' && <Car size={22} />
+                              {spot?.type == 'Accessible' ? <Accessibility size={22} />
+                                : spot?.type == 'Electric' ? <SmartphoneCharging size={22} />
+                                : spot?.type == 'Standard' && <Car size={22} />
                               }
                             </>
                           ) : (

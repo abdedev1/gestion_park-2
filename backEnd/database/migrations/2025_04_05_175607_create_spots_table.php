@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->enum("status", [ 'available', 'reserved', 'maintenance']);
-            $table->enum("type", [ 'standard', 'accessible', 'electric']);
+            $table->enum("type", [ 'Standard', 'Accessible', 'Electric']);
             $table->integer("x");
             $table->integer("y");
             $table->foreignId(column: 'park_id')->constrained('parks')->onDelete('cascade');
