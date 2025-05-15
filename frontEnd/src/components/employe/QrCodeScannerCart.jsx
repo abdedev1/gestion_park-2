@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
+import { RotateCcw } from "lucide-react";
 
 export default function QrCodeScannerCart({ onScanResult, onClose }) {
   const [isScanning, setIsScanning] = useState(true);
@@ -11,7 +12,6 @@ export default function QrCodeScannerCart({ onScanResult, onClose }) {
     
     setIsScanning(false);
 
-    // Parse la valeur scannée (ex: "client_id:2") en objet { client_id: 2 }
     let parsed = result[0].rawValue;
     if (typeof parsed === "string" && parsed.includes(":")) {
         const [key, value] = parsed.split(":");
@@ -21,7 +21,9 @@ export default function QrCodeScannerCart({ onScanResult, onClose }) {
     if (onScanResult) {
       onScanResult(parsed);
     }
-    if (onClose) onClose();
+    if (onClose) {
+      onClose()
+    }
 };
 
   const handleError = (error) => {
@@ -32,9 +34,13 @@ export default function QrCodeScannerCart({ onScanResult, onClose }) {
     setSelectedDeviceId(e.target.value);
   };
 
+    const resetScanner = () => {
+    setIsScanning(true);
+  };
+
   return (
     <>
-      {isScanning && (
+      {isScanning ? (
         <>
           <Scanner
             constraints={{ deviceId: selectedDeviceId }}
@@ -51,7 +57,10 @@ export default function QrCodeScannerCart({ onScanResult, onClose }) {
             </select>
           )}
         </>
-      )}
+      ) : <div className="flex justify-center bg-black items-center h-96 m-4">
+            <button onClick={resetScanner} className="btn btn-primary min-w-36"><RotateCcw size={18} />Scan Again</button>
+          </div>
+        }
     </>
   );
 }

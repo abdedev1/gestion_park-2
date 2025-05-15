@@ -11,7 +11,7 @@ class ParkingTicket extends Model
 
     protected $fillable = [
         'spot_id', 'clientName', 'entry_time', 'exit_time',
-        'status', 'base_rate_id', 'total_price', 'client_id'
+        'status', 'discount', 'total_price', 'client_id'
     ];
 
     protected $hidden = ["created_at", "updated_at", "client"];

@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('pricing_rates', function (Blueprint $table) {
             $table->id();
             $table->string('rate_name');
-            $table->float('price_per_hour');
+            $table->float('discount');
+            $table->float('price');
+            $table->string('feature');
+            $table->boolean('recommended')->default(false);
             $table->timestamps();
         });
     }

@@ -148,12 +148,12 @@ export default function ParkingTickets() {
         responsive: ["lg"],
     },
     {
-        title: "BasePrice", 
-        dataIndex: "base_rate_id",
-        key: "base_rate_id",
-        render: (text) => (
+        title: "Discount", 
+        dataIndex: "discount",
+        key: "discount",
+        render: (nbr) => (
           <div className="flex items-center gap-2">
-            {text}&nbsp;MAD
+            {100-nbr}&nbsp;%
           </div>
         ),
         responsive: ["lg"],

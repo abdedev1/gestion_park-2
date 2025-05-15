@@ -30,7 +30,7 @@ class ParkingTicketController extends Controller
             'entry_time' => 'required|date',
             'exit_time' => 'nullable|date',
             'status' => 'required|string|max:255',
-            'base_rate_id' => 'required|exists:pricing_rates,id',
+            'discount' => 'required',
             'total_price' => 'nullable|numeric',
             'client_id' => 'nullable|exists:clients,id',
         ]);

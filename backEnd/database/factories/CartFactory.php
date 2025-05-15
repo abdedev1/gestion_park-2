@@ -20,8 +20,8 @@ class CartFactory extends Factory
     public function definition(): array
     {
         return [
-            'client_id' => Client::factory(),
-            'base_rate_id' => PricingRate::factory(),
+            'client_id' => Client::inRandomOrder()->value('id'),
+            'base_rate_id' => PricingRate::inRandomOrder()->value('id'),
             'duration' => $this->faker->date(),
             'park_id' => Park::inRandomOrder()->value('id'),
             'status' => $this->faker->randomElement(['active', 'expired']),

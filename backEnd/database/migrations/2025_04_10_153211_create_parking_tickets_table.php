@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('entry_time');
             $table->dateTime('exit_time')->nullable();
             $table->string('status');
-            $table->foreignId('base_rate_id')->constrained('pricing_rates');
+            $table->float('discount');
             $table->bigInteger('total_price')->nullable();
             $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
             $table->timestamps();

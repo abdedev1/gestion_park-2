@@ -9,5 +9,5 @@ class PricingRate extends Model
 {
     /** @use HasFactory<\Database\Factories\PricingRateFactory> */
     use HasFactory;
-    protected $fillable = ['rate_name', 'price_per_hour'];
+    protected $fillable = ['rate_name', 'discount', 'price', 'feature', 'recommended'];
 }

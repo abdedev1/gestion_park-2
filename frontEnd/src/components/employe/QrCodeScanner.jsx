@@ -21,11 +21,9 @@ export default function QRCodeScanner({updateSpotStatus}) {
 
   
   const { parkingTickets } = useSelector(state => state.parkingTickets);
-  const { pricingRates } = useSelector(state => state.pricingRates);
-  const {employes} = useSelector(state=>state.employes) 
+  const { employes } = useSelector(state=>state.employes) 
   const { user } = useSelector((state) => state.auth);
 
-  // Set default camera on first load
   useEffect(() => {
     if (devices.length > 0) {
       setSelectedDeviceId(defaultDeviceId || null);
@@ -74,7 +72,9 @@ export default function QRCodeScanner({updateSpotStatus}) {
       const [key, value] = part.split(':').map(s => s.trim());
       if (key === "Spot_id") data.spot_id = value;
       if (key === "Spot") data.spotName = value;
-      if(key ==="Tickit_id") data.id = value
+      if(key === "Tickit_id") data.id = value
+      if (key === "price") data.price = value;
+      if (key === "discount") data.discount = value;
       
     });
   
@@ -100,13 +100,12 @@ export default function QRCodeScanner({updateSpotStatus}) {
     const now = new Date();
     const exitTimeStr = now.toISOString().slice(0, 16);
     const durationInHours = (now - entryTime) / (1000 * 60 * 60);
+    console.log("info:", durationInHours, parsedObject.price, parsedObject.discount);
 
-    const rate = pricingRates.find(r => r.id === ticket.base_rate_id);
-    const pricePerHour = rate ? rate.price_per_hour : 0;
     const updatedTicket = {
       ...ticket,
       exit_time: exitTimeStr,
-      total_price: parseFloat((durationInHours * pricePerHour).toFixed(2)),
+      total_price: ((durationInHours * user?.role_data?.park?.price) * (parsedObject.discount/100)).toFixed(2),
       spotName: parsedObject.spotName
     };
 
@@ -147,8 +146,6 @@ export default function QRCodeScanner({updateSpotStatus}) {
     processScannedResult();
   }, [scanResult]);
   
-  console.log(updateTicketG)
-
   return (
     <div className="max-w-md bg-base-100">
 
@@ -181,13 +178,29 @@ export default function QRCodeScanner({updateSpotStatus}) {
         <div className="bg-white p-6 rounded-lg">
           <h2 className="text-lg font-semibold mb-2">Scan Result:</h2>
             {updateTicketG && (
-              <div className="bg-gray-100 p-4 rounded-md mb-4 break-all">
-                
-                <p className="font-mono">Client: {updateTicketG.clientName}</p>
-                <p className="font-mono">Spot: {updateTicketG.spotName}</p>
-                <p className="font-mono">Entrée: {updateTicketG.entry_time}</p>
-                <p className="font-mono">Sortie: {updateTicketG.exit_time}</p>
-                <p className="font-mono">Total Price: {!updateTicketG.client_id ? updateTicketG.total_price : 0} MAD</p>
+              <div className="bg-gradient-to-br from-white text-lg via-gray-50 to-gray-200 p-6 rounded-2xl mb-4 shadow-xl border border-gray-200">
+                <div className="flex flex-col gap-4 w-full">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-700 w-28">Client:</span>
+                    <span className="font-mono text-gray-900">{updateTicketG.clientName}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-700 w-28">Spot:</span>
+                    <span className="font-mono text-gray-900">{updateTicketG.spotName}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-700 w-28">Entry:</span>
+                    <span className="font-mono text-gray-900">{updateTicketG.entry_time}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-700 w-28">Exit:</span>
+                    <span className="font-mono text-gray-900">{updateTicketG.exit_time}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-gray-700 w-28">Total:</span>
+                    <span className="font-mono text-green-700 text-xl">{updateTicketG.total_price} MAD</span>
+                  </div>
+                </div>
               </div>
             )}
             

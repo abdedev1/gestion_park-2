@@ -25,7 +25,7 @@ class ParkingTicketFactory extends Factory
             'entry_time' => $this->faker->dateTime(),
             'exit_time' => $this->faker->optional()->dateTime(),
             'status' => $this->faker->randomElement(['active', 'completed']),
-            'base_rate_id' => PricingRate::factory(),
+            'discount' => $this->faker->randomFloat(2, 0, 50),
             'total_price' => $this->faker->optional()->numberBetween(1, 100),
             'client_id' => Client::factory(),
         ];

@@ -33,18 +33,13 @@ export default function SpotsEmploye() {
         clientName: 'Not registered',
         spot_id: '',  
         client_id: null,
-        base_rate_id: null,
+        discount: null,
         entry_time: '',
         exit_time: null,
         total_price: 0,
         status: null
     });
 
- const getBaseRateIdForType = (type) => {
-  if (!type || !pricingRates) return null;
-  const found = pricingRates.find(r => r.rate_name.toLowerCase() === type.toLowerCase());
-  return found ? found.id : null;
-};
 
     useEffect(() => {
         dispatch(fetchPricingRates());
@@ -65,6 +60,16 @@ export default function SpotsEmploye() {
     }
 
     const handleClientScanResult = async (result) => {
+        if (!result) {
+            setFormData(prev => ({
+                ...prev,
+                clientName: 'Not registered',
+                client_id: null,
+                discount: 100
+            }));
+            setClient(null);
+        }
+
         if (result?.client_id) {
             setFormData(prev => ({
                 ...prev,
@@ -91,20 +96,20 @@ export default function SpotsEmploye() {
         clientName: client.user.first_name + " " + client.user.last_name,
         spot_id: spot.id,
         client_id: client.id,
-        base_rate_id: getBaseRateIdForType(spot.type),
+        discount: pricingRates.find(r => r.id === client.cart.base_rate_id)?.discount,
         entry_time: new Date().toISOString().slice(0, 16),
         exit_time: null,
         total_price: 0,
         status: "active"
         });
         setIsModalOpen(true);
-        setPendingSpot(null); 
+        setPendingSpot(null);
     } else if (spot.status === "available") {
         setFormData({
         clientName: 'Not registered',
         spot_id: spot.id,
         client_id: null,
-        base_rate_id: getBaseRateIdForType(spot.type),
+        discount: 100,
         entry_time: new Date().toISOString().slice(0, 16),
         exit_time: null,
         total_price: 0,
@@ -120,6 +125,7 @@ export default function SpotsEmploye() {
         ...prev,
         clientName: client.user.first_name + " " + client.user.last_name,
         client_id: client.id,
+        discount: pricingRates.find(r => r.id === client.cart.base_rate_id)?.discount,
         }));
         setPendingSpot(null);
     }
@@ -129,9 +135,7 @@ export default function SpotsEmploye() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if (selectedSpot) {
-            const pricePerHour = pricingRates.find(r => r.id === formData.base_rate_id)?.price_per_hour;
-            
+        if (selectedSpot) {            
             if (selectedSpot.status === "available") {
                 const resultAction = await dispatch(addParkingTicket(formData));
     
@@ -151,9 +155,7 @@ export default function SpotsEmploye() {
                     }));
                     updateSpotStatus(formData.spot_id, updatedSpot);
 
-    
-                  
-                    await generateTicketPDF({ ...formData, id: ticketId }, selectedSpot, pricePerHour);
+                    await generateTicketPDF({ ...formData, id: ticketId }, selectedSpot, park.price);
         
                     setIsModalOpen(false);}
                     
@@ -171,7 +173,12 @@ export default function SpotsEmploye() {
         setPark({...park, spots: park.spots.map(spot => spot.id === spotId ? updatedSpot : spot)});
     }
 
-    console.log(selectedSpot)
+    const closeScanner = () => {
+        setShowCartScanner(false);
+        setScanLoading(false);
+        setClient(null);
+    }
+
     const SpotModel = () => {
         return (
             <>
@@ -302,13 +309,15 @@ export default function SpotsEmploye() {
                 
             }onClick={()=>setShowScanner(true)}/>
 
+
+
             <div className="bg-base-100 mx-auto my-4 flex justify-center">
                 {park ? <ParkMap park={park} action={handleSpotClick} /> : <p className="text-center text-gray-500">No parks available</p>}
             </div>
             
-            <ShowModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
+            <ShowModal isOpen={isModalOpen} onClose={() => {setIsModalOpen(false); setClient(null)}} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
             <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner updateSpotStatus={updateSpotStatus} />} />
-            <ShowModal isOpen={showCartScanner} onClose={() => { setShowCartScanner(false); setScanLoading(false);}} title="Cart Scanner" content={<QrCodeScannerCart onScanResult={handleClientScanResult} onClose={() => { setShowCartScanner(false); setScanLoading(false);}} />} />
+            <ShowModal isOpen={showCartScanner} onClose={closeScanner} title="Cart Scanner" content={<QrCodeScannerCart onScanResult={handleClientScanResult} onClose={closeScanner} />} />
         </div>
     );
 }

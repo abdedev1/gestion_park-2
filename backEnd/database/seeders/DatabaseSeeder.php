@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
             ParkSeeder::class,
             EmployeSeeder::class,
             ClientSeeder::class,
-            CartSeeder::class,
             ParkingTicketSeeder::class,
             ReportSeeder::class,
         ]);

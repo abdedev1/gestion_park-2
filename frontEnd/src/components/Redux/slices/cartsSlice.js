@@ -13,6 +13,7 @@ export const createCart = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      console.log("Error creating cart:", error);
       return rejectWithValue(error.response?.data || error.message);
     }
   }

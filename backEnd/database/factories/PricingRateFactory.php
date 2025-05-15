@@ -18,7 +18,7 @@ class PricingRateFactory extends Factory
     {
         return [
             'rate_name' => $this->faker->randomElement(['Standard','Electric','Accessible']),
-            'price_per_hour' => $this->faker->randomFloat(2, 5, 50),
+            'discount' => $this->faker->randomFloat(2, 5, 50),
         ];
     }
 }

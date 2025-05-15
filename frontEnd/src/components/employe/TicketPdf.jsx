@@ -11,7 +11,7 @@ export const generateQRBase64 = async (text) => {
   }
 };
 
-export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) => {
+export const generateTicketPDF = async (formData, selectedSpot, price) => {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([400, 500]);
   const { width, height } = page.getSize();
@@ -80,7 +80,7 @@ export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) =>
   };
 
   drawLine("Client", formData.clientName, 0);
-  drawLine("Price / Hour", `${pricePerHour} MAD`, 30);
+  drawLine("Price / Hour", `${price} MAD`, 30);
   drawLine("Spot", selectedSpot.name, 60);
   drawLine("Entry", new Date(formData.entry_time).toLocaleString(), 90);
 
@@ -93,7 +93,7 @@ export const generateTicketPDF = async (formData, selectedSpot, pricePerHour) =>
   });
 
   // QR Code
-  const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.name}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id},Tickit_id:${formData.id}`;
+  const qrData = `Client: ${formData.clientName}, Spot: ${selectedSpot.name}, Entrée: ${formData.entry_time},Spot_id : ${formData.spot_id}, Tickit_id:${formData.id}, price:${price}, discount:${formData.discount}`;
   const qrBase64 = await generateQRBase64(qrData);
   const qrImageBytes = await fetch(qrBase64).then(res => res.arrayBuffer());
   const qrImage = await pdfDoc.embedPng(qrImageBytes);
