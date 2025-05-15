@@ -8,7 +8,7 @@ import { fetchEmployes } from '../Redux/slices/employesSlice';
 import { useEffect, useState,useRef } from "react";
 import { Scanner, useDevices } from "@yudiel/react-qr-scanner";
 import Cookies from "js-cookie";
-export default function QRCodeScanner() {
+export default function QRCodeScanner({updateSpotStatus}) {
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
   const defaultDeviceId = Cookies.get('deviceId');
@@ -127,10 +127,12 @@ export default function QRCodeScanner() {
       }
     }));
 
+    const updatedSpot = { ...spot, status: "available" }
     await dispatch(updateSpot({
       id: ticket.spot_id,
-      updatedSpot: { ...spot, status: "available" }
+      updatedSpot: updatedSpot
     }));
+    updateSpotStatus(ticket.spot_id, updatedSpot);
 
     if (user && employes.length > 0) {
       const employe_id = employes.find(emp => Number(emp.user_id) === Number(user.id))?.id;

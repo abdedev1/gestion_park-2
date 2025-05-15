@@ -149,7 +149,7 @@ export default function SpotsEmploye() {
                         id: formData.spot_id,
                         updatedSpot: updatedSpot
                     }));
-                    setPark({...park, spots: park.spots.map(spot => spot.id === formData.spot_id ? updatedSpot : spot)});
+                    updateSpotStatus(formData.spot_id, updatedSpot);
 
     
                   
@@ -166,6 +166,10 @@ export default function SpotsEmploye() {
        setLoading(false);
         
     };
+
+    updateSpotStatus = (spotId, updatedSpot) => {
+        setPark({...park, spots: park.spots.map(spot => spot.id === spotId ? updatedSpot : spot)});
+    }
 
     const SpotModel = () => {
         return (
@@ -302,7 +306,7 @@ export default function SpotsEmploye() {
             </div>
             
             <ShowModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
-            <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner />} />
+            <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner updateSpotStatus={updateSpotStatus} />} />
             <ShowModal isOpen={showCartScanner} onClose={() => { setShowCartScanner(false); setScanLoading(false);}} title="Cart Scanner" content={<QrCodeScannerCart onScanResult={handleClientScanResult} onClose={() => { setShowCartScanner(false); setScanLoading(false);}} />} />
         </div>
     );
