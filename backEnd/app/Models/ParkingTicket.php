@@ -25,12 +25,12 @@ class ParkingTicket extends Model
 
     public function getClientFirstNameAttribute(): ?string
     {
-        return $this->client?->user?->first_name ?? null;
+        return $this->client?->user?->first_name ?? "Unregistered";
     }
 
     public function getClientLastNameAttribute(): ?string
     {
-        return $this->client?->user?->last_name ?? null;
+        return $this->client?->user?->last_name ?? "Unregistered";
     }
 
     public function spot()

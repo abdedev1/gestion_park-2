@@ -97,24 +97,27 @@ export default function ParkingTickets() {
   // Define table columns
   const columns = [
     {
-      title: "#",
-      dataIndex: "index",
-      key: "index",
-      width: 60,
-      render: (_, __, index) => index + 1,
+        title: "First Name",
+        dataIndex: "client_first_name",
+        key: "client_first_name",
+        render: (text) => (
+          <div className="flex items-center gap-2">
+            {text}
+          </div>
+        ),
+        responsive: ["lg"],
     },
     {
-      title: "Spot id",
-      dataIndex: "spot_id",
-      key: "spot_id",
-      render: (text) => (
-        <div className="flex items-center gap-2">
-          
-          {text}
-        </div>
-      ),
+        title: "last Name",
+        dataIndex: "client_last_name",
+        key: "client_last_name",
+        render: (text) => (
+          <div className="flex items-center gap-2">
+            {text}
+          </div>
+        ),
+        responsive: ["lg"],
     },
-    
     {
       title: "Entry Time",
       dataIndex: "entry_time",
@@ -165,28 +168,6 @@ export default function ParkingTickets() {
             {text}
           </div>
         ),
-    },
-    {
-        title: "First Name",
-        dataIndex: "client_first_name",
-        key: "client_first_name",
-        render: (text) => (
-          <div className="flex items-center gap-2">
-            {text}
-          </div>
-        ),
-        responsive: ["lg"],
-    },
-    {
-        title: "last Name",
-        dataIndex: "client_last_name",
-        key: "client_last_name",
-        render: (text) => (
-          <div className="flex items-center gap-2">
-            {text}
-          </div>
-        ),
-        responsive: ["lg"],
     },
     {
       title: "Actions",
