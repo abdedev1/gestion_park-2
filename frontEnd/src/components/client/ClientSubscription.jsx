@@ -9,7 +9,6 @@ import { createSubscription } from "../Redux/slices/demandCardsSlice"
 export default function ClientSubscription({ onClose }) {
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [selectedPark, setSelectedPark] = useState("")
-  const [duration, setDuration] = useState(1)
   const [loading, setLoading] = useState(false)
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -25,31 +24,6 @@ export default function ClientSubscription({ onClose }) {
     dispatch(fetchPricingRates())
   }, [dispatch, status])
 
-  // Prix statiques pour chaque type
-  const PRICES = {
-    Standard: 100,
-    Electric: 150,
-    Accessible: 120,
-  }
-
-  // Plans dynamiques avec prix du front
-  const subscriptionPlans = pricingRates.map((rate, idx) => ({
-    id: rate.id,
-    name: rate.rate_name,
-    price: PRICES[rate.rate_name] || 0,
-    features: [
-      rate.rate_name === "Standard"
-        ? "6 spots/day"
-        : rate.rate_name === "Electric"
-        ? "Charging included"
-        : rate.rate_name === "Accessible"
-        ? "Accessible spots"
-        : "Flexible plan",
-      "24/7 access",
-      "Support included",
-    ],
-    recommended: rate.rate_name === "Standard"
-  }))
 
   const handleSelectPlan = (plan) => {
     setSelectedPlan(plan)
@@ -67,9 +41,7 @@ export default function ClientSubscription({ onClose }) {
         clientId: user.role_data.id,
         parkId: selectedPark,
         base_rate_id: selectedPlan.id,
-        duration,
         status: "pending",
-        totalPrice,
         token,
       })
     )
@@ -89,7 +61,7 @@ export default function ClientSubscription({ onClose }) {
   }
 
  
-  const totalPrice = selectedPlan ? selectedPlan.price * duration : 0
+  
 
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
@@ -107,30 +79,27 @@ export default function ClientSubscription({ onClose }) {
             <>
               <p className="text-gray-600 mb-6">Choose a subscription plan that fits your parking needs</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {subscriptionPlans.map((plan) => (
+                {pricingRates.map((plan) => (
                   <div
                     key={plan.id}
                     className={`border rounded-lg p-6 hover:shadow-md transition relative ${
                       plan.recommended ? "border-2 border-primary" : ""
                     }`}
                   >
-                    {plan.recommended && (
+                    {plan.recommended ? (
                       <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-medium rounded-bl-lg">
                         RECOMMENDED
                       </div>
-                    )}
-                    <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                    ):""}
+                    <h3 className="text-xl font-bold mb-2">{plan.rate_name}</h3>
                     <p className="text-3xl font-bold mb-4">
-                      {plan.price} MAD<span className="text-sm text-gray-500">/month</span>
+                      {plan.price} MAD<span className="text-sm text-gray-500">/Lifetime</span>
                     </p>
-                    <ul className="space-y-2 mb-6">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2">
+                    <div className="mb-6 flex items-center">
                           <Check size={16} className="text-green-500 mt-0.5" />
-                          <span className="text-gray-600">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
+                          <span className="text-gray-600">{plan.feature}</span>
+      
+                    </div>
                     <button
                       onClick={() => handleSelectPlan(plan)}
                       className={`w-full py-2 rounded-md font-medium transition ${
@@ -148,7 +117,7 @@ export default function ClientSubscription({ onClose }) {
           ) : (
             <div className="max-w-md mx-auto">
               <h3 className="font-medium text-lg mb-4">
-                {selectedPlan.name} Plan - {selectedPlan.price} MAD/month
+                {selectedPlan.name} Plan - {selectedPlan.price} MAD/Lifetime
               </h3>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
@@ -186,21 +155,6 @@ export default function ClientSubscription({ onClose }) {
                     ))
                   )}
                 </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Duration (Months)</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={duration}
-                  onChange={(e) => setDuration(Number(e.target.value))}
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-6">
-                <p className="text-lg font-medium">
-                  Total Price: <span className="text-blue-600">{totalPrice} MAD</span>
-                </p>
               </div>
               <div className="flex gap-4">
                 <button

@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 import {Link} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchParcs, getParcSpots, clearParcSpots } from '../Redux/slices/parcsSlice';
+import { fetchParcs, clearParcSpots } from '../Redux/slices/parcsSlice';
 import { setSearchQuery } from '../Redux/slices/parcsSlice';
-import ClientSubscription from "../client/ClientSubscription"
+import ClientSubscription from "../client/ClientSubscription";
 import {Spin} from "antd"
 import { Loader2 } from "lucide-react"
+import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 const HomePage = () => {
     const { user } = useSelector((state) => state.auth);
   // States
@@ -21,7 +22,7 @@ const HomePage = () => {
   // Redux
   const dispatch = useDispatch();
   const { parks, currentParcSpots, status, searchQuery } = useSelector(state => state.parks);
-
+  const { pricingRates } = useSelector(state => state.pricingRates);
   // Animation variants
   const parkVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -45,6 +46,7 @@ const HomePage = () => {
 
   useEffect(() => {
     dispatch(fetchParcs());
+    dispatch(fetchPricingRates());
   }, [dispatch]);
 
     // Filtrer les parcs en fonction de la recherche
@@ -303,26 +305,7 @@ const HomePage = () => {
                 </motion.p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                  {[
-                   {
-                    name: "Standard",
-                    price: 100,
-                    features: ["6 spots/day", "24/7 access", "Support included"],
-                    recommended: false
-                  },
-                  {
-                    name: "Accessible",
-                    price: 120,
-                    features: ["Accessible spots", "24/7 access", "Support included"],
-                    recommended: false
-                  },
-                  {
-                    name: "Electric",
-                    price: 150,
-                    features: ["Charging included", "24/7 access", "Support included"],
-                    recommended: true
-                  }
-                  ].map((plan, index) => (
+                  {pricingRates.map((plan, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 20 }}
@@ -331,22 +314,19 @@ const HomePage = () => {
                       viewport={{ once: true }}
                       className={`border rounded-xl p-8 hover:shadow-lg transition duration-300 ${plan.recommended ? "border-2 border-primary shadow-lg transform lg:scale-105" : "border-gray-200"}`}
                       >
-                      {plan.recommended && (
+                      {plan.recommended ? (
                         <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium inline-block mb-4">
                           MOST POPULAR
                         </div>
-                      )}
-                      <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                      ) : "" }
+                      <h3 className="text-2xl font-bold mb-2">{plan.rate_name}</h3>
                       <p className="text-4xl font-bold mb-4">
                         {plan.price} MAD<span className="text-lg text-gray-500">/month</span>
                       </p>
-                      <ul className="mb-8 space-y-3">
-                        {plan.features.map((feature, i) => (
-                          <li key={i} className="flex items-start">
+                      <ul className="mb-8 flex items-start">
                             <FaCheck className="text-green-500 mt-1 mr-2 flex-shrink-0" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
+                            <span>{plan.feature}</span>
+                          
                       </ul>
                       <button onClick={getStarted} className={`w-full py-3 rounded-lg font-medium transition ${plan.recommended ? "btn btn-primary" : "btn btn-soft"}`}>
                         Get Started

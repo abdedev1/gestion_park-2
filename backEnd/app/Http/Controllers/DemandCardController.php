@@ -16,8 +16,6 @@ class DemandCardController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'park_id' => 'required|exists:parks,id',
-            'duration' => 'required|integer|min:1',
-            'total_price' => 'required|numeric|min:0',
             'base_rate_id' => 'required|exists:pricing_rates,id',
             'status' => 'in:pending,accepted,rejected'
         ]);

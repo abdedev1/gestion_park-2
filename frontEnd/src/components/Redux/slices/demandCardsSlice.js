@@ -16,7 +16,7 @@ export const fetchDemandCards = createAsyncThunk(
 
 export const createSubscription = createAsyncThunk(
   "demandCards/createSubscription",
-  async ({ clientId, parkId,base_rate_id, duration, totalPrice,status, token }, { rejectWithValue }) => {
+  async ({ clientId, parkId,base_rate_id,status, token }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         "demand-cards", // API endpoint
@@ -24,8 +24,6 @@ export const createSubscription = createAsyncThunk(
           client_id: clientId,
           park_id: parkId,
           base_rate_id,
-          duration,
-          total_price: totalPrice,
           status,
         },
         {

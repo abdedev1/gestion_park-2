@@ -7,7 +7,7 @@ import { Button, FloatButton, Modal } from 'antd';
 import { ScanLine } from 'lucide-react';
 import QRCodeScanner from './QrCodeScanner';
 import { FaQrcode } from 'react-icons/fa';
-import { generateTicketPDF } from './ticketPdf';
+import { generateTicketPDF } from './TicketPdf';
 import { ParkMap } from '../ParkMap';
 import QrCodeScannerCart from './QrCodeScannerCart';
 import { getClientById } from '../../assets/api/admin/users'

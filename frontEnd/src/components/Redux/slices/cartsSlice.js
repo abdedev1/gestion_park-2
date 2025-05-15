@@ -4,11 +4,11 @@ import { axios } from "../../../assets/api/axios";
 // Créer une cart
 export const createCart = createAsyncThunk(
   "carts/createCart",
-  async ({ client_id, base_rate_id, duration, park_id, status, token }, { rejectWithValue }) => {
+  async ({ client_id, base_rate_id, park_id, status, token }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         "carts",
-        { client_id, base_rate_id, duration, park_id, status },
+        { client_id, base_rate_id, park_id, status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       return response.data;

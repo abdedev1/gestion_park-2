@@ -31,7 +31,7 @@ export default function Settings() {
     try {
       setLoading({ ...loading, password: true })
 
-      const response = await axios.post("/change-password", {
+      const response = await axios.put(`/change-password/${user.id}`, {
         current_password: values.current_password,
         new_password: values.new_password,
       })

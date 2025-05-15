@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->foreignId('base_rate_id')->constrained('pricing_rates')->onDelete('cascade');
-            $table->date('duration');
             $table->foreignId('park_id')->constrained('parks')->onDelete('cascade');
             $table->string('status')->default('active');
             $table->timestamps();

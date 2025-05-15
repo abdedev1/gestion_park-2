@@ -13,8 +13,6 @@ class DemandCard extends Model
 
     protected $fillable = [
         'client_id',
-        'duration',
-        'total_price',
         'park_id',
         'base_rate_id',
         'status'

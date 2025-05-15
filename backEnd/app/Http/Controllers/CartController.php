@@ -31,7 +31,6 @@ class CartController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'base_rate_id' => 'required|exists:pricing_rates,id',
-            'duration' => 'required|date',
             'park_id' => 'required|exists:parks,id',
             'status' => 'nullable|string|in:active,expired',
         ]);

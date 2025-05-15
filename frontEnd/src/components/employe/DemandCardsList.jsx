@@ -38,8 +38,6 @@ export default function DemandCardsList() {
 
   const handleSave = async (record) => {
   const newStatus = statusMap[record.id];
-  const durationDate = dayjs().add(record.duration, "month").format("YYYY-MM-DD");
-  console.log(record)
   try {
     await dispatch(
       updateDemandCardStatus({
@@ -54,7 +52,6 @@ export default function DemandCardsList() {
         createCart({
           client_id: record.client_id,
           base_rate_id: record.base_rate_id,
-          duration: durationDate,
           park_id: record.park_id,
           status: "active",
           token,
@@ -108,13 +105,6 @@ export default function DemandCardsList() {
       render: (_, record) =>
         record?.client?.user ? `${record.client.user.first_name} ${record.client.user.last_name}` : "N/A",
     },
-    {
-      title: "Duration",
-      dataIndex: "duration",
-      key: "duration",
-      render: (duration) => `${duration} ${duration > 1 ? "months" : "month"}`,
-    },
-    { title: "Total Price", dataIndex: "total_price", key: "total_price" },
     {
       title: "Status",
       dataIndex: "status",

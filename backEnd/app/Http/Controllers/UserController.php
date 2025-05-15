@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
-
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -38,7 +38,7 @@ class UserController extends Controller
             'last_name' => $request->last_name,
             'birth_date' => $request->birth_date,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
         ]);
 
@@ -87,7 +87,7 @@ class UserController extends Controller
         ));
 
         if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+            $user->password = Hash::make($request->password);
             $user->save();
         }
 
@@ -106,6 +106,28 @@ class UserController extends Controller
             'success' => true,
             'message' => 'User deleted successfully']);
         
+    }
+
+    public function changePassword(Request $request, string $id)
+    {
+        
+        $request->validate([
+            'current_password' => 'required|string|min:8',
+            'new_password' => 'required|string|min:8',
+            
+        ]);
+        $user = User::findOrFail($id);
+        if(!Hash::check($request->current_password, $user->password)){
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect']);
+        }   
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully']);
     }
     
 }

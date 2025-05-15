@@ -208,8 +208,6 @@ export const generateCartPDF = async (cart, clientName, rateName) => {
   const infoX = userImgX + userImgDims.width + 15;
   const infoY = userImgY + userImgDims.height - 17;
   page.drawText(`Client: ${clientName}`, { x: infoX, y: infoY, size: 14, font: fontBold, color: rgb(0,0,0) });
-  const expiry = dayjs().add(cart.duration, "month").format("YYYY-MM-DD");
-  page.drawText(`Expiry: ${expiry}`, { x: infoX, y: infoY - 18, size: 12, font: fontRegular, color: rgb(0,0,0) });
   page.drawText(`Rate: ${rateName}`, { x: infoX, y: infoY - 34, size: 12, font: fontRegular, color: rgb(0,0,0) });
   const fontSize = 9;
   const lineHeight = 12;

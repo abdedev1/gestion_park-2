@@ -53,6 +53,7 @@ Route::middleware(["auth:sanctum", isClientMiddleWare::class])->group(function()
 });
 Route::middleware(["auth:sanctum", isTheSameMiddleWare::class])->group(function(){
     Route::put('/profile/{id}', [UserController::class, 'update']);
+    Route::put('/change-password/{id}', [UserController::class, 'changePassword']);
     Route::delete('/profile/{id}', [UserController::class, 'destroy']);
 });
 
