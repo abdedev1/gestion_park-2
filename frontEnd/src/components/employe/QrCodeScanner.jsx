@@ -1,4 +1,4 @@
-import { fetchParkingTickets,updateParkingTicket } from '../Redux/slices/parkingTicketsSlice';
+import { fetchParkingTickets, updateParkingTicket, getTicketById } from '../Redux/slices/parkingTicketsSlice';
 import { useSelector,useDispatch } from "react-redux";
 import { fetchPricingRates } from '../Redux/slices/pricingRatesSlice';
 import isEqual from "lodash/isEqual";
@@ -21,7 +21,8 @@ export default function QRCodeScanner({updateSpotStatus}) {
 
   
   const { parkingTickets } = useSelector(state => state.parkingTickets);
-  const { employes } = useSelector(state=>state.employes) 
+  // const { ticket } = useSelector(state => state.parkingTickets);
+  const { employes } = useSelector(state=>state.employes)
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function QRCodeScanner({updateSpotStatus}) {
       const [key, value] = part.split(':').map(s => s.trim());
       if (key === "Spot_id") data.spot_id = value;
       if (key === "Spot") data.spotName = value;
-      if(key === "Tickit_id") data.id = value
+      if (key === "Tickit_id") data.id = value;
       if (key === "price") data.price = value;
       if (key === "discount") data.discount = value;
       
@@ -194,7 +195,7 @@ export default function QRCodeScanner({updateSpotStatus}) {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-semibold text-gray-700 w-28">Exit:</span>
-                    <span className="font-mono text-gray-900">{updateTicketG.exit_time}</span>
+                    <span className="font-mono text-gray-900">{updateTicketG.exit_time.replace('T', ' ')}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-semibold text-gray-700 w-28">Total:</span>

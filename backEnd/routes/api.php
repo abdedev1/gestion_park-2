@@ -63,6 +63,7 @@ Route::middleware(["auth:sanctum", IsAdminEmployeeMiddleware::class])->group(fun
     Route::apiResource('employes', EmployeController::class);
     Route::get('/clients', [ClientController::class, 'index']);
     Route::get('/clients/{id}', [ClientController::class, 'show']);
+    Route::apiResource('parking-tickets', ParkingTicketController::class);
 
 });
 
@@ -75,7 +76,6 @@ Route::get('/parks/{id}/employes',[ParkController::class,'getParkEmployes']);
 Route::get('/parks/{id}/spots',[ParkController::class,'getParkSpots']);
 
 Route::get('/employes/{id}/spots', [EmployeController::class, 'getEmployeSpots']);
-Route::apiResource('parking-tickets', ParkingTicketController::class);
 Route::apiResource('pricing_rates', PricingRateController::class);
 Route::post('/carts', [CartController::class, 'store']);
 Route::apiResource('demand-cards', DemandCardController::class);
