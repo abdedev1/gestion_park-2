@@ -303,32 +303,7 @@ export default function SpotsEmploye() {
             
             <ShowModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSpot?.status === "available" ? "Spot Reservation" : "Spot Release"} content={<SpotModel />} />
             <ShowModal isOpen={showScanner} onClose={() => setShowScanner(false)} title="QR Code Scanner" content={<QRCodeScanner />} />
-            {showCartScanner && (
-                <div
-                    style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    background: "rgba(0,0,0,0.5)",
-                    zIndex: 9999,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                    }}
-                >
-                    <div style={{ background: "#fff", padding: 24, borderRadius: 12, maxWidth: 400, width: "90%" }}>
-                    <QrCodeScannerCart
-                        onScanResult={handleClientScanResult}
-                        onClose={() => {
-                        setShowCartScanner(false);
-                        setScanLoading(false);
-                        }}
-                    />
-                    </div>
-                </div>
-                )}
+            <ShowModal isOpen={showCartScanner} onClose={() => setShowCartScanner(false)} title="Cart Scanner" content={<QrCodeScannerCart onScanResult={handleClientScanResult} onClose={() => { setShowCartScanner(false); setScanLoading(false);}} />} />
         </div>
     );
 }

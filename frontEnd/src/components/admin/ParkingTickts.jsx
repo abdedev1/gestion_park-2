@@ -153,7 +153,7 @@ export default function ParkingTickets() {
         key: "base_rate_id",
         render: (text) => (
           <div className="flex items-center gap-2">
-            {text}
+            {text}&nbsp;MAD
           </div>
         ),
         responsive: ["lg"],
@@ -165,7 +165,7 @@ export default function ParkingTickets() {
         responsive: ["lg"],
         render: (text) => (
           <div className="flex items-center gap-2">
-            {text}
+            {text}&nbsp;MAD
           </div>
         ),
     },
