@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axios } from "../../../assets/api/axios";
 
-// Async thunk to fetch userid by ID
 export const fetchUserById = createAsyncThunk(
   "userById/fetchUserById",
   async (id, { rejectWithValue }) => {

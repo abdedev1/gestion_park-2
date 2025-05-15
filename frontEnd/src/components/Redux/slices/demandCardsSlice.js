@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axios } from "../../../assets/api/axios"; // Use your custom axios instance
+import { axios } from "../../../assets/api/axios"; 
 
-// Async thunk to create a subscription
 export const fetchDemandCards = createAsyncThunk(
   "demandCards/fetchDemandCards",
   async (_, { rejectWithValue }) => {
@@ -19,7 +18,7 @@ export const createSubscription = createAsyncThunk(
   async ({ clientId, parkId,base_rate_id,status, token }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "demand-cards", // API endpoint
+        "demand-cards", 
         {
           client_id: clientId,
           park_id: parkId,
@@ -76,7 +75,7 @@ const demandCardsSlice = createSlice({
       })
       .addCase(createSubscription.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.demandCards.push(action.payload); // Add the new subscription to the state
+        state.demandCards.push(action.payload); 
       })
       .addCase(createSubscription.rejected, (state, action) => {
         state.status = "failed";

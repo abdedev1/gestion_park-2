@@ -83,11 +83,12 @@ export default function ClientSubscription({ onClose }) {
                   <div
                     key={plan.id}
                     className={`border rounded-lg p-6 hover:shadow-md transition relative ${
-                      plan.recommended ? "border-2 border-primary" : ""
+                      plan.recommended ? "border-2 border-primary shadow-lg" : ""
                     }`}
                   >
+                    
                     {plan.recommended ? (
-                      <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-medium rounded-bl-lg">
+                      <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium inline-block mb-4">
                         RECOMMENDED
                       </div>
                     ):""}
@@ -102,10 +103,10 @@ export default function ClientSubscription({ onClose }) {
                     </div>
                     <button
                       onClick={() => handleSelectPlan(plan)}
-                      className={`w-full py-2 rounded-md font-medium transition ${
+                      className={`w-full py-3 rounded-lg font-medium transition ${
                         plan.recommended
                           ? "btn btn-primary"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                          : "btn btn-soft"
                       }`}
                     >
                       Select Plan

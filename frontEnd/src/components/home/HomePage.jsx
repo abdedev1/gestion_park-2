@@ -321,13 +321,13 @@ const HomePage = () => {
                       ) : "" }
                       <h3 className="text-2xl font-bold mb-2">{plan.rate_name}</h3>
                       <p className="text-4xl font-bold mb-4">
-                        {plan.price} MAD<span className="text-lg text-gray-500">/month</span>
+                        {plan.price} MAD<span className="text-lg text-gray-500">/Lifetime</span>
                       </p>
-                      <ul className="mb-8 flex items-start">
+                      <div className="mb-8 flex items-start">
                             <FaCheck className="text-green-500 mt-1 mr-2 flex-shrink-0" />
                             <span>{plan.feature}</span>
                           
-                      </ul>
+                      </div>
                       <button onClick={getStarted} className={`w-full py-3 rounded-lg font-medium transition ${plan.recommended ? "btn btn-primary" : "btn btn-soft"}`}>
                         Get Started
                       </button>
