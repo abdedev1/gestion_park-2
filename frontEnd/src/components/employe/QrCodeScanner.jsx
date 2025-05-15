@@ -101,7 +101,6 @@ export default function QRCodeScanner({updateSpotStatus}) {
     const now = new Date();
     const exitTimeStr = now.toISOString().slice(0, 16);
     const durationInHours = (now - entryTime) / (1000 * 60 * 60);
-    console.log("info:", durationInHours, parsedObject.price, parsedObject.discount);
 
     const updatedTicket = {
       ...ticket,
