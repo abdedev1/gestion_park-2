@@ -21,9 +21,17 @@ export const deleteParkingTicket = createAsyncThunk("parking_ticket/deleteParkin
   return id;
 });
 
+export const getTicketById = createAsyncThunk(
+  "parking_ticket/getTicketById",
+  async (id) => {
+    const response = await axios.get(`parking-tickets/${id}`);
+    return response.data;
+  }
+);
+
 const parkingTicketSlice = createSlice({
   name: 'parkingTickets',
-  initialState: { parkingTickets: [], status: 'idle', error: null },
+  initialState: { parkingTickets: [], status: 'idle', error: null, ticket: null },
   extraReducers: (builder) => {
     builder
       .addCase(fetchParkingTickets.pending, (state) => { state.status = 'loading'; })
@@ -36,6 +44,9 @@ const parkingTicketSlice = createSlice({
       })
       .addCase(deleteParkingTicket.fulfilled, (state, action) => {
         state.parkingTickets = state.parkingTickets.filter(ticket => ticket.id !== action.payload);
+      })
+      .addCase(getTicketById.fulfilled, (state, action) => {
+        state.ticket = action.payload;
       });
   }
 });
